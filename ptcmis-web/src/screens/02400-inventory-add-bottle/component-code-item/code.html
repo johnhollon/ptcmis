@@ -1,0 +1,72 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<div class="code-main" [class.selected]="selected">
+  @if (model.status !== 'coded') {
+    <div class="signal"
+         [matTooltip]="model.status === 'printed' || model.status === 'checked' ? '已打印瓶码' : '未打印瓶码'"
+         [class.show]="model.status === 'printed' || model.status === 'checked'">
+    </div>
+    <div class="signal"
+         [matTooltip]="model.status === 'checked' ? '已核对' : '未核对'"
+         [class.show]="model.status === 'checked'">
+    </div>
+  }
+  <div class="content">
+    <div class="code">
+      <div class="self-id">{{ model.id }}</div>
+      @if (model.status !== 'coded') {
+        <div class="plants text-primary">
+          <span>
+            {{ model.plantCount }}株
+          </span>
+        </div>
+      }
+    </div>
+    @if (model.status !== 'coded' && taskGeneration > 0) {
+      <div class="info">
+        <span>
+          母瓶：{{ model.idParent || '未设置' }}
+        </span>
+      </div>
+    }
+    @if (model.status !== 'coded') {
+      <div class="info">
+        <span>
+          质检：{{ model.inspectorName || '未设置' }}
+        </span>
+        <span>
+          操作：{{ model.operatorName || '未设置' }}
+        </span>
+      </div>
+      <div class="info">
+        <span>
+          操作时间：{{ (model.operatorTime | timestamp) || '未设置' }}
+        </span>
+      </div>
+    }
+  </div>
+
+</div>
+

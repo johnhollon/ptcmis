@@ -1,0 +1,72 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@mixin tokens {
+  html {
+    --mat-sys-motion-easing-linear: linear;
+    --mat-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --mat-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 0.8, 0);
+    --mat-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+    --mat-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --mat-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+    --mat-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+    --mat-sys-motion-easing-spring-standard: cubic-bezier(0.25, 1, 0.5, 1);
+    --mat-sys-motion-easing-spring-emphasized: cubic-bezier(0.18, 1.25, 0.4, 1);
+    --mat-sys-motion-easing-spring-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --mat-sys-motion-duration-short1: 50ms;
+    --mat-sys-motion-duration-short2: 100ms;
+    --mat-sys-motion-duration-short3: 150ms;
+    --mat-sys-motion-duration-short4: 200ms;
+    --mat-sys-motion-duration-medium1: 250ms;
+    --mat-sys-motion-duration-medium2: 300ms;
+    --mat-sys-motion-duration-medium3: 350ms;
+    --mat-sys-motion-duration-medium4: 400ms;
+    --mat-sys-motion-duration-long1: 450ms;
+    --mat-sys-motion-duration-long2: 500ms;
+    --mat-sys-motion-duration-long3: 550ms;
+    --mat-sys-motion-duration-long4: 600ms;
+    --mat-sys-motion-duration-extralong1: 700ms;
+    --mat-sys-motion-duration-extralong2: 800ms;
+    --mat-sys-motion-duration-extralong3: 900ms;
+    --mat-sys-motion-duration-extralong4: 1000ms;
+    --mat-sys-motion-duration-extraLong1: 700ms;
+    --mat-sys-motion-duration-extraLong2: 800ms;
+    --mat-sys-motion-duration-extraLong3: 900ms;
+    --mat-sys-motion-duration-extraLong4: 1000ms;
+    --mat-sys-spacing-none: 0px;
+    --mat-sys-spacing-extra-small: 4px;
+    --mat-sys-spacing-small: 8px;
+    --mat-sys-spacing-medium: 12px;
+    --mat-sys-spacing-large: 16px;
+    --mat-sys-spacing-extra-large: 24px;
+    --mat-sys-spacing-xxl: 32px;
+    --mat-sys-spacing-xxxl: 48px;
+    --mat-sys-hover-state-layer-opacity: 0.08;
+    --mat-sys-focus-state-layer-opacity: 0.12;
+    --mat-sys-pressed-state-layer-opacity: 0.12;
+    --mat-sys-dragged-state-layer-opacity: 0.16;
+    --mat-sys-disabled-container-opacity: 0.12;
+    --mat-sys-disabled-content-opacity: 0.38;
+  }
+}

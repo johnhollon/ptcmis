@@ -1,0 +1,94 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+.main-container {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+
+  @include mat.form-field-overrides((
+    container-height: 40px,
+    container-vertical-padding: 0,
+    container-text-size:--mat-sys-body-size,
+    outlined-label-text-size:--mat-sys-body-size,
+    filled-label-text-size:--mat-sys-body-size,
+    container-text-line-height:40px,
+  ));
+
+  @include mat.select-overrides((
+    trigger-text-size:--mat-sys-body-size,
+  ));
+
+  ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 13px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    height: 2px;
+  }
+
+  .left-1,.left-2, .left-3{
+    @include mat.button-overrides((
+      filled-container-shape: var(--mat-sys-corner-small),
+      outlined-container-shape: var(--mat-sys-corner-small),
+      text-container-shape: var(--mat-sys-corner-small),
+    ));
+    > * {
+      flex: 0 0 auto;
+    }
+  }
+
+  .left-1 {
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mat-sys-corner-medium);
+    ::ng-deep mat-form-field {
+      max-width: 240px !important;
+    }
+  }
+
+
+  .left-2, .left-3 {
+    //flex: 0 0 350px !important;
+    width: 350px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background-color: var(--mat-sys-surface-container-lowest) !important;
+  }
+
+  .bottles-cdk-scroll {
+    flex: 1 !important;
+
+    .bottles-container {
+      padding: var(--mat-sys-corner-medium);
+    }
+  }
+
+}
+

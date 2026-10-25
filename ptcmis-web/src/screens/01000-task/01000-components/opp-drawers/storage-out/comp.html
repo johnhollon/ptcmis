@@ -1,0 +1,105 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+  <ng-container data-content-for="content">
+    <div class="main">
+      <div class="left-container">
+        <fieldSet class="filters-container">
+          <legend>过滤条件</legend>
+          <tissue-task-storage-out-filters (onFiltersChanged)="storageOutConditionSig.set($event)"
+                                           (onRefresh)="requestRefresh()"></tissue-task-storage-out-filters>
+        </fieldSet>
+        <div class="left-scroll-container">
+          <div class="table-item sticky"
+               [class.selected]="!selectedStorageOutIdSig()"
+               (click)="requestSelectStorageInOut('')"
+          >总览
+          </div>
+          @for (item of storageOutFilteredSigReadonly(); track item.id) {
+            <tissue-task-storage-out-item
+              [model]="item"
+              [selected]="selectedStorageOutIdSig()===item.id"
+              (click)="requestSelectStorageInOut(item.id)"
+            ></tissue-task-storage-out-item>
+          }
+        </div>
+      </div>
+      <div class="right-container">
+        <div class="right-container-title">
+          <div class="right-tabs-title-container">
+            @if (selectedStorageOutIdSig()) {
+              <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'baseInfo'" (click)="subModuleSelectedSig.set('baseInfo')">
+                出库申请
+              </div>
+              <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'process'" (click)="subModuleSelectedSig.set('process')">
+                出库明细
+              </div>
+              <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'archive'" (click)="subModuleSelectedSig.set('archive')">
+                附件资料
+              </div>
+            } @else {
+              <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'baseInfo'" (click)="subModuleSelectedSig.set('baseInfo')">
+                出库总览
+              </div>
+            }
+          </div>
+        </div>
+        <div class="right-container-content">
+          @if (selectedStorageOutIdSig()) {
+            <tissue-task-storage-out-editor-do [class.hidden]="subModuleSelectedSig() !== 'baseInfo'"
+                                               [editable]="editable"
+                                               [model]="serviceTissueTaskProcess.storageOutStatSig()"
+                                               [storageInOut]="serviceTissueTaskProcess.getStorageOut(selectedStorageOutIdSig()) ?? null"
+                                               (onSaved)="onSaved.emit()"
+                                               (onRequestStartLoading)="onRequestStartLoading.emit($event)"
+                                               (onRequestStopLoading)="onRequestStopLoading.emit()"
+                                               (onRequestCheck)="subModuleSelectedSig.set('process')"
+            ></tissue-task-storage-out-editor-do>
+            <tissue-task-storage-out-accept-do [class.hidden]="subModuleSelectedSig() !== 'process'"
+                                               [editable]="editable"
+                                               [model]="serviceTissueTaskProcess.storageOutStatSig()"
+                                               [storageInOut]="serviceTissueTaskProcess.getStorageOut(selectedStorageOutIdSig()) ?? null"
+                                               (onSaved)="onSaved.emit()"
+                                               (onRequestStartLoading)="onRequestStartLoading.emit($event)"
+                                               (onRequestStopLoading)="onRequestStopLoading.emit()"
+            ></tissue-task-storage-out-accept-do>
+            <archive-panel [class.hidden]="subModuleSelectedSig() !== 'archive'"
+                           data-content-for="content"
+                           [archives]="archivesSig()"
+                           [editable]="false"
+                           style="margin: var(--mat-sys-corner-large) 0 0  var(--mat-sys-corner-large)"
+            ></archive-panel>
+          } @else {
+            <tissue-task-storage-out-stat-do [model]="serviceTissueTaskProcess.storageOutStatSig()"></tissue-task-storage-out-stat-do>
+          }
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+</layout-drawer-opp-simple>

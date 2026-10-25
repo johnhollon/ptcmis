@@ -1,0 +1,239 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  margin-inline: 0;
+  border: none;
+  font-size: var(--mat-sys-body-medium-size);
+  overflow-x: visible;
+  padding: 0;
+
+  // 主体背景色
+  --background-color: var(--mat-sys-surface-container-lowest);
+  //--background-color-hover: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+  --background-color-hover: var(--mat-sys-surface-container);
+
+  // padding/margin大小
+  --space-size: var(--mat-sys-corner-medium);
+  --space-size-doc-item: 6px;
+
+  // 标题区
+  --title-height: 64px;
+  --title-background-color: var(--mat-sys-surface-container-highest);
+  --title-color: var(--mat-sys-on-surface-container-highest);
+
+  .description {
+    font-size: .8em;
+  }
+
+  > .archive-doc-container {
+    // 通过内容方向让滚动条出现在左侧
+    direction: rtl;
+    overflow-y: auto;
+    overflow-x: visible;
+    padding: 0;
+    flex: 0 0 300px;
+    width: 300px;
+    min-width: 0;
+    border: var(--border);
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+    border-radius: var(--mat-sys-corner-small) 0 0 0;
+    margin-inline: 0;
+    background-color: var(--background-color);
+
+    > .archive-doc-title {
+      position: sticky;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: var(--title-height);
+      background-color: var(--title-background-color);
+      color: var(--title-color);
+      z-index: 1;
+
+      * {
+        margin: 0;
+        padding: 0 var(--space-size);
+        line-height: var(--title-height);
+        font-size: var(--mat-sys-body-large-size);
+      }
+    }
+
+    .archive-doc-item {
+      position: relative;
+      padding: 0;
+      cursor: pointer;
+      height: var(--title-height);
+      z-index: 0;
+      transition: background-color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate);
+
+      &:hover, &.selected {
+        background-color: var(--background-color-hover);
+      }
+
+      // 右侧上方凹圆弧
+      &.selected {
+        &::before {
+          content: "";
+          position: absolute;
+          right: 0; // 扩展到右侧边界外（半径大小）
+          top: -16px; // 向上扩展半径大小
+          width: 16px; // 圆弧半径 r = 16px
+          height: 16px;
+          // 利用径向渐变切出右下角为实心、左上角透明的凹弧形
+          background: radial-gradient(circle at top left, transparent 16px, var(--background-color-hover) 16px);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        // 右侧下方凹圆弧
+        &::after {
+          content: "";
+          position: absolute;
+          right: 0; // 扩展到右侧边界外
+          bottom: -16px; // 向下扩展半径大小
+          width: 16px;
+          height: 16px;
+          // 利用径向渐变切出右上角为实心、左下角透明的凹弧形
+          background: radial-gradient(circle at bottom left, transparent 16px, var(--background-color-hover) 16px);
+          pointer-events: none;
+          z-index: 1;
+        }
+      }
+
+      .doc-icon {
+        position: absolute;
+        left: var(--space-size);
+        width: 0;
+        top: var(--space-size);
+        bottom: 0;
+      }
+
+      .doc-content {
+        position: absolute;
+        left: calc(var(--title-height) - var(--space-size));
+        right: 0;
+        top: var(--space-size);
+        bottom: var(--space-size);
+        overflow: hidden;
+        *{
+          text-wrap: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+    }
+
+    > .archive-doc-content, > .archive-doc-title {
+      // 恢复内容方向
+      direction: ltr;
+    }
+  }
+
+  > .archive-file-main-container {
+    flex: 1;
+    position: relative;
+
+    .archive-file-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: var(--title-height);
+      background-color: var(--title-background-color);
+      color: var(--title-color);
+      border-left: var(--border);
+      border-radius: 0 var(--mat-sys-corner-small) 0 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding-right: var(--space-size);
+
+      .archive-title {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0 var(--space-size);
+
+        h2 {
+          height: 24px;
+          font-size: var(--mat-sys-body-large-size);
+          padding: 0;
+          margin: 0;
+        }
+
+        .archive-title-desc {
+          height: 24px;
+          line-height: 24px;
+          padding: 0;
+          display: flex;
+          gap: var(--space-size);
+        }
+      }
+
+      .opp {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .archive-file-content-container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--title-height);
+      bottom: 0;
+      border-left: var(--border);
+      border-right: var(--border);
+      border-color: var(--background-color-hover);
+
+      .image-file-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+
+        .image-file {
+          position: absolute;
+          overflow: hidden;
+          border: var(--border);
+          box-shadow: var(--mat-sys-level2);
+
+          .image-overlay {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,345 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-1">
+      <legend>查看基本情况</legend>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>品种</mat-label>
+        <input matInput [value]="model.variety" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 important" floatLabel="always">
+        <mat-label>品种编号</mat-label>
+        <input matInput [value]="model.varietyCode" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 important" floatLabel="always">
+        <mat-label>外植体采集批次</mat-label>
+        <input matInput [value]="model.explantCollectionBatch" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 important" floatLabel="always">
+        <mat-label>代数</mat-label>
+        <input matInput [value]="model.generation" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 important" floatLabel="always">
+        <mat-label>建瓶来源</mat-label>
+        <input matInput value="{{model.sourceType | storageReason}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1"
+                      [class.error]="!model.codePrefix"
+                      [class.important]="!!model.codePrefix"
+                      floatLabel="always">
+        <mat-label>瓶码前缀</mat-label>
+        <input matInput [value]="model.codePrefix || '尚未分配'" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>创建时间</mat-label>
+        <input matInput [value]="model.createTime | timestamp" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>创建人</mat-label>
+        <input matInput [value]="model.creatorName" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>开始时间</mat-label>
+        <input matInput [value]="(model.startTime | timestamp) || '尚未开始'" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>完成时间</mat-label>
+        <input matInput [value]="(model.finishTime | timestamp) || '尚未完成'" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+        <mat-label>操作人</mat-label>
+        <input matInput [value]="model.operatorName" readonly>
+      </mat-form-field>
+
+    </fieldset>
+
+
+    @if (editable) {
+      <fieldset class="form-container left-1">
+        <legend>待用瓶码</legend>
+
+        <mat-form-field appearance="outline" class="important readonly">
+          <mat-label>瓶数</mat-label>
+          <input matInput type="number" [value]="printedSig().length" readonly>
+        </mat-form-field>
+
+        <button matButton="outlined" style="margin-left: 1px;" (click)="requestAssignCode()">
+          <mat-icon>add_to_drive</mat-icon>
+          分配待用瓶码
+        </button>
+
+        <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+          <comp-code-bottle-code-complement-task
+            *cdkVirtualFor="let bottle of printedSig()"
+            [model]="bottle"
+            [updateVersion]="updateVersionSig()"
+          ></comp-code-bottle-code-complement-task>
+        </cdk-virtual-scroll-viewport>
+      </fieldset>
+
+      @if (hasParentSig()) {
+        <fieldset class="form-container left-1">
+          <legend>可用母瓶(<span class="text-primary">点击选择</span>)</legend>
+          <div style="display: flex;gap:4px;">
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 118px;">
+              <mat-label>按前缀过滤</mat-label>
+              <input #codePrefixInputForParent matInput
+                     [matAutocomplete]="prefixAutoComplete"
+                     [formControl]="codePrefixFormControlForParent"
+                     (input)="requestFilterCodePrefixListForParent()"
+                     (focus)="requestFilterCodePrefixListForParent()"
+              >
+              <mat-autocomplete requireSelection="true" #prefixAutoComplete="matAutocomplete">
+                @for (option of codePrefixForParentFilteredSig(); track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 118px;">
+              <mat-label>按序号过滤</mat-label>
+              <input matInput [formControl]="codeSeqFormControlForParent" type="number" min="1" max="9999">
+            </mat-form-field>
+          </div>
+          <div style="display: flex;gap:4px;">
+            <select-user class="important" label="按操作员过滤" [canSelectEmpty]="true" optionEmptyText="全部"
+                         [formControl]="operatorFormControlForParent"></select-user>
+          </div>
+          <div>
+            <date-range class="important" label="按操作时间过滤" [showHint]="false" [formControl]="operatorTimeFormControlForParent"></date-range>
+          </div>
+          <button matButton="outlined" style="margin-left: 1px;" (click)="requestScanSetParentBottle()">
+            <mat-icon>qr_code</mat-icon>
+            扫码选择母瓶
+          </button>
+          <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+            <code-item-parent
+              *cdkVirtualFor="let bottle of parentSig()"
+              [model]="bottle"
+              (click)="requestSetParentBottle(bottle)"
+            ></code-item-parent>
+          </cdk-virtual-scroll-viewport>
+        </fieldset>
+      }
+
+      <fieldset class="form-container left-1" [formGroup]="formComplementBatch">
+        <legend class="text-primary">补码操作</legend>
+
+        <mat-form-field appearance="outline" class="col1" floatLabel="always" style="margin-bottom: 18px;">
+          <mat-label>补码瓶数</mat-label>
+          <input matInput type="number" min="0" [max]="printedSig().length" formControlName="childBottleCount">
+          @if (formComplementBatch.get('childBottleCount')?.touched && formComplementBatch.get('childBottleCount')?.invalid) {
+            <mat-error>{{ formComplementBatch.get('childBottleCount')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (hasParentSig()) {
+          <mat-form-field appearance="outline" class="col1" floatLabel="always" style="margin-bottom: 18px;">
+            <mat-label>设置默认母瓶瓶码</mat-label>
+            <input matInput formControlName="parentId">
+            <button matIconButton matSuffix matTooltip="清空" (click)="formComplementBatch.get('parentId')?.patchValue('')">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </mat-form-field>
+        }
+
+        <select-user label="选择质检员" class="col1" formControlName="inspector" style="margin-bottom: 18px;"></select-user>
+        <select-user label="选择操作员" class="col1" formControlName="operator" style="margin-bottom: 18px;"></select-user>
+
+        <mat-form-field appearance="outline" class="col1" floatLabel="always" style="margin-bottom: 18px;">
+          <mat-label>每瓶株数</mat-label>
+          <input matInput type="number" min="0" max="9999" formControlName="plants">
+          @if (formComplementBatch.get('plants')?.touched && formComplementBatch.get('plants')?.invalid) {
+            <mat-error>{{ formComplementBatch.get('plants')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1" floatLabel="always" style="margin-bottom: 18px;">
+          <mat-label>操作日期</mat-label>
+          <input matInput [matDatepicker]="datepicker" formControlName="operateDate">
+          <mat-datepicker #datepicker />
+          <mat-datepicker-toggle [for]="datepicker" matSuffix></mat-datepicker-toggle>
+          @if (formComplementBatch.get('operateDate')?.touched && formComplementBatch.get('operateDate')?.invalid) {
+            <mat-error>{{ formComplementBatch.get('operateDate')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1" floatLabel="always" style="margin-bottom: 18px;">
+          <mat-label>操作时间</mat-label>
+          <input matInput [matTimepicker]="timepicker" formControlName="operateTime">
+          <mat-timepicker [options]="customTimeOptions" #timepicker />
+          <mat-timepicker-toggle [for]="timepicker" matSuffix />
+          @if (formComplementBatch.get('operateTime')?.touched && formComplementBatch.get('operateTime')?.invalid) {
+            <mat-error>{{ formComplementBatch.get('operateTime')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button matButton="filled" style="margin-left: 1px;" (click)="requestComplementBatch()">
+          补码
+        </button>
+
+      </fieldset>
+    }
+
+
+    <fieldset class="form-container left-1">
+      <legend class="text-primary">培养瓶（补码中）</legend>
+      @if (editable) {
+        <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+          <mat-icon style="margin-right: 8px;">warning</mat-icon>
+          操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+        </div>
+      }
+      <mat-form-field appearance="outline" class="important readonly" floatLabel="always">
+        <mat-label>瓶数/株数</mat-label>
+        <input matInput value="{{usedStatSig().bottles + '/' + usedStatSig().plants}}" readonly>
+      </mat-form-field>
+      @if (editable) {
+        <button matButton="filled" style="margin-left: 1px;" (click)="requestPrintBatch()">
+          <mat-icon>print</mat-icon>
+          一键打印瓶码
+        </button>
+      }
+
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+        <comp-code-bottle-code-complement-task
+          *cdkVirtualFor="let bottle of usedSig()"
+          [model]="bottle"
+          [updateVersion]="updateVersionSig()"
+          [selected]="bottleOppMenuSelectedSig() === bottle"
+          [matContextMenuTriggerFor]="bottleOppMenu"
+          [matContextMenuTriggerData]="{ item: bottle }"
+          [matContextMenuTriggerDisabled]="!editable"
+          (menuOpened)="onBottleOppMenuOpened(bottle)"
+          (menuClosed)="onBottleOppMenuClosed()"
+        ></comp-code-bottle-code-complement-task>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+
+
+    <fieldset class="form-container left-1">
+      <legend class="text-primary">培养瓶（已核对）</legend>
+      @if (editable) {
+        <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+          <mat-icon style="margin-right: 8px;">warning</mat-icon>
+          操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+        </div>
+      }
+
+      <mat-form-field appearance="outline" class="important readonly" floatLabel="always">
+        <mat-label>瓶数/株数</mat-label>
+        <input matInput value="{{checkedStatSig().bottles + '/' + checkedStatSig().plants}}" readonly>
+      </mat-form-field>
+
+      @if (editable) {
+        <button matButton="filled" style="margin-left: 1px;" (click)="requestScanCheck()">
+          <mat-icon>qr_code</mat-icon>
+          扫码核对
+        </button>
+      }
+
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+        <comp-code-bottle-code-complement-task
+          *cdkVirtualFor="let bottle of checkedSig()"
+          [model]="bottle"
+          [updateVersion]="updateVersionSig()"
+          [selected]="bottleOppMenuSelectedSig() === bottle"
+          [matContextMenuTriggerFor]="bottleOppMenu"
+          [matContextMenuTriggerData]="{ item: bottle }"
+          [matContextMenuTriggerDisabled]="!editable"
+          (menuOpened)="onBottleOppMenuOpened(bottle)"
+          (menuClosed)="onBottleOppMenuClosed()"
+        ></comp-code-bottle-code-complement-task>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    @if (editable) {
+      <button matButton="filled" (click)="requestSave()" class="mat-shadow-2">保存执行数据</button>
+    }
+    @if (editable || finishable) {
+      <button matButton="filled" (click)="requestFinish()" class="mat-shadow-2" style="background-color: var(--mat-sys-error)">完成任务</button>
+    }
+    <button matButton="text" (click)="requestCancel()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+
+<!--瓶码右键上下文操作菜单-->
+<ng-container>
+  <mat-menu #bottleOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+      @if (item.status === 'process') {
+        <button mat-menu-item (click)="requestPrintSingle(item)">
+          <mat-icon>print</mat-icon>
+          打印瓶码
+        </button>
+        <button mat-menu-item (click)="requestUpdateStatusToCoded(item)">
+          <mat-icon>replay</mat-icon>
+          恢复待用
+        </button>
+      } @else if (item.status === 'printed') {
+        <button mat-menu-item (click)="requestUpdateStatusToChecked(item)">
+          <mat-icon>check_circle_outline</mat-icon>
+          完成核对
+        </button>
+        <button mat-menu-item (click)="requestPrintSingle(item)">
+          <mat-icon>print</mat-icon>
+          重打瓶码
+        </button>
+        <button mat-menu-item (click)="requestUpdateStatusToProcess(item)">
+          <mat-icon>replay</mat-icon>
+          撤销打印
+        </button>
+      } @else if (item.status === 'checked') {
+        <button mat-menu-item (click)="requestUpdateStatusToPrinted(item)">
+          <mat-icon>replay</mat-icon>
+          撤销核对
+        </button>
+      }
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

@@ -1,0 +1,55 @@
+@if (model && updateVersion() >= 0) {
+  <div class="code-main" [class.finished]="model.operateStatus === 'finished'" [class.discard]="model.operateStatus === 'discard'">
+    @if (model.roleInTask === 'child' && (model.operateStatus === 'finished' || model.operateStatus === 'discard')) {
+      <div class="signal"
+           [class.active]="model.childCodeStatus === 'printed' || model.childCodeStatus === 'checked'"
+           [matTooltip]="model.childCodeStatus === 'printed' || model.childCodeStatus === 'checked' ? '已打印瓶码' : '未打印瓶码'">
+      </div>
+      <div class="signal"
+           [class.active]="model.childCodeStatus === 'checked'"
+           [matTooltip]="model.childCodeStatus === 'checked' ? '已核对瓶码' : '未核对瓶码'">
+      </div>
+    }
+    <div class="code">{{ model.idBottle || '' }}</div>
+    <div class="info">
+      @if (model.discardReason) {
+        <span>{{ model.discardReason }}</span>
+      }
+      @if (model.parentKeepPlantCount || 0 > 0) {
+        <span>留种{{ (model.parentKeepPlantCount || 0) }}株</span>
+      }
+      @if (model.plantCountActual || 0 > 0) {
+        @if (model.parentKeepPlantCount || 0 > 0) {
+          <span>原瓶{{ (model.plantCountActual || 0) }}株</span>
+        } @else {
+          <span>{{ (model.plantCountActual || 0) }}株</span>
+        }
+      }
+    </div>
+  </div>
+}<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+
+

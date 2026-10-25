@@ -1,0 +1,155 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="tableDataSource" [trackBy]="trackById">
+
+  <!-- Column -->
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>瓶码</th>
+    <td mat-cell *matCellDef="let item">{{ item.id }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="variety">
+    <th mat-header-cell *matHeaderCellDef>品种</th>
+    <td mat-cell *matCellDef="let item">{{ item.variety }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="varietyCode">
+    <th mat-header-cell *matHeaderCellDef>编号</th>
+    <td mat-cell *matCellDef="let item">
+        <span [matTooltip]="item.variety + ' ' + item.varietyCode">
+          {{ item.varietyCode }}
+        </span>
+    </td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="explantCollectionBatch">
+    <th mat-header-cell *matHeaderCellDef matTooltip="外植体采集批次">批次</th>
+    <td mat-cell *matCellDef="let item">{{ item.explantCollectionBatch || '——' }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="generation">
+    <th mat-header-cell *matHeaderCellDef>代数</th>
+    <td mat-cell *matCellDef="let item">{{ item.generation }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="plantCount">
+    <th mat-header-cell *matHeaderCellDef>株数</th>
+    <td mat-cell *matCellDef="let item">{{ item.plantCount }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="sourceType">
+    <th mat-header-cell *matHeaderCellDef>建瓶来源</th>
+    <td mat-cell *matCellDef="let item">{{ item.sourceType | storageReason }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="taskTime">
+    <th mat-header-cell *matHeaderCellDef>建瓶时间</th>
+    <td mat-cell *matCellDef="let item">{{ item.taskTime | timestamp }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="discarded">
+    <th mat-header-cell *matHeaderCellDef>淘汰</th>
+    <td mat-cell *matCellDef="let item" [class.text-error]="item.discarded === '1'" [matTooltip]="item.discarded === '1' ? item.discardReason : ''">
+      {{ item.discarded === '1' ? '已淘汰' : '未淘汰' }}
+    </td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="currentStorageStatus">
+    <th mat-header-cell *matHeaderCellDef>当前库存状态</th>
+    <td mat-cell *matCellDef="let item" [class.text-error]="item.currentStorageStatus === 'out'"
+        matTooltip="{{item.currentStorageStatus === 'out' ? (item.lastIssuedReason | storageReason) + '出库' : (item.lastReceivedReason | storageReason) + '入库'}}">
+      {{ item.currentStorageStatus | bottleStorageStatus }}
+    </td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="lastOperatorName">
+    <th mat-header-cell *matHeaderCellDef>操作员</th>
+    <td mat-cell *matCellDef="let item">{{ item.lastOperatorName || '——' }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  <ng-container matColumnDef="idParent">
+    <th mat-header-cell *matHeaderCellDef>母瓶</th>
+    <td mat-cell *matCellDef="let item">{{ item.idParent || (item.generation > 0 ? '未设置' : '——') }}</td>
+  </ng-container>
+
+  <!-- Column -->
+  @if (columns.indexOf('action') > -1) {
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>操作</th>
+      <td mat-cell *matCellDef="let item">
+        <button matIconButton matTooltip="操作菜单"
+                [matMenuTriggerFor]="templateOppMenu"
+                [matMenuTriggerData]="{ item: item }"
+                (menuOpened)="onOppMenuOpened(item)"
+                (menuClosed)="onOppMenuClosed()">
+          <mat-icon>apps</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+  }
+
+  <!--thead 模板-->
+  <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+  <!--tbody 模板-->
+  <tr mat-row *matRowDef="let item; columns: columns;"
+      [matContextMenuTriggerFor]="templateOppMenu"
+      [matContextMenuTriggerData]="{ item: item }"
+      [matContextMenuTriggerDisabled]="columns.indexOf('action') < 0"
+      (menuOpened)="onOppMenuOpened(item)"
+      (menuClosed)="onOppMenuClosed()"
+      [class.menu-opened]="oppMenuSelectedModelSig() === item"></tr>
+</table>
+
+<!--操作菜单-->
+<ng-container>
+  <mat-menu #templateOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+
+      @if (columns.indexOf('action') > -1) {
+        <button mat-menu-item (click)="onView.emit(item)">
+          <mat-icon>search</mat-icon>
+          代际追溯
+        </button>
+      }
+
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="我的账户"
+                                     data-content-for="title">
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <div data-content-for="content">
+    <layout-drawer-opp-simple>
+      <fieldset data-content-for="content" class="form-container">
+        <legend>我的账户</legend>
+        <div class="form">
+          <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+            <mat-label>姓名</mat-label>
+            <input matInput [value]="actionPassport.currentNameOfUser" readonly>
+          </mat-form-field>
+          <div class="break"></div>
+          <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+            <mat-label>登录名（手机号码）</mat-label>
+            <input matInput [value]="actionPassport.currentUserAccount" readonly>
+          </mat-form-field>
+          <div class="break"></div>
+          <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+            <mat-label>账号类型</mat-label>
+            <input matInput [value]="actionPassport.role | role" readonly>
+          </mat-form-field>
+          <div class="break"></div>
+          <button matButton="filled" class="col2" (click)="requestUpdatePassword()">更改密码</button>
+        </div>
+      </fieldset>
+    </layout-drawer-opp-simple>
+  </div>
+</layout-page-function-simple>

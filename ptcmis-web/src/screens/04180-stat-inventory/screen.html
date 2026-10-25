@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="库存统计" data-content-for="title">
+<!--    <ng-container data-content-for="buttons">-->
+<!--      <button matButton="filled" (click)="service.requestExportExcel()">-->
+<!--        <mat-icon>download_for_offline</mat-icon>-->
+<!--        导出 Excel-->
+<!--      </button>-->
+<!--    </ng-container>-->
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <div class="layout-query-simple" data-content-for="content">
+    <fieldset class="filters-container">
+      <legend>统计维度/统计结果</legend>
+        <!--过滤条件区域-->
+        <filters-stat-inventory
+          (onConditionChanged)="requestConditionChanged($event)"
+          (onQuery)="requestQuery($event)"
+          (onExport)="requestExport($event)"
+        ></filters-stat-inventory>
+    </fieldset>
+
+    <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+      <table-stat-inventory></table-stat-inventory>
+    </cdk-virtual-scroll-viewport>
+
+  </div>
+</layout-page-function-simple>

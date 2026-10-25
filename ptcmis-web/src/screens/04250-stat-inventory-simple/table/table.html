@@ -1,0 +1,84 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="service.detailsDataSource">
+
+  <ng-container matColumnDef="group-variety">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef>品种</th>
+  </ng-container>
+  <ng-container matColumnDef="variety">
+    <td mat-cell *matCellDef="let item">{{ item.variety }}</td>
+    <td mat-footer-cell *matFooterCellDef>{{ service.endData.variety }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="group-varietyCode">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef>品种编号</th>
+  </ng-container>
+  <ng-container matColumnDef="varietyCode">
+    <td mat-cell *matCellDef="let item">{{ item.varietyCode }}</td>
+    <td mat-footer-cell *matFooterCellDef>{{ service.endData.varietyCode }}</td>
+  </ng-container>
+
+  @for (i of generationsSig(); track i) {
+    <ng-container matColumnDef="{{'group-g' + i}}">
+      <th mat-header-cell colspan="2" *matHeaderCellDef>{{ i + '代' }}</th>
+    </ng-container>
+    <ng-container matColumnDef="{{'plant' + i}}">
+      <th mat-header-cell *matHeaderCellDef>株数</th>
+      <td mat-cell *matCellDef="let item">{{ (item.generationMap[i]?.plant ?? 0).toLocaleString() }}</td>
+      <td mat-footer-cell *matFooterCellDef>{{ (service.endData.generationMap[i]?.plant ?? 0).toLocaleString() }}</td>
+    </ng-container>
+    <ng-container matColumnDef="{{'bottle' + i}}">
+      <th mat-header-cell *matHeaderCellDef>瓶数</th>
+      <td mat-cell *matCellDef="let item">{{ (item.generationMap[i]?.bottle ?? 0).toLocaleString() }}</td>
+      <td mat-footer-cell *matFooterCellDef>{{ (service.endData.generationMap[i]?.bottle ?? 0).toLocaleString() }}</td>
+    </ng-container>
+  }
+
+
+  <ng-container matColumnDef="group-sum">
+    <th mat-header-cell colspan="2" *matHeaderCellDef>合计</th>
+  </ng-container>
+  <ng-container matColumnDef="plantSum">
+    <th mat-header-cell *matHeaderCellDef>株数</th>
+    <td mat-cell *matCellDef="let item">{{ (item.plantSum ?? 0).toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef>{{ (service.endData.plantSum ?? 0).toLocaleString() }}</td>
+  </ng-container>
+  <ng-container matColumnDef="bottleSum">
+    <th mat-header-cell *matHeaderCellDef>瓶数</th>
+    <td mat-cell *matCellDef="let item">{{ (item.bottleSum ?? 0).toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef>{{ (service.endData.bottleSum ?? 0).toLocaleString() }}</td>
+  </ng-container>
+
+  <!--thead 表头-->
+  <tr mat-header-row *matHeaderRowDef="groupColumnsSig(); sticky: true"></tr>
+  <tr mat-header-row *matHeaderRowDef="headerColumnsSig(); sticky: true"></tr>
+
+  <!--明细数据-->
+  <tr mat-row *matRowDef="let item; columns: columnsSig();"></tr>
+
+  <!-- 期末余额 -->
+  <tr mat-footer-row *matFooterRowDef="columnsSig(); sticky:true" class="end-data-header-row"></tr>
+</table>
+

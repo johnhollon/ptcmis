@@ -1,0 +1,281 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+
+}
+
+.main {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  --left-container-width: 331px;
+  --title-height: 82px;
+  --border-color: var(--mat-sys-surface-container);
+  --border: 1px solid var(--mat-sys-surface-container);
+  --title-background-color: var(--mat-sys-surface-container);
+  --title-color: var(--mat-sys-on-surface-container-highest);
+  --title-border-color: var(--mat-sys-on-surface);
+  --title-border-on-color: var(--mat-sys-surface-container-lowest);
+  --title-border: 1px solid var(--title-border-color);
+  --title-box-shadow: var(--mat-sys-level3);
+}
+
+.left-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--left-container-width);
+  overflow: hidden;
+}
+
+.left-scroll-container {
+  width: calc(var(--left-container-width) - 1px);
+  direction: rtl;
+  overflow-y: auto;
+  position: absolute;
+  top: var(--title-height);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-right: var(--border);
+}
+
+.title-container {
+  direction: ltr;
+  padding: 0;
+  margin: 0;
+  position: sticky;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--title-height);
+  overflow: hidden;
+}
+
+// 过滤条件区
+.filters-container {
+  height: var(--title-height);
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-top: var(--mat-sys-corner-medium);
+  margin-inline: 0;
+  border: 1px solid var(--mat-sys-surface-container-highest);
+  border-bottom: 1px solid var(--title-border-color);
+  border-radius: var(--mat-sys-corner-medium) var(--mat-sys-corner-medium) 0 0;
+  font-size: var(--mat-sys-body-medium-size);
+  display: flex;
+  gap: var(--mat-sys-corner-small);
+  align-items: center;
+  flex-wrap: nowrap;
+  background-color: var(--title-background-color);
+  color: var(--title-color);
+  box-shadow: var(--title-box-shadow);
+  position: relative;
+  z-index: 3;
+
+  // mat‑form‑field外层：允许收缩，接收flex分配的空间
+  ::ng-deep mat-form-field {
+    flex: 1 1 0;
+    max-width: 220px;
+    width: 100%;
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  // 穿透到内部wrapper，强制跟随父容器宽度
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    width: 100% !important;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    width: 100% !important;
+  }
+
+  ::ng-deep button {
+    flex: 0 0 0;
+  }
+
+  ::ng-deep input {
+    max-width: 150px;
+  }
+
+
+  @include mat.form-field-overrides((
+    container-height: 40px,
+    container-vertical-padding: 0,
+    container-text-size:--mat-sys-body-size,
+    outlined-label-text-size:--mat-sys-body-size,
+    filled-label-text-size:--mat-sys-body-size,
+    container-text-line-height:40px,
+  ));
+
+  @include mat.select-overrides((
+    trigger-text-size:--mat-sys-body-size,
+  ));
+
+  ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 13px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    display: none;
+  }
+}
+
+.table-item {
+  // 主体背景色
+  --background-color: var(--mat-sys-surface-container-lowest);
+  //--background-color-hover: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+  --background-color-hover: var(--border-color);
+
+  direction: ltr;
+  position: relative;
+  width: 100%;
+  height: var(--query-item-height);
+  border-bottom: var(--border);
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  padding: var(--mat-sys-corner-large);
+  font-size: var(--mat-sys-body-medium-size);
+
+  &.sticky {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &:hover, &.selected {
+    background-color: var(--border-color);
+  }
+
+  // 右侧上方凹圆弧
+  &.selected {
+    &::before {
+      content: "";
+      position: absolute;
+      right: 0; // 扩展到右侧边界外（半径大小）
+      top: -16px; // 向上扩展半径大小
+      width: 16px; // 圆弧半径 r = 16px
+      height: 16px;
+      // 利用径向渐变切出右下角为实心、左上角透明的凹弧形
+      background: radial-gradient(circle at top left, transparent 16px, var(--background-color-hover) 16px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    // 右侧下方凹圆弧
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0; // 扩展到右侧边界外
+      bottom: -16px; // 向下扩展半径大小
+      width: 16px;
+      height: 16px;
+      // 利用径向渐变切出右上角为实心、左下角透明的凹弧形
+      background: radial-gradient(circle at bottom left, transparent 16px, var(--background-color-hover) 16px);
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+}
+
+
+.right-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--left-container-width);
+  right: 0;
+  overflow: hidden;
+  --container-padding: var(--mat-sys-corner-large);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.right-container-title {
+  min-height: var(--title-height);
+  max-height: var(--title-height);
+  height: var(--title-height);
+  box-sizing: border-box;
+  overflow: hidden;
+  border-bottom: var(--title-border);
+  font-size: var(--mat-sys-body-medium-size);
+  display: flex;
+  gap: var(--mat-sys-corner-small);
+  align-items: stretch;
+  flex-wrap: nowrap;
+  box-shadow: var(--title-box-shadow);
+  padding: 0 var(--container-padding) 0 var(--container-padding);
+}
+
+.right-tabs-title-container {
+  display: flex;
+  gap: var(--mat-sys-corner-extra-small);
+  align-items: flex-end;
+
+  .tab-title-item {
+    font-size: var(--mat-sys-body-large-size);
+    font-weight: 500;
+    padding: var(--mat-sys-corner-extra-small) var(--mat-sys-corner-large);
+    border: var(--border);
+    border-bottom: none;
+    background-color: var(--mat-sys-surface-container);
+    border-radius: var(--mat-sys-corner-large) var(--mat-sys-corner-large) 0 0;
+    cursor: pointer;
+    transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+    color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+
+    &:hover {
+      background-color: var(--mat-sys-surface-container-highest);
+    }
+
+    &.selected, &.selected:hover {
+      background-color: var(--title-border-color);
+      color: var(--title-border-on-color);
+    }
+  }
+}
+
+.right-tabs-title-toolbar{
+  align-self: flex-end;
+  padding:0 0 var(--mat-sys-corner-small) var(--mat-sys-corner-large);
+}
+
+.right-container-content {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.hidden {
+  display: none;
+}

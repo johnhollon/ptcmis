@@ -1,0 +1,52 @@
+@if (!!model) {
+  <div class="table-item" [class.selected]="selected">
+    <div class="item-title">
+      <span matTooltip="申请出库瓶数 / 已出库瓶数">瓶数: {{ 0 - (model.bottlesApplied ?? 0) }} / {{ 0 - (model.bottlesActual ?? 0) }}</span>
+      <span matTooltip="申请出库株数 / 已出库株数">株数: {{ 0 - (model.plantsApplied ?? 0) }} / {{ 0 - (model.plantsActual ?? 0) }}</span>
+    </div>
+    <div class="status-container"
+         [class.success]="model.status === 'finished' || model.status === 'done'"
+         [class.error]="model.status === 'rej_store' || model.status === 'rej_biz'">
+      <div class="status"
+      >{{ model.status | storageInOutStatus }}
+      </div>
+      @if (!!model.oppReason;) {
+        <span [matTooltip]="model.oppReason">{{ model.oppReason }}</span>
+      }
+    </div>
+    <div class="info-container">
+      <span>出库申请：</span>
+      <span>{{ model.applicantTime | timestamp }}</span>
+      <span>{{ model.applicantName }}</span>
+    </div>
+    <div class="info-container">
+      <span>出库操作：</span>
+      <span>{{ model.operatorTime | timestamp }}</span>
+      <span>{{ model.operatorName }}</span>
+    </div>
+  </div>
+}<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+

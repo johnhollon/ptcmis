@@ -1,0 +1,449 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+
+  .warning {
+    margin: var(--mat-sys-corner-extra-small) 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--mat-sys-body-medium-size);
+    min-width: 0;
+  }
+
+  @include mat.form-field-overrides((
+    container-height: 40px,
+    container-vertical-padding: 0,
+    container-text-size:--mat-sys-body-medium-size,
+    outlined-label-text-size:--mat-sys-body-medium-size,
+    filled-label-text-size:--mat-sys-body-medium-size,
+    container-text-line-height:40px,
+  ));
+
+  @include mat.select-overrides((
+    trigger-text-size:--mat-sys-body-medium-size,
+  ));
+
+  ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 13px;
+  }
+
+  ::ng-deep .no-error .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    display: none;
+  }
+
+  .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--mat-sys-corner-extra-small);
+
+    &.fixed {
+      flex: 0 0 468px;
+      width: 468px;
+      min-height: 0;
+      gap: var(--mat-sys-corner-medium);
+
+      &.acclimatization {
+        flex: 0 0 334px;
+        width: 334px;
+      }
+
+      &.readonly {
+        flex: 0 0 220px;
+        width: 220px;
+
+        &.induction {
+          display: none;
+        }
+      }
+    }
+
+    .form-container {
+      border-radius: var(--mat-sys-corner-extra-small);
+      background-color: var(--mat-sys-surface-container-lowest);
+
+      & + .form-container {
+        margin-left: 0;
+      }
+    }
+
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      gap: var(--mat-sys-corner-extra-small);
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      gap: var(--mat-sys-corner-small);
+    }
+  }
+
+  .code-item-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 0 6px !important;
+    min-width: 142px;
+    align-items: stretch;
+    max-width: 330px;
+
+    &.small {
+      flex: 0 0 152px;
+    }
+
+    mat-form-field, button {
+      margin-top: 12px;
+      margin-right: 6px;
+    }
+
+    .bottles-cdk-scroll {
+      flex: 1;
+
+      .bottles-container {
+        padding: var(--mat-sys-corner-medium);
+      }
+    }
+  }
+
+  .opp-group-container {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin-inline: 0;
+    border: none;
+    font-size: var(--mat-sys-body-medium-size);
+    overflow-x: visible;
+    padding: 0;
+    gap: 0;
+
+    // 主体背景色
+    --background-color: var(--mat-sys-surface-container-lowest);
+    //--background-color-hover: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+    --background-color-hover: var(--mat-sys-surface-container);
+
+    // padding/margin大小
+    --space-size: var(--mat-sys-corner-medium);
+    --space-size-doc-item: 6px;
+
+    // 标题区
+    --title-height: 48px;
+    --title-background-color: var(--mat-sys-surface-container-highest);
+    --title-color: var(--mat-sys-on-surface-container-highest);
+
+    .description {
+      font-size: .8em;
+    }
+
+    > .opp-group-doc-container {
+      // 通过内容方向让滚动条出现在左侧
+      direction: rtl;
+      overflow-y: auto;
+      overflow-x: visible;
+      padding: 0;
+      flex: 0 0 230px;
+      min-width: 0;
+      border: var(--border);
+      border-right: none;
+      border-bottom: none;
+      border-top: none;
+      border-radius: var(--mat-sys-corner-small) 0 0 0;
+      margin-inline: 0;
+      background-color: var(--background-color);
+      color: var(--mat-sys-on-surface);
+      position: relative;
+
+      > .opp-group-doc-title {
+        position: sticky;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: var(--title-height);
+        background-color: var(--title-background-color);
+        color: var(--title-color);
+        z-index: 1;
+
+        * {
+          margin: 0;
+          padding: 0 var(--space-size);
+          line-height: var(--title-height);
+          font-size: var(--mat-sys-body-large-size);
+        }
+      }
+
+      > .opp-group-doc-content, > .opp-group-doc-title {
+        // 恢复内容方向
+        direction: ltr;
+      }
+
+      > .opp-group-doc-content {
+        position: absolute;
+        top: var(--title-height);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+      }
+
+      .opp-group-doc-item {
+        position: relative;
+        padding: var(--space-size);
+        cursor: pointer;
+        transition: background-color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate);
+        border-bottom: 1px solid var(--background-color-hover);
+
+        &:hover, &.selected {
+          background-color: var(--background-color-hover);
+        }
+
+        // 右侧上方凹圆弧
+        &.selected {
+          &::before {
+            content: "";
+            position: absolute;
+            right: 0; // 扩展到右侧边界外（半径大小）
+            top: -16px; // 向上扩展半径大小
+            width: 16px; // 圆弧半径 r = 16px
+            height: 16px;
+            // 利用径向渐变切出右下角为实心、左上角透明的凹弧形
+            background: radial-gradient(circle at top left, transparent 16px, var(--background-color-hover) 16px);
+            pointer-events: none;
+            z-index: 1;
+          }
+
+          // 右侧下方凹圆弧
+          &::after {
+            content: "";
+            position: absolute;
+            right: 0; // 扩展到右侧边界外
+            bottom: -16px; // 向下扩展半径大小
+            width: 16px;
+            height: 16px;
+            // 利用径向渐变切出右上角为实心、左下角透明的凹弧形
+            background: radial-gradient(circle at bottom left, transparent 16px, var(--background-color-hover) 16px);
+            pointer-events: none;
+            z-index: 1;
+          }
+        }
+
+        .doc-content {
+          .doc-content-title {
+            width: 100%;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            font-size: var(--mat-sys-body-large-size);
+            margin-bottom: 4px;
+
+            .doc-content-title-status {
+              margin-left: auto;
+            }
+          }
+
+          .doc-content-info {
+            font-size: var(--mat-sys-label-medium-size);
+            width: 100%;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-right: var(--space-size);
+
+            &.small {
+              font-size: var(--mat-sys-label-small-size);
+              gap: 2px;
+
+              .status {
+                margin-left: 0;
+                font-size: var(--mat-sys-label-small-size);
+                padding: 1px 2px;
+                border-radius: 4px;
+                background-color: var(--mat-sys-primary);
+                color: var(--mat-sys-on-primary);
+                border: 1px solid var(--mat-sys-on-primary);
+                font-weight: 400;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    > .opp-group-detail-main-container {
+      flex: 1;
+      position: relative;
+
+      .opp-group-detail-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: var(--title-height);
+        background-color: var(--title-background-color);
+        color: var(--title-color);
+        border-left: var(--border);
+        border-radius: 0 var(--mat-sys-corner-small) 0 0;
+        overflow-y: hidden;
+        overflow-x: auto;
+        display: flex;
+        align-items: center;
+        gap: var(--space-size);
+        padding: 0 var(--space-size);
+
+        > * {
+          text-wrap: nowrap;
+        }
+
+        h2 {
+          height: 24px;
+          font-size: var(--mat-sys-body-large-size);
+          padding: 0;
+          margin: 0;
+        }
+
+        .opp-group-detail-title-desc {
+          height: 24px;
+          line-height: 24px;
+          padding: 0;
+          display: flex;
+          gap: var(--space-size);
+        }
+      }
+
+      .opp {
+        display: flex;
+        align-items: center;
+      }
+
+
+      .opp-group-detail-content-container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: var(--title-height);
+        bottom: 0;
+        border-left: var(--border);
+        border-right: var(--border);
+        border-color: var(--background-color-hover);
+        overflow: hidden;
+        padding: var(--space-size) var(--space-size) 0 var(--space-size);
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--mat-sys-corner-medium);
+
+        .opp-group-detail-stat-container {
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+          min-width: 0;
+          overflow-x: auto;
+          gap: var(--mat-sys-corner-extra-small);
+          border: var(--border);
+          border-radius: var(--mat-sys-corner-extra-small);
+          padding: var(--space-size);
+
+          ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+          }
+        }
+
+        .opp-group-detail-stat-container-for-all {
+          border: var(--border);
+          border-radius: var(--mat-sys-corner-extra-small);
+          padding: var(--space-size);
+
+          i {
+            font-style: normal;
+          }
+
+          span {
+            display: inline-block;
+
+            &.title {
+              padding: 0;
+              font-weight: 700;
+              width: 3em;
+              text-align: justify;
+              text-align-last: justify;
+            }
+          }
+
+          p{
+            display:flex;
+            align-items: center;
+            flex-wrap: wrap;
+          }
+        }
+
+        .opp-group-detail-bottles-main-container {
+          flex: 1;
+          display: flex;
+          align-items: stretch;
+          width: 100%;
+          gap: var(--space-size);
+        }
+      }
+    }
+  }
+
+  .status {
+    display: inline-block;
+    margin-left: 2px;
+    font-size: var(--mat-sys-label-small-size);
+    padding: 2px 4px;
+    border-radius: 4px;
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    border: 1px solid var(--mat-sys-on-primary);
+    font-weight: 400;
+  }
+
+  .stat-value-fixed,.stat-value-fixed-employee{
+    width:200px;
+    font-size:.9em;
+    display:flex !important;
+    align-items: center;
+  }
+  .stat-value-fixed-employee-name{
+    padding: 0;
+    font-weight: 500;
+    width: 3em;
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-align: justify;
+    text-align-last: justify;
+  }
+}

@@ -1,0 +1,313 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-1">
+      <legend>基本情况</legend>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error" style="width: 246px;"
+                      [class.error]="!model.status || model.status === 'rej_store' || model.status === 'rej_biz'"
+                      [class.important]="model.status === 'done' || model.status === 'finished'">
+        <mat-label>入库状态</mat-label>
+        <input matInput value="{{model.status | storageInOutStatus}}" readonly>
+      </mat-form-field>
+
+      <mat-divider></mat-divider>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>组培任务类型</mat-label>
+        <input matInput value="{{model.taskType | taskType}}" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>组培任务状态</mat-label>
+        <input matInput value="{{model.taskStatus | taskStatus}}" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>品种</mat-label>
+        <input matInput [value]="model.variety" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>品种编号</mat-label>
+        <input [matTooltip]="model.varietyCode" matInput [value]="model.varietyCode" readonly>
+      </mat-form-field>
+
+      <mat-divider></mat-divider>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>归还母代瓶数</mat-label>
+        <input matInput readonly [value]="bottleParentReturnStatSigReadonly().bottleCount">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>归还母代株数</mat-label>
+        <input matInput readonly [value]="bottleParentReturnStatSigReadonly().plantCount">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库留种瓶数</mat-label>
+        <input matInput readonly [value]="bottleParentKeepStatSigReadonly().bottleCount">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库留种株数</mat-label>
+        <input matInput readonly [value]="bottleParentKeepStatSigReadonly().plantCount">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库子代瓶数</mat-label>
+        <input matInput readonly [value]="bottleChildInStatSigReadonly().bottleCount">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库子代株数</mat-label>
+        <input matInput readonly [value]="bottleChildInStatSigReadonly().plantCount">
+      </mat-form-field>
+
+      <mat-divider></mat-divider>
+
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库申请人</mat-label>
+        <input matInput readonly value="{{model.applicantName}}">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库申请时间</mat-label>
+        <input matInput readonly [matTooltip]="model.applicantTime | timestamp" value="{{model.applicantTime | timestamp}}">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库末次操作人</mat-label>
+        <input matInput readonly value="{{model.operatorName}}">
+      </mat-form-field>
+      <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+        <mat-label>入库末次操作时间</mat-label>
+        <input matInput readonly [matTooltip]="model.operatorTime | timestamp" value="{{model.operatorTime | timestamp}}">
+      </mat-form-field>
+
+    </fieldset>
+
+    <fieldset class="form-container left-2">
+      <legend>归还母瓶
+        @if (editable) {
+          <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+          <span class="text-primary">右键操作</span>
+        }
+      </legend>
+      <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+        @if (editable) {
+          <mat-label>瓶数/株数 | 已核对</mat-label>
+        } @else {
+          <mat-label>瓶数/株数</mat-label>
+        }
+        @if (editable) {
+          <input matInput readonly
+                 [value]="bottleParentReturnStatSigReadonly().bottleCount + '/' + bottleParentReturnStatSigReadonly().plantCount + ' | ' + bottleParentReturnStatSigReadonly().bottleCountChecked + '/' + bottleParentReturnStatSigReadonly().plantCountChecked">
+        } @else {
+          <input matInput readonly [value]="bottleParentReturnStatSigReadonly().bottleCount + '/' + bottleParentReturnStatSigReadonly().plantCount">
+        }
+      </mat-form-field>
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+        <code-item-storage-in *cdkVirtualFor="let bottle of bottleParentReturnListSig()"
+                              [model]="bottle"
+                              [matContextMenuTriggerFor]="bottleOppMenu"
+                              [matContextMenuTriggerData]="{ item: bottle }"
+                              [matContextMenuTriggerDisabled]="!editable"
+                              (menuOpened)="onBottleOppMenuOpened(bottle)"
+                              (menuClosed)="onBottleOppMenuClosed()"
+                              [class.menu-opened]="bottleOppMenuSelectedSig() === bottle"
+        ></code-item-storage-in>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+    <fieldset class="form-container left-2">
+      <legend>留种入库
+        @if (editable) {
+          <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+          <span class="text-primary">右键操作</span>
+        }
+      </legend>
+      <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+        @if (editable) {
+          <mat-label>瓶数/株数 | 已核对</mat-label>
+        } @else {
+          <mat-label>瓶数/株数</mat-label>
+        }
+        @if (editable) {
+          <input matInput readonly
+                 [value]="bottleParentKeepStatSigReadonly().bottleCount + '/' + bottleParentKeepStatSigReadonly().plantCount + ' | ' + bottleParentKeepStatSigReadonly().bottleCountChecked + '/' + bottleParentKeepStatSigReadonly().plantCountChecked">
+        } @else {
+          <input matInput readonly [value]="bottleParentKeepStatSigReadonly().bottleCount + '/' + bottleParentKeepStatSigReadonly().plantCount">
+        }
+      </mat-form-field>
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+        <code-item-storage-in *cdkVirtualFor="let bottle of bottleParentKeepListSig()"
+                              [model]="bottle"
+                              [matContextMenuTriggerFor]="bottleOppMenu"
+                              [matContextMenuTriggerData]="{ item: bottle }"
+                              [matContextMenuTriggerDisabled]="!editable"
+                              (menuOpened)="onBottleOppMenuOpened(bottle)"
+                              (menuClosed)="onBottleOppMenuClosed()"
+                              [class.menu-opened]="bottleOppMenuSelectedSig() === bottle"
+        ></code-item-storage-in>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+    <fieldset class="form-container left-2">
+      <legend>子瓶入库
+        @if (editable) {
+          <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+          <span class="text-primary">右键操作</span>
+        }
+      </legend>
+      <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+        @if (editable) {
+          <mat-label>瓶数/株数 | 已核对</mat-label>
+        } @else {
+          <mat-label>瓶数/株数</mat-label>
+        }
+        @if (editable) {
+          <input matInput readonly
+                 [value]="bottleChildInStatSigReadonly().bottleCount + '/' + bottleChildInStatSigReadonly().plantCount + ' | ' + bottleChildInStatSigReadonly().bottleCountChecked + '/' + bottleChildInStatSigReadonly().plantCountChecked">
+        } @else {
+          <input matInput readonly [value]="bottleChildInStatSigReadonly().bottleCount + '/' + bottleChildInStatSigReadonly().plantCount">
+        }
+      </mat-form-field>
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+        <code-item-storage-in *cdkVirtualFor="let bottle of bottleChildInListSig()"
+                              [model]="bottle"
+                              [matContextMenuTriggerFor]="bottleOppMenu"
+                              [matContextMenuTriggerData]="{ item: bottle }"
+                              [matContextMenuTriggerDisabled]="!editable"
+                              (menuOpened)="onBottleOppMenuOpened(bottle)"
+                              (menuClosed)="onBottleOppMenuClosed()"
+                              [class.menu-opened]="bottleOppMenuSelectedSig() === bottle"
+        ></code-item-storage-in>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+
+    @if (editable) {
+      <fieldset class="form-container left-2">
+        <legend>已核对
+          @if (editable) {
+            <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+            <span class="text-primary">右键操作</span>
+          }
+        </legend>
+        <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+          <mat-label>瓶数/株数</mat-label>
+          <input matInput readonly [value]="bottleCheckedStatSigReadonly().bottleCount + '/' + bottleCheckedStatSigReadonly().plantCount">
+        </mat-form-field>
+        <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+          <code-item-storage-in *cdkVirtualFor="let bottle of bottleCheckedListSig()"
+                                [model]="bottle"
+                                [matContextMenuTriggerFor]="bottleOppMenu"
+                                [matContextMenuTriggerData]="{ item: bottle }"
+                                [matContextMenuTriggerDisabled]="!editable"
+                                (menuOpened)="onBottleOppMenuOpened(bottle)"
+                                (menuClosed)="onBottleOppMenuClosed()"
+                                [class.menu-opened]="bottleOppMenuSelectedSig() === bottle"
+          ></code-item-storage-in>
+        </cdk-virtual-scroll-viewport>
+      </fieldset>
+    }
+
+    <fieldset class="form-container logs">
+      <legend>办理日志</legend>
+      <div style="height: 100%; display: flex; flex-direction: column; align-items: stretch;">
+        <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+          <table mat-table [dataSource]="tableLogsDataSource" [trackBy]="logTrackById">
+
+            <ng-container matColumnDef="operatorTime">
+              <th mat-header-cell *matHeaderCellDef>办理时间</th>
+              <td mat-cell *matCellDef="let item">{{ item.operatorTime | timestamp }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="operatorName">
+              <th mat-header-cell *matHeaderCellDef>办理人</th>
+              <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>状态</th>
+              <td mat-cell *matCellDef="let item">{{ item.status | storageInOutStatus }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="oppReason">
+              <th mat-header-cell *matHeaderCellDef>备注</th>
+              <td mat-cell *matCellDef="let item">{{ item.oppReason }}</td>
+            </ng-container>
+
+            <!--thead 模板-->
+            <tr mat-header-row *matHeaderRowDef="tableColumnsLogStorageOut; sticky: true"></tr>
+            <!--tbody 模板-->
+            <tr mat-row *matRowDef="let item; columns: tableColumnsLogStorageOut;"
+                [class.text-primary]="item.status === 'done' || item.status === 'finished'"
+                [class.text-error]="item.status === 'rej_store' || item.status === 'rej_biz'"
+            ></tr>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    @if (editable) {
+      @if (model.status === 'apply') {
+        <button matButton="filled" (click)="requestCheckScan()">
+          <mat-icon>qr_code</mat-icon>
+          扫码核对
+        </button>
+        <button matButton="filled" (click)="requestCheckBatch()" style="background-color: var(--mat-sys-error)">一键核对</button>
+        <button matButton="filled" (click)="requestReCheck()">重新核对</button>
+        <button matButton="filled" (click)="requestRejBiz()" style="background-color: var(--mat-sys-error)">驳回业务</button>
+        <button matButton="filled" (click)="requestFinish()">完成入库</button>
+      }
+    }
+    <button matButton="text" (click)="requestCancel()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+<!--瓶码右键上下文操作菜单-->
+<ng-container>
+  <mat-menu #bottleOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+
+      @if (checkedSet.has(item.idBottle)) {
+        <button mat-menu-item (click)="requestBottleToUnChecked(item.idBottle)" class="text-error">
+          <mat-icon>replay</mat-icon>
+          取消核对
+        </button>
+      } @else {
+        <button mat-menu-item (click)="requestBottleToChecked(item.idBottle)" class="text-primary">
+          <mat-icon>fact_check</mat-icon>
+          完成核对
+        </button>
+      }
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

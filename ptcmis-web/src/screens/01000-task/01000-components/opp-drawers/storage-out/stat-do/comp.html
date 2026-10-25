@@ -1,0 +1,128 @@
+@if (model) {
+  <div class="main-container">
+
+    <fieldset class="left-fixed">
+      <legend>出库瓶数统计</legend>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>预计使用母代瓶数</mat-label>
+        <input matInput [value]="model.planBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计申请母代瓶数</mat-label>
+        <input matInput [value]="model.applyBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计已备出母代瓶数</mat-label>
+        <input matInput [value]="model.doneBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计已接收母代瓶数</mat-label>
+        <input matInput [value]="model.outBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>作业中瓶数</mat-label>
+        <input matInput [value]="model.processBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>待作业瓶数</mat-label>
+        <input matInput [value]="model.unProcessBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>驳回库房瓶数</mat-label>
+        <input matInput [value]="model.rejStoreBottles" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>驳回业务瓶数</mat-label>
+        <input matInput [value]="model.rejBizBottles" readonly />
+      </mat-form-field>
+    </fieldset>
+
+    <fieldset class="right">
+      <legend>出库瓶数统计</legend>
+      <div #chartContainerForBottles class="chart"></div>
+    </fieldset>
+
+    <fieldset class="left-fixed">
+      <legend>出库株数统计</legend>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>预计使用母代株数</mat-label>
+        <input matInput [value]="model.planPlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计申请母代株数</mat-label>
+        <input matInput [value]="model.applyPlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计已备出母代株数</mat-label>
+        <input matInput [value]="model.donePlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>累计已接收母代株数</mat-label>
+        <input matInput [value]="model.outPlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>作业中株数</mat-label>
+        <input matInput [value]="model.processPlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>待作业株数</mat-label>
+        <input matInput [value]="model.unProcessPlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>驳回库房株数</mat-label>
+        <input matInput [value]="model.rejStorePlants" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+        <mat-label>驳回业务株数</mat-label>
+        <input matInput [value]="model.rejBizPlants" readonly />
+      </mat-form-field>
+    </fieldset>
+
+
+    <fieldset class="right">
+      <legend>出库株数统计</legend>
+      <div #chartContainerForPlants class="chart"></div>
+    </fieldset>
+
+  </div>
+}<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+

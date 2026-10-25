@@ -1,0 +1,114 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: block;
+  height: 48px;
+  margin: 0;
+  margin-right: 6px;
+  overflow: hidden;
+  position: relative;
+  padding: 5px 2px;
+  user-select: none;
+
+  &.menu-opened {
+    .code-main {
+      background-color: var(--mat-sys-surface-container-high);
+
+      .code {
+        color: var(--mat-sys-error)
+      }
+    }
+  }
+
+
+  .code-main {
+    background-color: var(--mat-sys-surface-container-low);
+
+    &:hover {
+      background-color: var(--mat-sys-surface-container);
+
+      .code {
+        color: var(--mat-sys-error)
+      }
+    }
+
+    box-shadow: var(--mat-sys-level1);
+    height: 48px;
+
+    border-radius: 4px;
+    padding: 0 4px 0 0;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    min-height: 0;
+    gap: 2px;
+    min-width: 126px;
+
+    .signal {
+      flex: 0 0 4px;
+      height: 100%;
+      background-color: var(--mat-sys-surface-container-highest);
+      &.active{
+        background-color: var(--mat-sys-primary);
+      }
+    }
+
+    &.finished {
+      .info{
+        color: var(--mat-sys-primary);
+      }
+    }
+
+    &.discard {
+      .signal {
+        &.active{
+          background-color: var(--mat-sys-error);
+        }
+      }
+      .info{
+        color: var(--mat-sys-error);
+      }
+    }
+
+    .code {
+      font-weight: 700;
+      font-size: var(--mat-sys-body-small-size);
+      padding: 0 0 0 var(--mat-sys-corner-extra-small);
+    }
+
+    .info {
+      margin-left: auto;
+      font-weight: 700;
+      color: var(--mat-sys-primary);
+      font-size: var(--mat-sys-label-medium-size);
+      display: flex;
+      align-items: center;
+      gap:4px;
+    }
+  }
+}

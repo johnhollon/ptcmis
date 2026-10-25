@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset data-content-for="content" class="form-container">
+    <legend>查看绩效基线信息</legend>
+    <div class="form">
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>员工</mat-label>
+        <input matInput [value]="model.userName" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>员工身份</mat-label>
+        <input matInput [value]="model.userRole | taskUserRole" readonly>
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>绩效种类</mat-label>
+        <input matInput [value]="model.bizType | workloadTransactionBizType" readonly>
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>品种</mat-label>
+        <input matInput [value]="model.variety" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>编号</mat-label>
+        <input matInput [value]="model.varietyCode" readonly>
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>代数</mat-label>
+        <input matInput [value]="model.generation" readonly>
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>瓶数基线</mat-label>
+        <input matInput [value]="model.bottles" readonly>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>株数基线</mat-label>
+        <input matInput [value]="model.plants" readonly>
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

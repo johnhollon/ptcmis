@@ -1,0 +1,217 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  // 顶部标题栏
+  & > .top-level-toolbar {
+    --title-bar-height: calc(var(--mat-sys-corner-large) * 3);
+    --mat-toolbar-standard-height: var(--title-bar-height);
+    height: var(--title-bar-height);
+    user-select: none;
+  }
+
+  // 最底层内容区域（与顶部标题栏同级）
+  & > .top-level-content {
+    flex: 1;
+
+    // 左侧功能导航树（drawer）
+    & > .top-level-content-drawer {
+      width: calc(var(--mat-sys-corner-large) * 15);
+      overflow: hidden;
+      border-radius: 0;
+      box-shadow: var(--mat-sys-level3);
+
+      // mat 自动生成的，位于 drawer 内部的滚动容器
+      ::ng-deep .mat-drawer-inner-container {
+        padding: 0;
+      }
+
+      // 功能导航树容器
+      .top-level-side-nav {
+        padding: var(--mat-sys-corner-medium);
+        user-select: none;
+
+        .tree-node {
+          cursor: pointer;
+          transition: background-color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate),
+          color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate);
+
+          &.selected, &.selected:hover {
+            background-color: var(--mat-sys-primary);
+            color: var(--mat-sys-on-primary);
+          }
+
+          &:hover {
+            background-color: var(--mat-sys-secondary-container);
+            color: var(--mat-sys-on-secondary-container);
+          }
+        }
+      }
+    }
+
+    // mat 自动生成的，drawer底层内容面板
+    & > ::ng-deep .mat-drawer-content {
+      padding: 0;
+    }
+
+    // 与左侧功能导航树平级的右侧内容（drawer底部内容）
+    .top-level-content-tabs {
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--mat-sys-surface-container-lowest);
+      display: flex;
+      flex-direction: column;
+      gap: var(--mat-sys-corner-extra-small);
+
+      // 右侧顶部功能 Tab 标签页
+      > .top-level-tab-headers-container {
+        --tab-header-height: calc(var(--mat-sys-corner-medium) * 2);
+        --tab-header-icon-size: calc(var(--tab-header-height) * .6);
+
+        display: flex;
+        align-items: center;
+        padding: 0 0 0 var(--mat-sys-corner-small);
+        height: var(--tab-header-height);
+        overflow: hidden;
+        box-shadow: var(--mat-sys-level2);
+        background-color: var(--mat-sys-surface);
+        border-bottom: 1px solid var(--mat-sys-primary);
+        user-select: none;
+
+        // 更改图标样式
+        @include mat.icon-button-overrides((
+          icon-size: var(--tab-header-icon-size),
+          container-shape: 0,
+          state-layer-size: var(--tab-header-icon-size),
+          touch-target-size: var(--tab-header-icon-size),
+        ));
+        // 设置图标大小
+        .mat-icon {
+          height: var(--tab-header-icon-size);
+          width: var(--tab-header-icon-size);
+          font-size: var(--tab-header-icon-size);
+        }
+
+        // 右侧顶部功能 Tab 标签页 -> 标签容器
+        > .top-level-tab-headers {
+          flex: 1;
+          display: flex;
+          align-items: stretch;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scroll-behavior: smooth; /* 平滑滚动 */
+          gap: calc(var(--mat-sys-corner-extra-small) / 2);
+
+          * {
+            word-break: keep-all;
+          }
+
+          .chip {
+            flex:0 0 auto;
+            font-size: var(--mat-sys-label-medium-size);
+            line-height: var(--tab-header-height);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: var(--mat-sys-corner-extra-small);
+            padding: 0 calc(var(--mat-sys-corner-extra-small) / 2) 0 var(--mat-sys-corner-small);
+            background-color: var(--mat-sys-surface);
+            border-radius: var(--mat-sys-corner-small);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            transition: background-color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate),
+            color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate);
+            // 更改图标样式
+            @include mat.icon-button-overrides((
+              container-shape: var(--mat-sys-corner-extra-small),
+              state-layer-size: calc(var(--tab-header-height) - var(--mat-sys-corner-small)),
+              touch-target-size: calc(var(--tab-header-height) - var(--mat-sys-corner-small)),
+            ));
+
+            button {
+              opacity: 0;
+              pointer-events: none;
+              transition: opacity var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate),
+              color var(--mat-sys-motion-duration-short2) var(--mat-sys-motion-easing-standard-accelerate);
+            }
+
+            &.selected, &:hover {
+              button {
+                opacity: 1;
+                pointer-events: auto;
+              }
+            }
+
+            &.selected, &.selected:hover {
+              background-color: var(--mat-sys-primary);
+              color: var(--mat-sys-on-primary);
+
+              button {
+                color: var(--mat-sys-on-primary);
+              }
+            }
+
+            &:hover {
+              background-color: var(--mat-sys-secondary-container);
+              color: var(--mat-sys-on-secondary-container);
+
+              button {
+                color: var(--mat-sys-on-secondary-container);
+              }
+            }
+          }
+        }
+
+        // 右侧顶部功能 Tab 标签页 -> 更多标签按钮
+        > .top-level-tab-headers-overflow-btn {
+          @include mat.icon-button-overrides((
+            icon-size: var(--tab-header-icon-size),
+            container-shape: 0,
+            state-layer-size: var(--tab-header-height),
+            touch-target-size: var(--tab-header-height),
+          ));
+          border-left: 1px solid color-mix(in srgb, var(--mat-sys-shadow) 30%, transparent);
+          display: none;
+        }
+      }
+
+    }
+
+    // 右侧主要功能区（与顶部 Tab 标签页容器平级
+    .top-level-tab-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--mat-sys-surface-container-lowest);
+    }
+  }
+}

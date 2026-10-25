@@ -1,0 +1,111 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+  (onDrawerClosed)="onDrawerClosed()"
+  (onDrawerOpened)="onDrawerOpened()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="盘点调差" data-content-for="title">
+    <!--标题补充信息及插槽 titleDescriptionOutlet-->
+    <ng-template cdkPortalOutlet #titleDescriptionOutlet data-content-for="description"></ng-template>
+    <!--标题按钮区域及插槽 titleButtonsOutlet-->
+    <ng-template cdkPortalOutlet #titleButtonsOutlet data-content-for="buttons"></ng-template>
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <layout-query-simple data-content-for="content">
+
+    <!--过滤条件区域-->
+    <filters-inventory-adjustment data-content-for="filters"
+                                  (onFiltersChanged)="onFiltersChanged($event)"
+                                  (onQuery)="requestQuery()"
+    ></filters-inventory-adjustment>
+
+    <!--查询结果区域-->
+    <table-inventory-adjustment data-content-for="table"
+                                [models]="listSig()"
+                                (onView)="requestView($event)"
+                                (onEdit)="requestEdit($event)"
+                                (onDelete)="requestDelete($event)"
+    ></table-inventory-adjustment>
+
+    <!--分页区域-->
+    <paginator data-content-for="pagination"
+               [page]="paginationSig()"
+               (change)="onPageChanged($event)"
+               aria-label="Select page">
+    </paginator>
+  </layout-query-simple>
+
+  <!--drawer区域及插槽 drawerOutlet-->
+  <ng-template cdkPortalOutlet #drawerOutlet data-content-for="drawer"></ng-template>
+</layout-page-function-simple>
+
+<!--标题附属信息模板-->
+<ng-container>
+  <!--标题附属信息模板 - 查看详情 - titleDescriptionPortalView-->
+  <ng-template #titleDescriptionPortalView>查看</ng-template>
+  <!--标题附属信息模板 - 出库 - titleDescriptionPortalEdit-->
+  <ng-template #titleDescriptionPortalEdit>编辑</ng-template>
+</ng-container>
+
+<!--标题按钮区域模板-->
+<ng-container>
+  <ng-template #titleButtonsPortalAdd>
+    <button matButton="filled" (click)="requestAdd()">
+      <mat-icon>add</mat-icon>
+      新增
+    </button>
+  </ng-template>
+</ng-container>
+
+<!--编辑Drawer区域模板-->
+<ng-container>
+  <ng-template #drawerPortalEdit>
+    <editor-inventory-adjustment
+      [model]="selectedModelSig()"
+      [editable]="true"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></editor-inventory-adjustment>
+  </ng-template>
+  <ng-template #drawerPortalView>
+    <editor-inventory-adjustment
+      [model]="selectedModelSig()"
+      [editable]="false"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></editor-inventory-adjustment>
+  </ng-template>
+</ng-container>

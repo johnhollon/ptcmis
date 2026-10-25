@@ -1,0 +1,134 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+.main-container {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+
+  // 表格容器
+  .table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    padding-right: var(--mat-sys-corner-medium);
+    // 覆写 table 样式
+    @include mat.table-overrides((
+      background-color: var(--mat-sys-surface-container-lowest),
+      row-item-outline-color: var(--border-color),
+    ));
+
+
+    ::ng-deep .mat-mdc-table {
+      border-collapse: collapse;
+      border-spacing: 0;
+
+      thead tr {
+        background-color: var(--mat-sys-surface-container-highest);
+      }
+
+      th {
+        border: var(--border);
+        border-top: none;
+      }
+
+      td {
+        border-width: 1px;
+        border-style: solid;
+        border-left-color: var(--border-color);
+        border-right-color: var(--border-color);
+        border-bottom-color: var(--border-color);
+        transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+        color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+
+        &.selected,
+        &.selected:hover {
+          background-color: var(--mat-sys-tertiary) !important;
+          color: var(--mat-sys-on-tertiary) !important;
+        }
+      }
+
+      tbody tr {
+        transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+        color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+
+        &:hover {
+          background-color: var(--mat-sys-surface-container-low) !important;
+        }
+
+        &.menu-opened {
+          background-color: var(--mat-sys-surface-container-high) !important;
+
+          &:hover {
+            background-color: var(--mat-sys-surface-container-high) !important;
+          }
+        }
+
+        &.selected,
+        &.selected:hover {
+          background-color: var(--mat-sys-tertiary) !important;
+          color: var(--mat-sys-on-tertiary) !important;
+        }
+      }
+
+      th, td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
+
+        &.start {
+          text-align: start;
+        }
+
+        &.end {
+          text-align: end;
+        }
+      }
+
+      --icon-size: calc(var(--mat-sys-body-medium-size) * 1.5);
+      // 更改图标样式
+      @include mat.icon-button-overrides((
+        icon-size: calc(var(--icon-size)),
+        container-shape: var(--mat-sys-corner-small),
+        state-layer-size: calc(var(--icon-size) * 1.45),
+        touch-target-size: calc(var(--icon-size) * 1.45),
+      ));
+      // 设置图标大小
+      .mat-icon {
+        height: var(--icon-size);
+        width: var(--icon-size);
+        font-size: var(--icon-size);
+      }
+
+      .mat-mdc-icon-button {
+        margin-right: var(--mat-sys-corner-extra-small);
+      }
+    }
+
+  }
+}
+

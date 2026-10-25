@@ -1,0 +1,147 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+  (onDrawerClosed)="onDrawerClosed()"
+  (onDrawerOpened)="onDrawerOpened()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="瓶体补码"
+                                     data-content-for="title">
+    <!--标题补充信息及插槽 titleDescriptionOutlet-->
+    <ng-template cdkPortalOutlet #titleDescriptionOutlet data-content-for="description"></ng-template>
+    <!--标题按钮区域及插槽 titleButtonsOutlet-->
+    <ng-template cdkPortalOutlet #titleButtonsOutlet data-content-for="buttons"></ng-template>
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <layout-query-simple data-content-for="content">
+
+    <!--过滤条件区域-->
+    <filters-bottle-code-complement-task data-content-for="filters"
+                                         (onFiltersChanged)="onFiltersChanged($event)"
+                                         (onQuery)="requestQuery()"
+    ></filters-bottle-code-complement-task>
+
+    <!--查询结果区域-->
+    <table-bottle-code-complement-task data-content-for="table"
+                                       [models]="listSig()"
+                                       (onView)="requestView($event)"
+                                       (onEdit)="requestEdit($event)"
+                                       (onProcess)="requestProcess($event)"
+                                       (onDelete)="requestDelete($event)"
+    ></table-bottle-code-complement-task>
+
+    <!--分页区域-->
+    <paginator data-content-for="pagination"
+               [page]="paginationSig()"
+               (change)="onPageChanged($event)"
+               aria-label="Select page">
+    </paginator>
+  </layout-query-simple>
+
+  <!--drawer区域及插槽 drawerOutlet-->
+  <ng-template cdkPortalOutlet #drawerOutlet data-content-for="drawer"></ng-template>
+</layout-page-function-simple>
+
+<!--标题附属信息模板-->
+<ng-container>
+  <!--标题附属信息模板 - 查看详情 - titleDescriptionPortalView-->
+  <ng-template #titleDescriptionPortalView>查看详情</ng-template>
+  <!--标题附属信息模板 - 出库 - titleDescriptionPortalEdit-->
+  <ng-template #titleDescriptionPortalEdit>
+    <sub-title-bottle-code-complement-task subTitle="编辑" [model]="selectedModelSig()"></sub-title-bottle-code-complement-task>
+  </ng-template>
+  <!--标题附属信息模板 - 执行补码 - titleDescriptionPortalProcess-->
+  <ng-template #titleDescriptionPortalProcess>
+    <sub-title-bottle-code-complement-task subTitle="执行补码" [model]="selectedModelSig()"></sub-title-bottle-code-complement-task>
+  </ng-template>
+</ng-container>
+
+<!--标题按钮区域模板-->
+<ng-container>
+  <ng-template #titleButtonsPortalAdd>
+    <button matButton="filled" (click)="requestAdd()">
+      <mat-icon>add</mat-icon>
+      新增
+    </button>
+  </ng-template>
+  <ng-template #titleButtonsPortalProcess>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleProcessSig() === 'process'" (click)="subModuleProcessSig.set('process')">
+        执行赋码
+      </div>
+      <div class="tab-title" [class.selected]="subModuleProcessSig() === 'archive'" (click)="subModuleProcessSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #titleButtonsPortalViewer>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleViewerSig() === 'process'" (click)="subModuleViewerSig.set('process')">
+        赋码情况
+      </div>
+      <div class="tab-title" [class.selected]="subModuleViewerSig() === 'archive'" (click)="subModuleViewerSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+</ng-container>
+
+<!--编辑Drawer区域模板-->
+<ng-container>
+  <ng-template #drawerPortalEdit>
+    <editor-bottle-code-complement-task
+      [model]="selectedModelSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></editor-bottle-code-complement-task>
+  </ng-template>
+  <ng-template #drawerPortalProcess>
+    <process-bottle-code-complement-task
+      [model]="selectedModelSig()"
+      [subModule]="subModuleProcessSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></process-bottle-code-complement-task>
+  </ng-template>
+  <ng-template #drawerPortalView>
+    <viewer-bottle-code-complement-task
+      [model]="selectedModelSig()"
+      [subModule]="subModuleViewerSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+    ></viewer-bottle-code-complement-task>
+  </ng-template>
+</ng-container>

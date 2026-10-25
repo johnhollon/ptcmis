@@ -1,0 +1,488 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+@use "styles/scrollbar" as scrollbar;
+@use "styles/mat-tokens" as mat-tokens;
+@use "components/00700-image-overlay/image.scss" as *;
+// 全局使用窄型滚轴。
+* {
+  @include scrollbar.scrollbar-thin();
+}
+
+// 补齐 MD3 标准 Token
+@include mat-tokens.tokens();
+
+html {
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$green-palette,
+    typography: (
+      plain-family: -apple-system BlinkMacSystemFont "Segoe UI" sans-serif "Apple Color Emoji" "Segoe UI Emoji" "Segoe UI Symbol" "Noto Color Emoji",
+      brand-family: -apple-system BlinkMacSystemFont "Segoe UI" sans-serif "Apple Color Emoji" "Segoe UI Emoji" "Segoe UI Symbol" "Noto Color Emoji",
+      bold-weight: 900,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: 0
+  ));
+  @include mat.system-classes();
+  --mat-sys-border-color-1: color-mix(in srgb, var(--mat-sys-outline) 80%, transparent);
+  --mat-sys-border-color-2: color-mix(in srgb, var(--mat-sys-outline) 70%, transparent);
+  --mat-sys-border-color-3: color-mix(in srgb, var(--mat-sys-outline) 60%, transparent);
+  --mat-sys-border-color-4: color-mix(in srgb, var(--mat-sys-outline) 50%, transparent);
+  --mat-sys-level-shadow-color-1: color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
+  --mat-sys-level-shadow-color-2: color-mix(in srgb, var(--mat-sys-outline) 14%, transparent);
+  --mat-sys-level-shadow-color-3: color-mix(in srgb, var(--mat-sys-outline) 12%, transparent);
+  --mat-sys-level0: 0px 0px 0px 0px var(--mat-sys-level-shadow-color-1), 0px 0px 0px 0px var(--mat-sys-level-shadow-color-2), 0px 0px 0px 0px var(--mat-sys-level-shadow-color-3);
+  --mat-sys-level1: 0px 2px 1px -1px var(--mat-sys-level-shadow-color-1), 0px 1px 1px 0px var(--mat-sys-level-shadow-color-2), 0px 1px 3px 0px var(--mat-sys-level-shadow-color-3);
+  --mat-sys-level2: 0px 3px 3px -2px var(--mat-sys-level-shadow-color-1), 0px 3px 4px 0px var(--mat-sys-level-shadow-color-2), 0px 1px 8px 0px var(--mat-sys-level-shadow-color-3);
+  --mat-sys-level3: 0px 3px 5px -1px var(--mat-sys-level-shadow-color-1), 0px 6px 10px 0px var(--mat-sys-level-shadow-color-2), 0px 1px 18px 0px var(--mat-sys-level-shadow-color-3);
+  --mat-sys-level4: 0px 5px 5px -3px var(--mat-sys-level-shadow-color-1), 0px 8px 10px 1px var(--mat-sys-level-shadow-color-2), 0px 3px 14px 2px var(--mat-sys-level-shadow-color-3);
+  --mat-sys-level5: 0px 7px 8px -4px var(--mat-sys-level-shadow-color-1), 0px 12px 17px 2px var(--mat-sys-level-shadow-color-2), 0px 5px 22px 4px var(--mat-sys-level-shadow-color-3);
+
+  p {
+    padding: 0;
+    margin: 0;
+  }
+
+  legend {
+    user-select: none;
+    word-break: keep-all;
+    text-wrap: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    --icon-size: var(--mat-sys-body-large-size);
+
+    @include mat.icon-button-overrides((
+      icon-size: calc(var(--icon-size)),
+      container-shape: var(--mat-sys-corner-small),
+      state-layer-size: calc(var(--icon-size) * 1.3),
+      touch-target-size: calc(var(--icon-size) * 1.3),
+    ));
+    // 设置图标大小
+    .mat-icon {
+      height: var(--icon-size);
+      width: var(--icon-size);
+      font-size: var(--icon-size);
+    }
+
+    button, .mat-mdc-icon-button {
+      margin: 0 !important;
+      margin-left: var(--mat-sys-corner-extra-small) !important;
+    }
+
+  }
+
+  input {
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  .mat-mdc-tooltip-surface {
+    max-width: 1000px !important;
+    word-break: keep-all !important;
+  }
+
+  .mat-mdc-select-panel, .mat-mdc-autocomplete-panel {
+    user-select: none;
+  }
+
+  // 缩小 table padding
+  .mdc-data-table__cell, .mdc-data-table__header-cell {
+    padding: 0 8px;
+  }
+
+  .text-error {
+    color: var(--mat-sys-error) !important;
+  }
+
+  .text-primary {
+    color: var(--mat-sys-primary) !important;
+  }
+
+  .text-v-center {
+    display: flex;
+    align-items: center;
+  }
+
+  .error {
+    @include mat.snack-bar-overrides((
+      container-color: var(--mat-sys-error-container),
+      button-color: var(--mat-sys-error),
+      supporting-text-color: var(--mat-sys-error),
+    ));
+  }
+
+  //.info {
+  //  @include mat.snack-bar-overrides((
+  //    container-color: var(--mat-sys-primary-container),
+  //    button-color: var(--mat-sys-primary),
+  //    supporting-text-color: var(--mat-sys-primary),
+  //  ));
+  //}
+}
+
+html, body {
+  background-color: var(--mat-sys-surface-container-low);
+  margin: 0;
+  padding: 0;
+
+  button {
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.page-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+
+  .top-level-toolbar {
+    flex: 0;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .data-main-container {
+    flex: 1;
+    position: relative;
+
+    .data-main-container-drawer-container {
+      position: absolute !important;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .data-main-container-drawer-content {
+      position: absolute !important;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .data-main-container-drawer {
+      width: 100% !important;
+      background-color: var(--mat-sys-surface-container-low) !important;
+    }
+
+    .drawer-inner {
+      position: absolute;
+      top: 12px;
+      bottom: 0;
+      left: 12px;
+      right: 0;
+
+      .top-level-toolbar {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 24px;
+        top: auto;
+        height: var(--title-bar-height);
+        bottom: 0;
+        z-index: 2;
+        box-shadow: var(--mat-sys-level2);
+        left: -12px;
+        right: 0;
+        padding: 0 36px 0 24px;
+
+
+        button {
+          min-width: 120px;
+        }
+      }
+
+      .opp-main-container {
+        position: absolute;
+        top: 0;
+        bottom: var(--title-bar-height);
+        z-index: 1;
+        left: 0;
+        right: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        .opp-container {
+          padding-right: 24px;
+          left: 12px;
+          right: 24px;
+          top: 12px;
+          bottom: 12px;
+          position: absolute;
+        }
+      }
+    }
+  }
+}
+
+
+//.filters-container {
+//  display: flex;
+//  gap: 8px;
+//  position: absolute;
+//  top: 12px;
+//  height: var(--title-bar-height);
+//  left: 12px;
+//  right: 12px;
+//
+//  .mat-mdc-form-field-subscript-wrapper {
+//    display: none !important;
+//    height: 0 !important;
+//  }
+//}
+
+//.table-container {
+//  position: absolute;
+//  top: calc(var(--title-bar-height) + 24px);
+//  left: 12px;
+//  right: 12px;
+//  bottom: 0;
+//}
+
+//.table {
+//  border-collapse: collapse;
+//  background-color: var(--mat-sys-surface-container-low) !important;
+//
+//  th, td {
+//    padding: 12px 8px;
+//    text-align: left;
+//  }
+//
+//  .status-text {
+//    cursor: pointer;
+//
+//    &:hover {
+//      text-decoration: underline;
+//    }
+//  }
+//}
+
+//.empty-tip {
+//  padding: 32px;
+//  text-align: center;
+//}
+
+
+.dialog-editor {
+  .top-level-content {
+    padding: 12px 0 0 0;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+    gap: 6px;
+  }
+
+  .checkbox-row {
+    flex-direction: row;
+    margin-top: 8px;
+  }
+
+  mat-dialog-actions {
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .full {
+    width: 100%;
+  }
+
+}
+
+.opp-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  align-items: flex-start;
+
+  &.columned {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
+    gap: 16px;
+
+    > * {
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: auto;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  .col-150 {
+    flex: 0 0 150px;
+  }
+
+  .col-300 {
+    flex: 0 0 300px;
+  }
+
+  .col-450 {
+    flex: 0 0 466px;
+  }
+
+  .col-600 {
+    flex: 0 0 616px;
+  }
+
+  .col-750 {
+    flex: 0 0 766px;
+  }
+
+  .col-1050 {
+    flex: 0 0 1066px;
+  }
+
+  col-fill {
+    flex: 1 1 0;
+    min-width: 150px;
+  }
+
+  .col-full {
+    flex: 0 0 100%;
+  }
+
+  .break {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 16px;
+    margin-right: 16px;
+  }
+}
+
+mat-form-field.readonly {
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+}
+
+mat-form-field.important {
+  --mat-select-enabled-trigger-text-color: var(--mat-sys-primary);
+  --mat-form-field-outlined-input-text-color: var(--mat-sys-primary);
+  --mat-form-field-outlined-label-text-color: var(--mat-sys-primary);
+}
+
+
+mat-form-field.error {
+  --mat-select-enabled-trigger-text-color: var(--mat-sys-error);
+  --mat-form-field-outlined-input-text-color: var(--mat-sys-error);
+  --mat-form-field-outlined-label-text-color: var(--mat-sys-error);
+}
+
+mat-form-field.ignore {
+  --mat-select-enabled-trigger-text-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+  --mat-form-field-outlined-input-text-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+}
+
+
+.mat-shadow-1 {
+  box-shadow: var(--mat-sys-level1);
+}
+
+.mat-shadow-2 {
+  box-shadow: var(--mat-sys-level2);
+}
+
+.mat-shadow-3 {
+  box-shadow: var(--mat-sys-level3);
+}
+
+.mat-shadow-4 {
+  box-shadow: var(--mat-sys-level4);
+}
+
+.mat-shadow-5 {
+  box-shadow: var(--mat-sys-level5);
+}
+
+.z-index-2 {
+  position: absolute;
+  z-index: 2;
+}
+
+.color-primary {
+  color: var(--mat-sys-primary);
+}
+
+
+//@include mat.table-overrides((
+//  background-color: var(--mat-sys-surface-container-highest),
+//));
+
+//table {
+//  tr {
+//    &:hover {
+//      background-color: var(--mat-sys-surface-container-high) !important;
+//    }
+//  }
+//}
+//
+//table {
+//  tr {
+//    td, th {
+//      white-space: nowrap;
+//      text-overflow: ellipsis;
+//      overflow: hidden;
+//      text-align: center;
+//    }
+//  }
+//}

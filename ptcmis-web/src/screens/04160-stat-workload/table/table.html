@@ -1,0 +1,318 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="detailsDataSource">
+
+  <!-- 员工 -->
+  <ng-container matColumnDef="group-userName">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef style="justify-content: center !important;">员工</th>
+  </ng-container>
+  <ng-container matColumnDef="userName">
+    <td mat-cell *matCellDef="let node" [style.padding-left.px]="(node.level * 24) + 12">
+      @if (node.expandable) {
+        <mat-icon>
+          {{ service.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+        </mat-icon>
+      } @else {
+        <mat-icon class="tree-spacer"></mat-icon>
+      }
+      {{ node.data.userName }}
+    </td>
+    <td mat-cell *matCellDef="let node">{{ node.data.userName }}</td>
+  </ng-container>
+  <ng-container matColumnDef="sum-userName">
+    <td mat-footer-cell *matFooterCellDef colspan="4" style="justify-content: center !important;">合计</td>
+  </ng-container>
+
+  <!-- 品种 -->
+  <ng-container matColumnDef="group-variety">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef style="justify-content: center !important;">品种</th>
+  </ng-container>
+  <ng-container matColumnDef="variety">
+    <td mat-cell *matCellDef="let node">{{ node.data.variety }}</td>
+  </ng-container>
+
+  <!-- 编号 -->
+  <ng-container matColumnDef="group-varietyCode">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef style="justify-content: center !important;">编号</th>
+  </ng-container>
+  <ng-container matColumnDef="varietyCode">
+    <td mat-cell *matCellDef="let node">{{ node.data.varietyCode }}</td>
+  </ng-container>
+
+  <!-- 代数 -->
+  <ng-container matColumnDef="group-generation">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef>代数</th>
+  </ng-container>
+  <ng-container matColumnDef="generation">
+    <td mat-cell *matCellDef="let node">{{ node.data.generation < 0 ? '' : node.data.generation }}</td>
+  </ng-container>
+
+  <!-- 瓶数 -->
+  <ng-container matColumnDef="group-bottle">
+    <th mat-header-cell colspan="13" *matHeaderCellDef>瓶数</th>
+  </ng-container>
+  <ng-container matColumnDef="bottleBegin">
+    <th mat-header-cell *matHeaderCellDef>期初</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.bottleBegin.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleBegin.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleIn">
+    <th mat-header-cell *matHeaderCellDef>子瓶</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.bottleIn.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleIn.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleOut">
+    <th mat-header-cell *matHeaderCellDef>留种</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.bottleOut.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleOut.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleAdj">
+    <th mat-header-cell *matHeaderCellDef>调整</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.bottleAdj.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleAdj.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleCurrent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="本期有效工作量">工作量</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ (node.data.bottleEnd - node.data.bottleBegin).toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ (service.sumSig().bottleEnd - service.sumSig().bottleBegin).toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleCurrentPercent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="本期有效工作量占本期有效工作总量的比例">占比</th>
+    <td mat-cell *matCellDef="let node" class="number">{{
+        (node.data.bottleEnd - node.data.bottleBegin) < 1 ? '0.00%' :
+          (service.sumSig().bottleEnd - service.sumSig().bottleBegin) < 1 ? '100.00%' :
+            (((node.data.bottleEnd - node.data.bottleBegin) / (service.sumSig().bottleEnd - service.sumSig().bottleBegin)) * 100).toFixed(2) + '%'
+      }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">100.00%</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleEnd">
+    <th mat-header-cell *matHeaderCellDef>期末</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.bottleEnd.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleEnd.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleEndPercent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="总体有效工作量占所有工作量的比例">占比</th>
+    <td mat-cell *matCellDef="let node" class="number">{{
+        node.data.bottleEnd < 1 ? '0.00%' :
+          service.sumSig().bottleEnd  < 1 ? '100.00%' :
+            ((node.data.bottleEnd / service.sumSig().bottleEnd) * 100).toFixed(2) + '%'
+      }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">100.00%</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleBeginDiscard">
+    <th mat-header-cell *matHeaderCellDef>期初<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.bottleBeginDiscard > 0" *matCellDef="let node"
+        class="number">{{ node.data.bottleBeginDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleBeginDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleDiscard">
+    <th mat-header-cell *matHeaderCellDef>本期<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.bottleDiscard > 0" *matCellDef="let node"
+        class="number">{{ node.data.bottleDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleDiscardPercent">
+    <th mat-header-cell *matHeaderCellDef>本期<br/>淘汰率</th>
+    <td mat-cell [class.text-error]="node.data.bottleDiscard > 0" *matCellDef="let node"
+        class="number">{{
+        node.data.bottleDiscard < 1 ? '0.00%' :
+          (node.data.bottleEnd - node.data.bottleBegin + node.data.bottleDiscard) < 1 ? '100.00%' :
+            ((node.data.bottleDiscard / (node.data.bottleEnd - node.data.bottleBegin + node.data.bottleDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+    <td mat-footer-cell [class.text-error]="service.sumSig().bottleDiscard > 0" *matFooterCellDef class="number">{{
+        service.sumSig().bottleDiscard < 1 ? '0.00%' :
+          (service.sumSig().bottleEnd - service.sumSig().bottleBegin + service.sumSig().bottleDiscard) < 1 ? '100.00%' :
+            ((service.sumSig().bottleDiscard / (service.sumSig().bottleEnd - service.sumSig().bottleBegin + service.sumSig().bottleDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleEndDiscard">
+    <th mat-header-cell *matHeaderCellDef>期末<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.bottleEndDiscard > 0" *matCellDef="let node"
+        class="number">{{ node.data.bottleEndDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().bottleEndDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleEndDiscardPercent">
+    <th mat-header-cell *matHeaderCellDef>总<br/>淘汰率</th>
+    <td mat-cell [class.text-error]="node.data.bottleEndDiscard > 0" *matCellDef="let node"
+        class="number">{{
+        node.data.bottleEndDiscard < 1 ? '0.00%' :
+          (node.data.bottleEnd + node.data.bottleEndDiscard) < 1 ? '100.00%' :
+            ((node.data.bottleEndDiscard / (node.data.bottleEnd + node.data.bottleEndDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+    <td mat-footer-cell [class.text-error]="service.sumSig().bottleEndDiscard > 0" *matFooterCellDef
+        class="number">{{
+        service.sumSig().bottleEndDiscard < 1 ? '0.00%' :
+          (service.sumSig().bottleEnd + service.sumSig().bottleEndDiscard) < 1 ? '100.00%' :
+            ((service.sumSig().bottleEndDiscard / (service.sumSig().bottleEnd + service.sumSig().bottleEndDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+  </ng-container>
+
+  <!-- 株数 -->
+  <ng-container matColumnDef="group-plant">
+    <th mat-header-cell colspan="13" *matHeaderCellDef>株数</th>
+  </ng-container>
+  <ng-container matColumnDef="plantBegin">
+    <th mat-header-cell *matHeaderCellDef>期初</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.plantBegin.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantBegin.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantIn">
+    <th mat-header-cell *matHeaderCellDef>子瓶</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.plantIn.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantIn.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantOut">
+    <th mat-header-cell *matHeaderCellDef>留种</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.plantOut.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantOut.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantAdj">
+    <th mat-header-cell *matHeaderCellDef>调整</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.plantAdj.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantAdj.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantCurrent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="本期有效工作量">工作量</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ (node.data.plantEnd - node.data.plantBegin).toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ (service.sumSig().plantEnd - service.sumSig().plantBegin).toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantCurrentPercent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="本期有效工作量占本期有效工作总量的比例">占比</th>
+    <td mat-cell *matCellDef="let node" class="number">{{
+        (node.data.plantEnd - node.data.plantBegin) < 1 ? '0.00%' :
+          (service.sumSig().plantEnd - service.sumSig().plantBegin) < 1 ? '100.00%' :
+            (((node.data.plantEnd - node.data.plantBegin) / (service.sumSig().plantEnd - service.sumSig().plantBegin)) * 100).toFixed(2) + '%'
+      }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">100.00%</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantEnd">
+    <th mat-header-cell *matHeaderCellDef>期末</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.data.plantEnd.toLocaleString() }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantEnd.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantEndPercent">
+    <th mat-header-cell *matHeaderCellDef matTooltip="总体有效工作量占所有工作量的比例">占比</th>
+    <td mat-cell *matCellDef="let node" class="number">{{
+        node.data.plantEnd < 1 ? '0.00%' :
+          service.sumSig().plantEnd  < 1 ? '100.00%' :
+            ((node.data.plantEnd / service.sumSig().plantEnd) * 100).toFixed(2) + '%'
+      }}</td>
+    <td mat-footer-cell *matFooterCellDef class="number">100.00%</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantBeginDiscard">
+    <th mat-header-cell *matHeaderCellDef>期初<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.plantBeginDiscard > 0" *matCellDef="let node"
+        class="number">{{ node.data.plantBeginDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantBeginDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantDiscard">
+    <th mat-header-cell *matHeaderCellDef>本期<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.plantDiscard > 0" *matCellDef="let node" class="number">{{ node.data.plantDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantDiscardPercent">
+    <th mat-header-cell *matHeaderCellDef>本期<br/>淘汰率</th>
+    <td mat-cell [class.text-error]="node.data.plantDiscard > 0" *matCellDef="let node"
+        class="number">{{
+        node.data.plantDiscard < 1 ? '0.00%' :
+          (node.data.plantEnd - node.data.plantBegin + node.data.plantDiscard) < 1 ? '100.00%' :
+            ((node.data.plantDiscard / (node.data.plantEnd - node.data.plantBegin + node.data.plantDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+    <td mat-footer-cell [class.text-error]="service.sumSig().plantDiscard > 0" *matFooterCellDef
+        class="number">{{
+        service.sumSig().plantDiscard < 1 ? '0.00%' :
+          (service.sumSig().plantEnd - service.sumSig().plantBegin + service.sumSig().plantDiscard) < 1 ? '100.00%' :
+            ((service.sumSig().plantDiscard / (service.sumSig().plantEnd - service.sumSig().plantBegin + service.sumSig().plantDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantEndDiscard">
+    <th mat-header-cell *matHeaderCellDef>期末<br/>淘汰</th>
+    <td mat-cell [class.text-error]="node.data.plantEndDiscard > 0" *matCellDef="let node"
+        class="number">{{ node.data.plantEndDiscard.toLocaleString() }}
+    </td>
+    <td mat-footer-cell *matFooterCellDef class="number">{{ service.sumSig().plantEndDiscard.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantEndDiscardPercent">
+    <th mat-header-cell *matHeaderCellDef>总<br/>淘汰率</th>
+    <td mat-cell [class.text-error]="node.data.plantEndDiscard > 0" *matCellDef="let node"
+        class="number">{{
+        node.data.plantEndDiscard < 1 ? '0.00%' :
+          (node.data.plantEnd + node.data.plantEndDiscard) < 1 ? '100.00%' :
+            ((node.data.plantEndDiscard / (node.data.plantEnd + node.data.plantEndDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+    <td mat-footer-cell [class.text-error]="service.sumSig().plantEndDiscard > 0" *matFooterCellDef
+        class="number">{{
+        service.sumSig().plantEndDiscard < 1 ? '0.00%' :
+          (service.sumSig().plantEnd + service.sumSig().plantEndDiscard) < 1 ? '100.00%' :
+            ((service.sumSig().plantEndDiscard / (service.sumSig().plantEnd + service.sumSig().plantEndDiscard)) * 100).toFixed(2) + '%'
+      }}
+    </td>
+  </ng-container>
+
+  <!-- 表头 -->
+  <tr mat-header-row *matHeaderRowDef="headerGroupColumns sticky:true"></tr>
+  <tr mat-header-row *matHeaderRowDef="headerColumns sticky:true"></tr>
+  <!--明细数据-->
+  <tr mat-row *matRowDef="let node; columns: columns;" [class.expandable]="node.expandable" (click)="service.toggleNode(node)"></tr>
+  <!-- 合计行 -->
+  <tr mat-footer-row *matFooterRowDef="sumColumns; sticky:true" class="end-data-header-row"></tr>
+
+</table>

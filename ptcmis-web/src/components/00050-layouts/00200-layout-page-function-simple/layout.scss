@@ -1,0 +1,128 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--mat-sys-corner-medium);
+  position: absolute;
+  top: var(--mat-sys-corner-small);
+  left: var(--mat-sys-corner-large);
+  bottom: 0;
+  right: 0;
+  --mat-sys-shadow-color: color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  --border: 1px solid var(--mat-sys-shadow-color);
+  --title-container-height: 40px;
+
+  // 标题区
+  ::ng-deep .page-function-title-container {
+    --page-function-title-container-padding-h: var(--mat-sys-corner-medium);
+    --page-function-title-container-padding-v: var(--mat-sys-corner-medium);
+    position: relative;
+    background-color: var(--mat-sys-surface-container-low);
+    --shadow-color-1: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+    --shadow-color-2: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+    --shadow-color-3: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    box-shadow: 0px 3px 3px -2px var(--shadow-color-1), 0px 3px 4px 0px var(--shadow-color-2), 0px 1px 8px 0px var(--shadow-color-3);
+    padding: var(--page-function-title-container-padding-v) var(--page-function-title-container-padding-h);
+    //margin-right: var(--mat-sys-corner-medium);
+    border-radius: var(--mat-sys-corner-medium) var(--mat-sys-corner-medium) 0 0;
+    height: var(--title-container-height);
+    border-bottom: 2px solid var(--mat-sys-primary);
+
+    transition: filter var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+    &.blur-content {
+      filter: blur(8px);
+      pointer-events: none;
+      user-select: none;
+    }
+  }
+
+  // 内容区
+  ::ng-deep .page-function-content-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--mat-sys-surface-container-lowest);
+
+    transition: filter var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+    &.blur-content {
+      filter: blur(8px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    // mat 自动生成的 drawer 容器
+    ::ng-deep .mat-drawer-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    .page-function-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    // 重置Drawer样式
+    @include mat.sidenav-overrides((
+      container-shape:var(--mat-sys-corner-small),
+      container-width:100%,
+    ));
+
+    .page-function-drawer {
+      background-color: var(--mat-sys-surface-container-lowest);
+      //border: var(--border);
+      border-bottom: none;
+      border-right: none;
+    }
+  }
+
+  ::ng-deep .loading-container {
+    display: none;
+    position: absolute;
+    top: calc(0px - var(--mat-sys-corner-small));
+    left: calc(0px - var(--mat-sys-corner-large));
+    right: 0;
+    bottom: 0;
+    background-color: color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
+    z-index: 9000;
+
+    &.loading {
+      display: block;
+    }
+  }
+}
+
+

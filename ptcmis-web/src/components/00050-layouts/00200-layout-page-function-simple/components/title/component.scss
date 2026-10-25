@@ -1,0 +1,93 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--mat-sys-corner-medium);
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    font: var(--mat-sys-title-large);
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+  }
+
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .opp-container {
+    display: flex;
+    gap: var(--mat-sys-corner-medium);
+    height: var(--title-container-height, 40px);
+    // 更改图标样式
+    @include mat.icon-button-overrides((
+      container-shape: var(--mat-sys-corner-medium),
+    ));
+    @include mat.button-overrides((
+      filled-container-shape: var(--mat-sys-corner-medium),
+    ));
+
+    ::ng-deep .tabs {
+      position: absolute;
+      right: var(--mat-sys-corner-medium);
+      bottom: 0;
+      display: flex;
+      gap: calc(var(--mat-sys-corner-extra-small) / 2);
+      align-items: flex-end;
+      // margin-bottom: calc(0px - var(--page-function-title-container-padding-v));
+
+      .tab-title {
+        padding: var(--mat-sys-corner-extra-small) var(--mat-sys-corner-large);
+        border-radius: var(--mat-sys-corner-medium) var(--mat-sys-corner-medium) 0 0;
+        background-color: var(--mat-sys-surface-container-highest);
+        cursor: pointer;
+        user-select: none;
+        transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+        color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+
+        &:hover {
+          color: var(--mat-sys-on-secondary-container);
+          background-color: var(--mat-sys-secondary-container);
+        }
+
+        &.selected, &.selected:hover {
+          background-color: var(--mat-sys-primary);
+          color: var(--mat-sys-on-primary);
+        }
+      }
+    }
+  }
+
+}
+

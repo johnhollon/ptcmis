@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <fieldset class="form-container main-container" data-content-for="content">
+    <legend>母代追溯</legend>
+    <div style="height: 100%; display: flex; flex:1; align-items: stretch;">
+      <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+        <table-query-bottle [models]="service.parentsSig()" [columns]="columns"></table-query-bottle>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </fieldset>
+
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+

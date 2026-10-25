@@ -1,0 +1,79 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset class="form-container" data-content-for="content">
+    <form [formGroup]="form" class="form">
+
+      <select-variety-code formControlName="varietyCode" class="col2"></select-variety-code>
+
+      <div class="break"></div>
+
+      <mat-form-field appearance="outline" floatLabel="always" tabindex="-1" class="col2">
+        <mat-label>培养瓶建瓶来源</mat-label>
+        <mat-select formControlName="sourceType" tabIndex="-1">
+          <mat-option value="induction">{{ 'induction' | storageReason }}</mat-option>
+          <mat-option value="differentiation">{{ 'differentiation' | storageReason }}</mat-option>
+          <!--          <mat-option value="multiplication">{{ 'multiplication' | storageReason }}</mat-option>-->
+          <mat-option value="rooting">{{ 'rooting' | storageReason }}</mat-option>
+          <!--          <mat-option value="acclimatization">{{ 'acclimatization' | storageReason }}</mat-option>-->
+        </mat-select>
+        @if (form.get('sourceType')?.touched && form.get('sourceType')?.invalid) {
+          <mat-error>{{ form.get('sourceType')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>外植体采集批次</mat-label>
+        <input type="number" min="0" matInput formControlName="explantCollectionBatch">
+        @if (form.get('explantCollectionBatch')?.touched && form.get('explantCollectionBatch')?.invalid) {
+          <mat-error>{{ form.get('explantCollectionBatch')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="break"></div>
+
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>代数</mat-label>
+        <input type="number" min="0" max="99" matInput formControlName="generation">
+        @if (form.get('generation')?.touched && form.get('generation')?.invalid) {
+          <mat-error>{{ form.get('generation')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+
+    </form>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+    <button matButton="filled" (click)="requestSave()">保存</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

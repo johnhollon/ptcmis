@@ -1,0 +1,90 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: contents;
+}
+
+.main-container {
+  --mat-sys-shadow-color: color-mix(in srgb, var(--mat-sys-outline) 40%, transparent);
+  --border: 1px solid var(--mat-sys-shadow-color);
+  font-size: var(--mat-sys-body-medium-size);
+
+  flex: 1;
+  display: flex;
+  gap: var(--mat-sys-corner-medium);
+  align-items: stretch;
+  padding: var(--mat-sys-corner-large);
+
+  @include mat.form-field-overrides((
+    container-height: 40px,
+    container-vertical-padding: 0,
+    container-text-size:--mat-sys-body-size,
+    outlined-label-text-size:--mat-sys-body-size,
+    filled-label-text-size:--mat-sys-body-size,
+    container-text-line-height:40px,
+  ));
+
+  ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 13px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    height: 2px;
+  }
+
+  .left-fixed {
+    flex: 0 0 200px !important;
+    width: 200px !important;
+    padding: var(--mat-sys-corner-medium) var(--mat-sys-corner-medium);
+    border: var(--border);
+    border-radius: var(--mat-sys-corner-medium);
+    box-shadow: var(--mat-sys-level1);
+
+    mat-form-field {
+      margin-bottom: 12px;
+      width: 200px;
+    }
+  }
+
+  .right {
+    flex: 1;
+    padding: var(--mat-sys-corner-medium);
+    border: var(--border);
+    border-radius: var(--mat-sys-corner-medium);
+    box-shadow: var(--mat-sys-level1);
+    position: relative;
+
+    .chart {
+      position: absolute;
+      top: var(--mat-sys-corner-medium);
+      bottom: var(--mat-sys-corner-medium);
+      left: var(--mat-sys-corner-medium);
+      right: var(--mat-sys-corner-medium);
+    }
+  }
+}
+

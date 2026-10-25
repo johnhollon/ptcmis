@@ -1,0 +1,190 @@
+@if (model && storageInOut) {
+
+  <div class="form-container main-container">
+    <fieldset class="form-container left-fixed">
+      <legend>
+        出库申请信息(
+        <span
+          [class.text-primary]="storageInOut.status === APIConst.storageInOutStatus.done || storageInOut.status === APIConst.storageInOutStatus.finished"
+          [class.text-error]="storageInOut.status === APIConst.storageInOutStatus.rej_biz || storageInOut.status === APIConst.storageInOutStatus.rej_store">
+          {{ storageInOut.status | storageInOutStatus }}
+        </span>
+        )
+      </legend>
+
+      <div class="form width-fixed">
+
+        <fieldset class="form-container">
+          <legend>出库瓶数</legend>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>预计使用母代瓶数</mat-label>
+            <input matInput [value]="model.planBottles" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计申请母代瓶数</mat-label>
+            <input matInput [value]="model.applyBottles" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计已备出母代瓶数</mat-label>
+            <input matInput [value]="model.doneBottles" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计已接收母代瓶数</mat-label>
+            <input matInput [value]="model.outBottles" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="important readonly" floatLabel="always">
+            <mat-label>本次申请出库母代瓶数</mat-label>
+            <input matInput [value]="-storageInOut.bottlesApplied" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>本次已出库母代瓶数</mat-label>
+            <input matInput [value]="-storageInOut.bottlesActual" readonly>
+          </mat-form-field>
+
+
+        </fieldset>
+
+        <fieldset class="form-container">
+          <legend>出库株数</legend>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>预计使用母代株数</mat-label>
+            <input matInput [value]="model.planPlants" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计申请母代株数</mat-label>
+            <input matInput [value]="model.applyPlants" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计已备出母代株数</mat-label>
+            <input matInput [value]="model.donePlants" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>累计已接收母代株数</mat-label>
+            <input matInput [value]="model.outPlants" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="important readonly" floatLabel="always">
+            <mat-label>本次申请出库母代株数</mat-label>
+            <input matInput [value]="-storageInOut.plantsApplied" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly" floatLabel="always">
+            <mat-label>本次已出库母代株数</mat-label>
+            <input matInput [value]="-storageInOut.plantsActual" readonly>
+          </mat-form-field>
+
+        </fieldset>
+      </div>
+
+    </fieldset>
+
+    <div class="right" style="flex-direction: column;display: flex;">
+      @if (editable && storageInOut.status === APIConst.storageInOutStatus.done) {
+        <div class="toolbar">
+          <button matButton (click)="requestBottleCheckedScan()">
+            <mat-icon>qr_code</mat-icon>
+            扫码接收
+          </button>
+          <button matButton (click)="requestBottleCheckedAll()" class="text-error">
+            <mat-icon>fact_check</mat-icon>
+            一键接收
+          </button>
+          <button matButton (click)="requestFinishCheck()">
+            <mat-icon>fact_check</mat-icon>
+            完成接收
+          </button>
+          <div class="text-error" style="display: flex;align-items: center;gap:4px;">
+            <mat-icon>warning</mat-icon>
+            若株数、瓶数与实际不符，应
+            <span class="text-primary" matTooltip="点击即可执行驳回库房操作" style="cursor: pointer;" (click)="requestRejStore()">
+              驳回库房
+            </span>
+            。
+          </div>
+        </div>
+      }
+      <div class="detail-container">
+        @if (storageInOut.status !== APIConst.storageInOutStatus.finished) {
+          <fieldset class="form-container" style="flex:0 0 300px;">
+            <legend>出库明细</legend>
+            <div style="display: flex; gap:16px;">
+              <mat-form-field appearance="outline" class="important readonly" style="flex: 1;" floatLabel="always">
+                <mat-label>瓶数/株数</mat-label>
+                <input matInput [value]="normalStatSig().bottles + '/' + normalStatSig().plants" readonly>
+              </mat-form-field>
+            </div>
+            <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+              <comp-code-storage-out *cdkVirtualFor="let item of normalListSig()"
+                                     [canOpp]="editable && storageInOut.status === APIConst.storageInOutStatus.done"
+                                     [id]="item.idBottle"
+                                     [plantCount]="item.plantCountActual ?? 0"
+                                     [status]="item.status"
+                                     (onChecked)="requestBottleChecked($event)"
+                                     (onNormal)="requestBottleNormal($event)"
+              ></comp-code-storage-out>
+            </cdk-virtual-scroll-viewport>
+          </fieldset>
+        }
+        @if (storageInOut.status === APIConst.storageInOutStatus.finished || (editable && storageInOut.status === APIConst.storageInOutStatus.done)) {
+          <fieldset class="form-container" style="flex:0 0 300px;">
+            <legend class="text-primary">接收明细</legend>
+            <div style="display: flex; gap:16px;">
+              <mat-form-field appearance="outline" class="important readonly" style="flex: 1;" floatLabel="always">
+                <mat-label>瓶数/株数</mat-label>
+                <input matInput [value]="doneStatSig().bottles + '/' + doneStatSig().plants" readonly>
+              </mat-form-field>
+            </div>
+            <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+              <comp-code-storage-out *cdkVirtualFor="let item of doneListSig()"
+                                     [canOpp]="editable && storageInOut.status === APIConst.storageInOutStatus.done"
+                                     [id]="item.idBottle"
+                                     [plantCount]="item.plantCountActual ?? 0"
+                                     [status]="item.status"
+                                     (onChecked)="requestBottleChecked($event)"
+                                     (onNormal)="requestBottleNormal($event)"
+              ></comp-code-storage-out>
+            </cdk-virtual-scroll-viewport>
+          </fieldset>
+        }
+      </div>
+
+    </div>
+
+
+  </div>
+
+}<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+

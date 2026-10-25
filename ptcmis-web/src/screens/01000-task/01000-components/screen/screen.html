@@ -1,0 +1,276 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+  (onDrawerClosed)="onDrawerClosed()"
+  (onDrawerOpened)="onDrawerOpened()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="{{taskType | taskType}}"
+                                     data-content-for="title">
+    <!--标题补充信息及插槽 titleDescriptionOutlet-->
+    <ng-template cdkPortalOutlet #titleDescriptionOutlet data-content-for="description"></ng-template>
+    <!--标题按钮区域及插槽 titleButtonsOutlet-->
+    <ng-template cdkPortalOutlet #titleButtonsOutlet data-content-for="buttons"></ng-template>
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <layout-query-simple data-content-for="content">
+
+    <!--过滤条件区域-->
+    <filters-tissue-task data-content-for="filters"
+                         [taskType]="taskType"
+                         (onFiltersChanged)="onFiltersChanged($event)"
+                         (onQuery)="requestQuery()"
+    ></filters-tissue-task>
+
+    <!--查询结果区域-->
+    <table-tissue-task data-content-for="table"
+                       [models]="listSig()"
+                       [taskType]="taskType"
+                       (onView)="requestView($event)"
+                       (onEdit)="requestEdit($event)"
+                       (onProcess)="requestProcess($event)"
+                       (onDelete)="doDelete($event)"
+                       (onUpdateToProcess)="requestUpdateToProcess($event)"
+                       (onStorageIn)="requestStorageIn($event)"
+    ></table-tissue-task>
+
+    <!--分页区域-->
+    <paginator data-content-for="pagination"
+               [page]="paginationSig()"
+               (change)="onPageChanged($event)"
+               aria-label="Select page">
+    </paginator>
+  </layout-query-simple>
+
+  <!--drawer区域及插槽 drawerOutlet-->
+  <ng-template cdkPortalOutlet #drawerOutlet data-content-for="drawer"></ng-template>
+</layout-page-function-simple>
+
+<!--标题附属信息模板-->
+<ng-container>
+  <!--标题附属信息模板 - 查看详情 - titleDescriptionPortalView-->
+  <ng-template #titleDescriptionPortalView>
+    <sub-title-tissue-task subTitle="查看详情" [model]="selectedModelSig()"></sub-title-tissue-task>
+  </ng-template>
+  <!--标题附属信息模板 - 创建 - titleDescriptionPortalAdd-->
+  <ng-template #titleDescriptionPortalAdd>创建</ng-template>
+  <!--标题附属信息模板 - 编辑 - titleDescriptionPortalEdit-->
+  <ng-template #titleDescriptionPortalEdit>编辑</ng-template>
+  <!--标题附属信息模板 - 执行任务 - titleDescriptionPortalProcess-->
+  <ng-template #titleDescriptionPortalProcess>
+    <sub-title-tissue-task subTitle="执行任务" [model]="selectedModelSig()"></sub-title-tissue-task>
+  </ng-template>
+  <!--标题附属信息模板 - 恢复执行 - titleDescriptionPortalUpdateToProcess-->
+  <ng-template #titleDescriptionPortalUpdateToProcess>
+    <sub-title-tissue-task subTitle="恢复执行" [model]="selectedModelSig()"></sub-title-tissue-task>
+  </ng-template>
+  <!--标题附属信息模板 - 入库办理 - titleDescriptionPortalStorageIn-->
+  <ng-template #titleDescriptionPortalStorageIn>
+    <sub-title-tissue-task subTitle="入库办理" [model]="selectedModelSig()"></sub-title-tissue-task>
+  </ng-template>
+</ng-container>
+
+<!--标题按钮区域模板-->
+<ng-container>
+  <!--标题按钮区域模板 - 新增 - titleButtonsPortalAdd-->
+  <ng-template #titleButtonsPortalAdd>
+    <button matButton="filled" (click)="requestAdd()">
+      <mat-icon>add</mat-icon>
+      新增
+    </button>
+  </ng-template>
+  <!--标题按钮区域模板 - 执行 - titleButtonsPortalProcess-->
+  <ng-template #titleButtonsPortalProcess>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="processSubModuleSig() === 'stat'" (click)="processSubModuleSig.set('stat')">
+        任务总览
+      </div>
+      <div class="tab-title" [class.selected]="processSubModuleSig() === 'process'" (click)="processSubModuleSig.set('process')">
+        执行任务
+      </div>
+      @if (taskType !== 'induction') {
+        <div class="tab-title" [class.selected]="processSubModuleSig() === 'storge-out'"
+             (click)="processSubModuleSig.set('storge-out')">
+          母代出库
+        </div>
+      }
+      <div class="tab-title" [class.selected]="processSubModuleSig() === 'storage-in'"
+           (click)="processSubModuleSig.set('storage-in')">
+        入库业务
+      </div>
+      <div class="tab-title" [class.selected]="processSubModuleSig() === 'archive'" (click)="processSubModuleSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <!--标题按钮区域模板 - 查看 - titleButtonsPortalViewer-->
+  <ng-template #titleButtonsPortalViewer>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="viewerSubModuleSig() === 'stat'" (click)="viewerSubModuleSig.set('stat')">
+        任务总览
+      </div>
+      <div class="tab-title" [class.selected]="viewerSubModuleSig() === 'process'" (click)="viewerSubModuleSig.set('process')">
+        执行情况
+      </div>
+      @if (taskType !== 'induction') {
+        <div class="tab-title" [class.selected]="viewerSubModuleSig() === 'storge-out'"
+             (click)="viewerSubModuleSig.set('storge-out')">
+          出库情况
+        </div>
+      }
+      <div class="tab-title" [class.selected]="viewerSubModuleSig() === 'storage-in'"
+           (click)="viewerSubModuleSig.set('storage-in')">
+        入库情况
+      </div>
+      <div class="tab-title" [class.selected]="viewerSubModuleSig() === 'archive'" (click)="viewerSubModuleSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <!--标题按钮区域模板 - 恢复执行 - titleButtonsPortalUpdateToProcess-->
+  <ng-template #titleButtonsPortalUpdateToProcess>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="updateToProcessSubModuleSig() === 'stat'" (click)="updateToProcessSubModuleSig.set('stat')">
+        任务总览
+      </div>
+      <div class="tab-title" [class.selected]="updateToProcessSubModuleSig() === 'process'" (click)="updateToProcessSubModuleSig.set('process')">
+        执行情况
+      </div>
+      @if (taskType !== 'induction') {
+        <div class="tab-title" [class.selected]="updateToProcessSubModuleSig() === 'storge-out'"
+             (click)="updateToProcessSubModuleSig.set('storge-out')">
+          出库情况
+        </div>
+      }
+      <div class="tab-title" [class.selected]="updateToProcessSubModuleSig() === 'storage-in'"
+           (click)="updateToProcessSubModuleSig.set('storage-in')">
+        入库情况
+      </div>
+      <div class="tab-title" [class.selected]="updateToProcessSubModuleSig() === 'archive'" (click)="updateToProcessSubModuleSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <!--标题按钮区域模板 - 入库办理 - titleButtonsPortalStorageIn-->
+  <ng-template #titleButtonsPortalStorageIn>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="storageInSubModuleSig() === 'stat'" (click)="storageInSubModuleSig.set('stat')">
+        任务总览
+      </div>
+      <div class="tab-title" [class.selected]="storageInSubModuleSig() === 'process'" (click)="storageInSubModuleSig.set('process')">
+        执行情况
+      </div>
+      @if (taskType !== 'induction') {
+        <div class="tab-title" [class.selected]="storageInSubModuleSig() === 'storge-out'"
+             (click)="storageInSubModuleSig.set('storge-out')">
+          出库情况
+        </div>
+      }
+      <div class="tab-title" [class.selected]="storageInSubModuleSig() === 'storage-in'"
+           (click)="storageInSubModuleSig.set('storage-in')">
+        入库情况
+      </div>
+      <div class="tab-title" [class.selected]="storageInSubModuleSig() === 'archive'" (click)="storageInSubModuleSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+</ng-container>
+
+<!--编辑Drawer区域模板-->
+<ng-container>
+  <!--编辑Drawer区域模板 - 创建 - drawerPortalAdd-->
+  <ng-template #drawerPortalAdd>
+    <tissue-task-editor [model]="selectedModelSig()"
+                        [taskType]="taskType"
+                        [new]="true"
+                        [updateChildGeneration]="updateChildGeneration"
+                        (onSave)="doAdd($event)"
+                        (onCancel)="closeDrawer()"></tissue-task-editor>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 编辑 - drawerPortalEdit-->
+  <ng-template #drawerPortalEdit>
+    <tissue-task-editor [model]="selectedModelSig()"
+                        [taskType]="taskType"
+                        [new]="false"
+                        [updateChildGeneration]="updateChildGeneration"
+                        (onSave)="doUpdate($event)"
+                        (onCancel)="closeDrawer()"></tissue-task-editor>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 执行任务 - drawerPortalProcess-->
+  <ng-template #drawerPortalProcess>
+    <tissue-task-process [model]="selectedModelSig()"
+                         [subModuleSelected]="processSubModuleSig()"
+                         [editable]="true"
+                         [storageInEnable]="true"
+                         (onSaved)="requestQuery()"
+                         (onRequestChangeSubModule)="processSubModuleSig.set($event)"
+                         (onRequestStartLoading)="requestStartLoading($event)"
+                         (onRequestStopLoading)="requestStopLoading()"
+                         (onCancel)="closeDrawer()"></tissue-task-process>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 查看 - drawerPortalViewer-->
+  <ng-template #drawerPortalViewer>
+    <tissue-task-process [model]="selectedModelSig()"
+                         [subModuleSelected]="viewerSubModuleSig()"
+                         [editable]="false"
+                         [storageInEnable]="false"
+                         (onSaved)="requestQuery()"
+                         (onRequestChangeSubModule)="viewerSubModuleSig.set($event)"
+                         (onRequestStartLoading)="requestStartLoading($event)"
+                         (onRequestStopLoading)="requestStopLoading()"
+                         (onCancel)="closeDrawer()"></tissue-task-process>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 恢复执行 - drawerPortalUpdateToProcess-->
+  <ng-template #drawerPortalUpdateToProcess>
+    <tissue-task-process [model]="selectedModelSig()"
+                         [subModuleSelected]="updateToProcessSubModuleSig()"
+                         [editable]="true"
+                         [storageInEnable]="false"
+                         (onSaved)="requestQuery()"
+                         (onRequestChangeSubModule)="updateToProcessSubModuleSig.set($event)"
+                         (onRequestStartLoading)="requestStartLoading($event)"
+                         (onRequestStopLoading)="requestStopLoading()"
+                         (onCancel)="closeDrawer()"></tissue-task-process>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 入库办理 - drawerPortalStorageIn-->
+  <ng-template #drawerPortalStorageIn>
+    <tissue-task-process [model]="selectedModelSig()"
+                         [subModuleSelected]="storageInSubModuleSig()"
+                         [editable]="false"
+                         [storageInEnable]="true"
+                         (onSaved)="requestQuery()"
+                         (onRequestChangeSubModule)="storageInSubModuleSig.set($event)"
+                         (onRequestStartLoading)="requestStartLoading($event)"
+                         (onRequestStopLoading)="requestStopLoading()"
+                         (onCancel)="closeDrawer()"></tissue-task-process>
+  </ng-template>
+</ng-container>

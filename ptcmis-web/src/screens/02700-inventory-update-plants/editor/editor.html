@@ -1,0 +1,185 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <div class="main-container" data-content-for="content">
+
+    <fieldset class="form-container left-fixed">
+      <legend>培养瓶基本信息</legend>
+      <div class="form">
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>瓶码</mat-label>
+          <input matInput [value]="model.id" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>母瓶</mat-label>
+          <input matInput [value]="model.idParent || (model.generation > 0 ? '未设置' : '——')" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always" [matTooltip]="model.variety + ' ' + model.varietyCode">
+          <mat-label>品种</mat-label>
+          <input matInput [value]="model.variety + ' ' + model.varietyCode" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>外植体采集批次</mat-label>
+          <input matInput [value]="model.explantCollectionBatch" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>代数</mat-label>
+          <input matInput [value]="model.generation" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 important" floatLabel="always">
+          <mat-label>更正瓶内株数</mat-label>
+          <input matInput [formControl]="formControlPlants" type="number" min="1" max="999">
+          @if (formControlPlants?.touched && formControlPlants?.invalid) {
+            <mat-error>{{ formControlPlants?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button matButton="filled" class="col1" (click)="requestSave()">更正</button>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>建瓶来源</mat-label>
+          <input matInput [value]="model.sourceType | storageReason" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>建瓶时间</mat-label>
+          <input matInput [value]="model.taskTime | timestamp" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+          <mat-label>末次操作人</mat-label>
+          <input matInput [value]="model.lastOperatorName || '——'" readonly>
+        </mat-form-field>
+
+        <mat-divider style="height: 1px; width: 400px; margin:0 auto;"></mat-divider>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always" [class.error]="model.discarded === '1'">
+          <mat-label>淘汰</mat-label>
+          <input matInput [value]="model.discarded === '1' ? '已淘汰' : '未淘汰'" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always" [class.error]="model.discarded === '1'">
+          <mat-label>淘汰原因</mat-label>
+          <input matInput [value]="model.discarded === '1' ? (model.discardReason || '未知') : '——'" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>执行淘汰人员</mat-label>
+          <input matInput [value]="model.discarded === '1' ? (model.discardUserName || '未知') : '——'" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>执行淘汰时间</mat-label>
+          <input matInput [value]="model.discarded === '1' ? ((model.discardTime | timestamp) || '未知') : '——'" readonly>
+        </mat-form-field>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-container left-fixed">
+      <legend>仓储情况</legend>
+      <div class="form">
+
+        <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always" [class.error]="model.currentStorageStatus === 'out'">
+          <mat-label>当前仓储状态</mat-label>
+          <input matInput [value]="(model.currentStorageStatus | bottleStorageStatus) || '——'" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-divider style="height: 1px; width: 400px; margin:0 auto;"></mat-divider>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+          <mat-label>末次入库原因</mat-label>
+          <input matInput [value]="(model.lastReceivedReason | storageReason) || '——'" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>末次入库人</mat-label>
+          <input matInput [value]="(model.lastReceivedUserName) || '——'" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>末次入库时间</mat-label>
+          <input matInput [value]="(model.lastReceivedTime | timestamp) || '——'" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-divider style="height: 1px; width: 400px; margin:0 auto;"></mat-divider>
+
+        <div class="break"></div>
+
+
+        <mat-form-field appearance="outline" class="col2 readonly" floatLabel="always">
+          <mat-label>末次出库原因</mat-label>
+          <input matInput [value]="(model.lastIssuedReason | storageReason) || '——'" readonly>
+        </mat-form-field>
+
+        <div class="break"></div>
+
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>末次出库人</mat-label>
+          <input matInput [value]="(model.lastIssuedUserName) || '——'" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col1 readonly" floatLabel="always">
+          <mat-label>末次出库时间</mat-label>
+          <input matInput [value]="(model.lastIssuedTime | timestamp) || '——'" readonly>
+        </mat-form-field>
+      </div>
+    </fieldset>
+
+  </div>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

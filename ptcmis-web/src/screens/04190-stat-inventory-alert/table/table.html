@@ -1,0 +1,115 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="detailsDataSource">
+
+  <!-- 品种 -->
+  <ng-container matColumnDef="group-variety">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef style="justify-content: center !important;">品种</th>
+  </ng-container>
+  <ng-container matColumnDef="variety">
+    <td mat-cell *matCellDef="let node">{{ node.variety }}</td>
+  </ng-container>
+
+  <!-- 编号 -->
+  <ng-container matColumnDef="group-varietyCode">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef style="justify-content: center !important;">编号</th>
+  </ng-container>
+  <ng-container matColumnDef="varietyCode">
+    <td mat-cell *matCellDef="let node">{{ node.varietyCode }}</td>
+  </ng-container>
+
+  <!-- 代数 -->
+  <ng-container matColumnDef="group-generation">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef>代数</th>
+  </ng-container>
+  <ng-container matColumnDef="generation">
+    <td mat-cell *matCellDef="let node">{{ node.generation < 0 ? '' : node.generation }}</td>
+  </ng-container>
+
+  <!-- 瓶数 -->
+  <ng-container matColumnDef="group-bottle">
+    <th mat-header-cell colspan="5" *matHeaderCellDef>瓶数</th>
+  </ng-container>
+  <ng-container matColumnDef="bottleBegin">
+    <th mat-header-cell *matHeaderCellDef>期初</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.bottleBegin.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleIn">
+    <th mat-header-cell *matHeaderCellDef>入库</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.bottleIn.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleOut">
+    <th mat-header-cell *matHeaderCellDef>出库</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.bottleOut.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleAdj">
+    <th mat-header-cell *matHeaderCellDef>调整</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.bottleAdj.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="bottleEnd">
+    <th mat-header-cell *matHeaderCellDef>期末</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.bottleEnd.toLocaleString() }}</td>
+  </ng-container>
+
+  <!-- 株数 -->
+  <ng-container matColumnDef="group-plant">
+    <th mat-header-cell colspan="5" *matHeaderCellDef>株数</th>
+  </ng-container>
+  <ng-container matColumnDef="plantBegin">
+    <th mat-header-cell *matHeaderCellDef>期初</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.plantBegin.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantIn">
+    <th mat-header-cell *matHeaderCellDef>入库</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.plantIn.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantOut">
+    <th mat-header-cell *matHeaderCellDef>出库</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.plantOut.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantAdj">
+    <th mat-header-cell *matHeaderCellDef>调整</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.plantAdj.toLocaleString() }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="plantEnd">
+    <th mat-header-cell *matHeaderCellDef>期末</th>
+    <td mat-cell *matCellDef="let node" class="number">{{ node.plantEnd.toLocaleString() }}</td>
+  </ng-container>
+
+  <!-- 表头 -->
+  <tr mat-header-row *matHeaderRowDef="headerGroupColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="headerColumns"></tr>
+  <!--明细数据-->
+  <tr mat-row *matRowDef="let node; columns: columns;"></tr>
+
+</table>

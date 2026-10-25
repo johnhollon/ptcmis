@@ -1,0 +1,209 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+  (onDrawerClosed)="onDrawerClosed()"
+  (onDrawerOpened)="onDrawerOpened()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="任务出库"
+                                     data-content-for="title">
+    <!--标题补充信息及插槽 titleDescriptionOutlet-->
+    <ng-template cdkPortalOutlet #titleDescriptionOutlet data-content-for="description"></ng-template>
+    <!--标题按钮区域及插槽 titleButtonsOutlet-->
+    <ng-template cdkPortalOutlet #titleButtonsOutlet data-content-for="buttons"></ng-template>
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <layout-query-simple data-content-for="content">
+
+    <!--过滤条件区域-->
+    <filters-storage-out-task data-content-for="filters"
+                              (onFiltersChanged)="onFiltersChanged($event)"
+                              (onQuery)="requestQuery()"
+    ></filters-storage-out-task>
+
+    <!--查询结果区域-->
+    <table-storage-out-task data-content-for="table"
+                            [models]="listSig()"
+                            (onView)="requestView($event)"
+                            (onProcess)="requestProcess($event)"
+                            (onDelete)="requestDelete($event)"
+                            (onEdit)="requestEditTask($event)"
+                            (onDone)="requestFinish($event)"
+    ></table-storage-out-task>
+
+    <!--分页区域-->
+    <paginator data-content-for="pagination"
+               [page]="paginationSig()"
+               (change)="onPageChanged($event)"
+               aria-label="Select page">
+    </paginator>
+  </layout-query-simple>
+
+  <!--drawer区域及插槽 drawerOutlet-->
+  <ng-template cdkPortalOutlet #drawerOutlet data-content-for="drawer"></ng-template>
+</layout-page-function-simple>
+
+<!--标题附属信息模板-->
+<ng-container>
+  <ng-template #titleDescriptionPortalAdd>新增任务出库</ng-template>
+  <ng-template #titleDescriptionPortalEdit>编辑任务出库</ng-template>
+  <ng-template #titleDescriptionPortalViewer>
+    <sub-title-storage-out-task subTitle="查看详情" [model]="selectedModelSig()"></sub-title-storage-out-task>
+  </ng-template>
+  <ng-template #titleDescriptionPortalProcess>
+    <sub-title-storage-out-task subTitle="出库" [model]="selectedModelSig()"></sub-title-storage-out-task>
+  </ng-template>
+  <ng-template #titleDescriptionPortalRejBiz>
+    <sub-title-storage-out-task subTitle="驳回" [model]="selectedModelSig()"></sub-title-storage-out-task>
+  </ng-template>
+  <ng-template #titleDescriptionPortalFinish>
+    <sub-title-storage-out-task subTitle="备出" [model]="selectedModelSig()"></sub-title-storage-out-task>
+  </ng-template>
+</ng-container>
+
+<!--标题按钮区域模板-->
+<ng-container>
+  <ng-template #titleButtonsPortalAdd>
+    <button matButton="filled" (click)="requestAdd()">
+      <mat-icon>add</mat-icon>
+      新增
+    </button>
+  </ng-template>
+  <ng-template #titleButtonsPortalProcess>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleProcessSig() === 'process'" (click)="subModuleProcessSig.set('process')">
+        执行出库
+      </div>
+      <div class="tab-title" [class.selected]="subModuleProcessSig() === 'logs'" (click)="subModuleProcessSig.set('logs')">
+        操作日志
+      </div>
+      <div class="tab-title" [class.selected]="subModuleProcessSig() === 'archive'" (click)="subModuleProcessSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #titleButtonsPortalRejBiz>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleRejBizSig() === 'process'" (click)="subModuleRejBizSig.set('process')">
+        出库情况
+      </div>
+      <div class="tab-title" [class.selected]="subModuleRejBizSig() === 'logs'" (click)="subModuleRejBizSig.set('logs')">
+        操作日志
+      </div>
+      <div class="tab-title" [class.selected]="subModuleRejBizSig() === 'archive'" (click)="subModuleRejBizSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #titleButtonsPortalFinish>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleFinishSig() === 'process'" (click)="subModuleFinishSig.set('process')">
+        出库情况
+      </div>
+      <div class="tab-title" [class.selected]="subModuleFinishSig() === 'logs'" (click)="subModuleFinishSig.set('logs')">
+        操作日志
+      </div>
+      <div class="tab-title" [class.selected]="subModuleFinishSig() === 'archive'" (click)="subModuleFinishSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #titleButtonsPortalViewer>
+    <div class="tabs">
+      <div class="tab-title" [class.selected]="subModuleViewerSig() === 'process'" (click)="subModuleViewerSig.set('process')">
+        出库情况
+      </div>
+      <div class="tab-title" [class.selected]="subModuleViewerSig() === 'logs'" (click)="subModuleViewerSig.set('logs')">
+        操作日志
+      </div>
+      <div class="tab-title" [class.selected]="subModuleViewerSig() === 'archive'" (click)="subModuleViewerSig.set('archive')">
+        附属材料
+      </div>
+    </div>
+  </ng-template>
+</ng-container>
+
+<!--编辑Drawer区域模板-->
+<ng-container>
+  <!--编辑Drawer区域模板 - 创建 - drawerPortalAdd-->
+  <ng-template #drawerPortalAdd>
+    <storage-out-task-editor [model]="selectedTaskSig()"
+                             [new]="true"
+                             (onSave)="doAdd($event)"
+                             (onCancel)="closeDrawer()"></storage-out-task-editor>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 编辑 - drawerPortalEdit-->
+  <ng-template #drawerPortalEdit>
+    <storage-out-task-editor [model]="selectedTaskSig()"
+                             [new]="false"
+                             (onSave)="doUpdate($event)"
+                             (onCancel)="closeDrawer()"></storage-out-task-editor>
+  </ng-template>
+  <ng-template #drawerPortalRejBiz>
+    <storage-out-task-rej-biz
+      [model]="selectedModelSig()"
+      [subModule]="subModuleRejBizSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></storage-out-task-rej-biz>
+  </ng-template>
+  <ng-template #drawerPortalProcess>
+    <storage-out-task-process
+      [model]="selectedModelSig()"
+      [subModule]="subModuleProcessSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></storage-out-task-process>
+  </ng-template>
+  <ng-template #drawerPortalFinish>
+    <storage-out-task-finish
+      [model]="selectedModelSig()"
+      [subModule]="subModuleFinishSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+      (onSaved)="requestQuery()"
+    ></storage-out-task-finish>
+  </ng-template>
+  <ng-template #drawerPortalViewer>
+    <storage-out-task-viewer
+      [model]="selectedModelSig()"
+      [subModule]="subModuleViewerSig()"
+      (onCancel)="closeDrawer()"
+      (onRequestStartLoading)="requestStartLoading($event)"
+      (onRequestStopLoading)="requestStopLoading()"
+    ></storage-out-task-viewer>
+  </ng-template>
+</ng-container>

@@ -1,0 +1,54 @@
+@if(updateVersionSig() >= 0){
+  <div class="code-main" [class.discard]="model?.status === 'discard'">
+    <div class="signal" [matTooltip]="model?.status === 'discard' ? '已淘汰' : ''"></div>
+    <div class="code">{{ model?.id || '' }}</div>
+    <div style="flex:1;"></div>
+    @if (model.status === 'discard') {
+      <div class="info" [class.readonly]="!editable" [matTooltip]="'淘汰： ' + model.reason + (editable ? ' 点击编辑' : '')"
+           (click)="editable ? onRequestUpdateDiscardReason.emit(model) : undefined">{{ model.reason }}
+      </div>
+    }
+    @if (loadingSig()) {
+      <mat-spinner [diameter]="20"></mat-spinner>
+    } @else if (model.status === 'discard') {
+      <div class="info readonly" [matTooltip]="'瓶内' + model.plants + '株'">{{ model.plants }}</div>
+    }
+    @if (editable) {
+      @if (model.status === 'discard') {
+        <button matIconButton matTooltip="恢复" (click)="onRequestUpdateToNormal.emit(model.id)">
+          <mat-icon>replay_circle_filled</mat-icon>
+        </button>
+      } @else {
+        <button matIconButton matTooltip="淘汰" (click)="onRequestUpdateToDiscard.emit(model.id)">
+          <mat-icon>bug_report</mat-icon>
+        </button>
+      }
+    }
+  </div>
+}<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+
+
+

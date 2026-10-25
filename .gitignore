@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+
+!ptcmis-printer
+!ptcmis-printer/.gitignore
+
+!ptcmis-server
+!ptcmis-server/.gitignore
+
+!ptcmis-web
+!ptcmis-web/.gitignore
+
+!COPYING
+!COPYRIGHT
+!copyright.md

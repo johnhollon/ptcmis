@@ -1,0 +1,141 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-1">
+      <legend>打印记录</legend>
+
+      <mat-form-field appearance="outline" class="readonly col1 important">
+        <mat-label>类型</mat-label>
+        <input matInput value="{{model.tableName | pipeCodePrintTableName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>备注</mat-label>
+        <input matInput value="{{model.description}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>打印人</mat-label>
+        <input matInput value="{{model.operatorName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>打印时间</mat-label>
+        <input matInput value="{{model.operateTime | timestamp}}" readonly>
+      </mat-form-field>
+
+      <button matButton="filled" style="background-color: var(--mat-sys-error)" (click)="requestPrintBatch()">
+        <mat-icon>print</mat-icon>
+        全部重新打印
+      </button>
+
+    </fieldset>
+
+    <fieldset class="form-container table-main-container" style="flex:1; display: flex;flex-direction: column; align-items: stretch;">
+      <legend>打印明细<span class="text-primary">（右键单独重打）</span></legend>
+      <div class="filters-container" style="display:flex;gap:4px;">
+        <filters-code-print-process-do
+          [codePrefixList]="allCodePrefixSig()"
+          (onFiltersChanged)="requestQuery($event)"
+        ></filters-code-print-process-do>
+      </div>
+      <div style="flex:1; display: flex; flex-direction: column; align-items: stretch;">
+        <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+          <table mat-table [dataSource]="tableDetailDataSource" [trackBy]="logTrackById">
+
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef>瓶码</th>
+              <td mat-cell *matCellDef="let item">{{ item.code }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="varietyCode">
+              <th mat-header-cell *matHeaderCellDef>品种编码</th>
+              <td mat-cell *matCellDef="let item">{{ item.varietyCode }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="explantCollectionBatch">
+              <th mat-header-cell *matHeaderCellDef>外植体采集批次</th>
+              <td mat-cell *matCellDef="let item">{{ item.explantCollectionBatch || '——' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="generation">
+              <th mat-header-cell *matHeaderCellDef>代数</th>
+              <td mat-cell *matCellDef="let item">{{ item.generation }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="operatorName">
+              <th mat-header-cell *matHeaderCellDef>操作人</th>
+              <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="operateTime">
+              <th mat-header-cell *matHeaderCellDef>操作时间</th>
+              <td mat-cell *matCellDef="let item">{{ item.operateTime | timestamp }}</td>
+            </ng-container>
+
+            <!--thead 模板-->
+            <tr mat-header-row *matHeaderRowDef="tableColumnsDetail; sticky: true"></tr>
+            <!--tbody 模板-->
+            <tr mat-row *matRowDef="let item; columns: tableColumnsDetail;" [matContextMenuTriggerFor]="templateOppMenu"
+                [matContextMenuTriggerData]="{ item: item }"
+                (menuOpened)="onOppMenuOpened(item)"
+                (menuClosed)="onOppMenuClosed()"
+                [class.menu-opened]="oppMenuSelectedModelSig() === item"
+            ></tr>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+
+<!--操作菜单-->
+<ng-container>
+  <mat-menu #templateOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+
+      <button mat-menu-item (click)="requestPrint(item)">
+        <mat-icon>print</mat-icon>
+        重打瓶码
+      </button>
+
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

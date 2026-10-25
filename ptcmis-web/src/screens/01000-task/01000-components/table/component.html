@@ -1,0 +1,241 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="tableDataSource" [trackBy]="trackById">
+
+  <ng-container matColumnDef="variety">
+    <th mat-header-cell *matHeaderCellDef>品种</th>
+    <td mat-cell [matTooltip]="item.task.variety" *matCellDef="let item">{{ item.task.variety }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="varietyCode">
+    <th mat-header-cell *matHeaderCellDef>编号</th>
+    <td mat-cell [matTooltip]="item.task.variety + ' ' + item.task.varietyCode" *matCellDef="let item">{{ item.task.varietyCode }}</td>
+  </ng-container>
+
+  @if (taskType === 'induction') {
+    <ng-container matColumnDef="explantCollectionBatch">
+      <th mat-header-cell *matHeaderCellDef matTooltip="外植体采集批次">批次</th>
+      <td mat-cell *matCellDef="let item">{{ item.task.explantCollectionBatch || '——' }}</td>
+    </ng-container>
+  }
+
+  <ng-container matColumnDef="taskStatus">
+    <th mat-header-cell *matHeaderCellDef>执行状态</th>
+    <td mat-cell *matCellDef="let item" [class.text-primary]="item.task.taskStatus === 'finished'">{{ item.task.taskStatus | taskStatus }}</td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="storageInStatus">
+    <th mat-header-cell *matHeaderCellDef>入库状态</th>
+    <td mat-cell *matCellDef="let item"
+        [class.text-error]="item.task.taskStatus === 'finished' && (!item.storageInStatus || item.storageInStatus === 'rej_biz')"
+        [class.text-primary]="item.storageInStatus === 'none' || item.storageInStatus === 'finished'">
+      {{ item.storageInStatus === 'none' ? '无需入库' : item.task.taskStatus !== 'finished' ? '——' : !item.storageInStatus ? '未申请' : (item.storageInStatus | storageInOutStatus) }}
+    </td>
+  </ng-container>
+
+
+  @if (taskType !== 'acclimatization') {
+    <ng-container matColumnDef="codePrefix">
+      <th mat-header-cell *matHeaderCellDef matTooltip="子瓶瓶码前缀">瓶码前缀</th>
+      <td mat-cell [class.text-error]="!item.task.codePrefix" *matCellDef="let item">{{ item.task.codePrefix || '未分配' }}</td>
+    </ng-container>
+  }
+
+  @if (taskType !== 'induction') {
+    <ng-container matColumnDef="parentBottles">
+      <th mat-header-cell *matHeaderCellDef matTooltip="母代瓶数: 计划使用/已使用">P/A 母瓶</th>
+      <td mat-cell *matCellDef="let item">
+        {{ item.task.estimatedParentBottles || 0 }}/{{ item.actualParentBottles || 0 }}
+      </td>
+    </ng-container>
+  }
+
+  <ng-container matColumnDef="parentPlants">
+    <th mat-header-cell *matHeaderCellDef matTooltip="母代株数: 计划使用/已使用">P/A 母株</th>
+    <td mat-cell *matCellDef="let item">
+      {{ item.task.estimatedParentPlants || 0 }}/{{ item.actualParentPlants || 0 }}
+    </td>
+  </ng-container>
+
+  @if (taskType !== 'induction') {
+    <ng-container matColumnDef="parentKeepBottles">
+      <th mat-header-cell *matHeaderCellDef matTooltip="母代留种瓶数: 计划瓶数/已留种瓶数">P/A 留种瓶数</th>
+      <td mat-cell *matCellDef="let item">
+        {{ item.task.estimatedParentKeepBottles || 0 }}/{{ item.keepParentBottles || 0 }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="parentKeepPlants">
+      <th mat-header-cell *matHeaderCellDef matTooltip="母代留种株数: 计划株数/已留种株数">P/A 留种株数</th>
+      <td mat-cell *matCellDef="let item">
+        {{ item.task.estimatedParentKeepPlants || 0 }}/{{ item.keepParentPlants || 0 }}
+      </td>
+    </ng-container>
+  }
+
+  @if (taskType !== 'acclimatization') {
+    <ng-container matColumnDef="childrenBottles">
+      <th mat-header-cell *matHeaderCellDef matTooltip="子代瓶数: 计划生产/已生产/已淘汰">P/A/D 子瓶</th>
+      <td mat-cell *matCellDef="let item"
+          [class.text-error]="(item.discardChildrenBottles || 0) > 0">
+        {{ item.task.estimatedChildrenBottles || 0 }}/{{ item.actualChildrenBottles || 0 }}/{{ item.discardChildrenBottles || 0 }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="childrenPlants">
+      <th mat-header-cell *matHeaderCellDef matTooltip="子代株数: 计划生产/已生产/已淘汰">P/A/D 子株</th>
+      <td mat-cell *matCellDef="let item"
+          [class.text-error]="(item.discardChildrenPlants || 0) > 0">
+        {{ item.task.estimatedChildrenPlants || 0 }}/{{ item.actualChildrenPlants || 0 }}/{{ item.discardChildrenPlants || 0 }}
+      </td>
+    </ng-container>
+  }
+
+  <ng-container matColumnDef="inspectorNames">
+    <th mat-header-cell *matHeaderCellDef>质检员</th>
+    <td mat-cell *matCellDef="let item">
+      <span matTooltip="{{names(item.inspectors)}}">{{ names(item.inspectors) }}</span>
+    </td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="operatorNames">
+    <th mat-header-cell *matHeaderCellDef>操作员</th>
+    <td mat-cell *matCellDef="let item">
+      <span matTooltip="{{names(item.operators)}}">{{ names(item.operators) }}</span>
+    </td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="creatorUserName">
+    <th mat-header-cell *matHeaderCellDef>创建人</th>
+    <td mat-cell *matCellDef="let item">{{ item.task.creatorUserName }}</td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="createTime">
+    <th mat-header-cell *matHeaderCellDef>创建时间</th>
+    <td mat-cell *matCellDef="let item">
+      <span matTooltip="{{ item.task.createTime | timestamp }}">{{ item.task.createTime | timestamp }}</span>
+    </td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="startTime">
+    <th mat-header-cell *matHeaderCellDef>开始时间</th>
+    <td mat-cell *matCellDef="let item">
+      <span matTooltip="{{ item.task.startTime | timestamp }}">{{ item.task.startTime | timestamp }}</span>
+    </td>
+  </ng-container>
+
+
+  <ng-container matColumnDef="finishTime">
+    <th mat-header-cell *matHeaderCellDef>完成时间</th>
+    <td mat-cell *matCellDef="let item">
+      <span matTooltip="{{ item.task.finishTime | timestamp }}">{{ item.task.finishTime | timestamp }}</span>
+    </td>
+  </ng-container>
+
+
+  <!-- Column 操作 -->
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>操作</th>
+    <td mat-cell *matCellDef="let item">
+      <button matIconButton matTooltip="操作菜单"
+              [matMenuTriggerFor]="templateOppMenu"
+              [matMenuTriggerData]="{ item: item, enabled:item.enabled === APIConst.booleans.BOOLEAN_TRUE }"
+              (menuOpened)="onOppMenuOpened(item)"
+              (menuClosed)="onOppMenuClosed()">
+        <mat-icon>apps</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <!--thead 模板-->
+  <tr mat-header-row *matHeaderRowDef="defaultTableColumns; sticky: true"></tr>
+  <!--tbody 模板-->
+  <tr mat-row *matRowDef="let item; columns: defaultTableColumns;"
+      [matContextMenuTriggerFor]="templateOppMenu"
+      [matContextMenuTriggerData]="{ item: item, enabled:item.enabled === APIConst.booleans.BOOLEAN_TRUE }"
+      (menuOpened)="onOppMenuOpened(item)"
+      (menuClosed)="onOppMenuClosed()"
+      [class.menu-opened]="oppMenuSelectedModelSig() === item"></tr>
+</table>
+
+<!--操作菜单-->
+<ng-container>
+  <mat-menu #templateOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+
+      <button mat-menu-item (click)="onView.emit(item)">
+        <mat-icon>search</mat-icon>
+        查看
+      </button>
+
+      @if (item.task.taskStatus === 'created') {
+        <button mat-menu-item (click)="onEdit.emit(item)">
+          <mat-icon>edit</mat-icon>
+          编辑
+        </button>
+      }
+
+      @if (item.task.taskStatus === 'created' || item.task.taskStatus === 'coded' || item.task.taskStatus === 'processing') {
+        <button mat-menu-item (click)="onProcess.emit(item)">
+          <mat-icon>play_circle</mat-icon>
+          执行
+        </button>
+      }
+
+      @if (item.task.taskStatus === 'finished') {
+        @if (!item.storageInList || item.storageInList.length < 1) {
+          <button mat-menu-item (click)="onUpdateToProcess.emit(item)">
+            <mat-icon>replay</mat-icon>
+            恢复执行
+          </button>
+        }
+
+        @if (item.storageInStatus !== 'none' && (!item.storageInStatus || item.storageInStatus === 'rej_biz' || item.storageInStatus === 'apply')) {
+          <button mat-menu-item (click)="onStorageIn.emit(item)">
+            <mat-icon>login</mat-icon>
+            入库
+          </button>
+        }
+      }
+
+      @if (item.task.taskStatus === 'created' || item.task.taskStatus === 'coded' || item.task.taskStatus === 'processing') {
+        <button mat-menu-item (click)="onDelete.emit(item)">
+          <mat-icon>delete</mat-icon>
+          删除
+        </button>
+      }
+
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

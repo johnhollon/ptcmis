@@ -1,0 +1,203 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-1">
+      <legend>基本情况</legend>
+
+      <mat-form-field appearance="outline" class="readonly col1 important">
+        <mat-label>状态</mat-label>
+        <input matInput value="{{model.status | storageInOutStatus}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1 important">
+        <mat-label>已处理瓶数/株数</mat-label>
+        <input matInput [value]="outStatSig().bottles + ' / ' + outStatSig().plants" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>创建人</mat-label>
+        <input matInput value="{{model.applicantName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>创建时间</mat-label>
+        <input matInput value="{{model.applicantTime | timestamp}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>末次操作人</mat-label>
+        <input matInput value="{{model.operatorName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>末次操作时间</mat-label>
+        <input matInput value="{{model.operatorTime | timestamp}}" readonly>
+      </mat-form-field>
+
+    </fieldset>
+
+    @if (editable) {
+      <fieldset class="form-container left-2">
+        <legend>在库
+          @if (editable) {
+            <span class="text-primary">(点击出库)</span>
+          }
+        </legend>
+        @if (editable) {
+          <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+            <mat-icon style="margin-right: 8px;">warning</mat-icon>
+            操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+          </div>
+        }
+        <div style="display: flex; flex-direction: column; width: 280px; margin-bottom: 12px; gap:8px;">
+          <div style="display: flex;gap:4px;">
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 138px;">
+              <mat-label>按前缀过滤</mat-label>
+              <input #codePrefixInputForAll matInput
+                     [matAutocomplete]="prefixAutoCompleteForAll"
+                     [formControl]="codePrefixFormControlForAll"
+                     (input)="requestFilterCodePrefixListForAll()"
+                     (focus)="requestFilterCodePrefixListForAll()"
+              >
+              <mat-autocomplete requireSelection="true" #prefixAutoCompleteForAll="matAutocomplete">
+                @for (option of codePrefixForAllFilteredSig(); track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 138px;">
+              <mat-label>按序号过滤</mat-label>
+              <input matInput [formControl]="codeSeqFormControlForAll" type="number" min="1" max="9999">
+            </mat-form-field>
+          </div>
+          <div style="display: flex;gap:2px;">
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 92px;">
+              <mat-label>按品种过滤</mat-label>
+              <input matInput [formControl]="varietyCodeFormControlForAll">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 92px;">
+              <mat-label>按代数过滤</mat-label>
+              <input matInput [formControl]="generationFormControlForAll" type="number" min="0">
+            </mat-form-field>
+            <mat-form-field appearance="outline" floatLabel="always" class="important" style="flex:0 0 92px;">
+              <mat-label>按批次过滤</mat-label>
+              <input matInput [formControl]="batchFormControlForAll" type="number" min="0">
+            </mat-form-field>
+          </div>
+          <select-user class="important" label="按操作员过滤" [canSelectEmpty]="true" optionEmptyText="全部"
+                       style="width: 100%;"
+                       [formControl]="operatorFormControlForAll"></select-user>
+          <date-range class="important no-error" label="按操作时间过滤" [showHint]="false" [formControl]="operatorTimeFormControlForAll"></date-range>
+          <button matButton="filled" (click)="requestScanToOut()">
+            <mat-icon>qr_code</mat-icon>
+            扫码减瓶
+          </button>
+        </div>
+        <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+          <code-item-inventory-out
+            *cdkVirtualFor="let bottle of allBottleSig()"
+            [model]="bottle"
+            [out]="outBottleMap.has(bottle.id)"
+            (click)="requestUpdateToOut(bottle)"
+          ></code-item-inventory-out>
+        </cdk-virtual-scroll-viewport>
+      </fieldset>
+    }
+
+    <fieldset class="form-container left-2">
+      <legend>出库
+        @if (editable) {
+          <span class="text-error">(点击撤销)</span>
+        }
+        <span [class.text-error]="!editable">[{{outStatSig().bottles}}瓶 | {{outStatSig().plants}}株]</span>
+      </legend>
+      @if (editable) {
+        <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+          <mat-icon style="margin-right: 8px;">warning</mat-icon>
+          操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+        </div>
+      }
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="70" [maxBufferPx]="2080" [minBufferPx]="840">
+        <code-item-inventory-out
+          *cdkVirtualFor="let bottle of outBottleSig()"
+          [model]="bottle"
+          (click)="requestUpdateToNone(bottle)"
+          [out]="true"
+        ></code-item-inventory-out>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+
+    <fieldset class="form-container" style="flex:1;">
+      <legend>办理日志</legend>
+      <div style="height: 100%; display: flex; flex-direction: column; align-items: stretch;">
+        <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+          <table mat-table [dataSource]="tableLogsDataSource" [trackBy]="logTrackById">
+
+            <ng-container matColumnDef="operatorTime">
+              <th mat-header-cell *matHeaderCellDef>办理时间</th>
+              <td mat-cell *matCellDef="let item">{{ item.operatorTime | timestamp }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="operatorName">
+              <th mat-header-cell *matHeaderCellDef>办理人</th>
+              <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>状态</th>
+              <td mat-cell *matCellDef="let item">{{ item.status | storageInOutStatus }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="oppReason">
+              <th mat-header-cell *matHeaderCellDef>备注</th>
+              <td mat-cell *matCellDef="let item">{{ item.oppReason }}</td>
+            </ng-container>
+
+            <!--thead 模板-->
+            <tr mat-header-row *matHeaderRowDef="tableColumnsLogStorageOut; sticky: true"></tr>
+            <!--tbody 模板-->
+            <tr mat-row *matRowDef="let item; columns: tableColumnsLogStorageOut;"
+            ></tr>
+          </table>
+        </cdk-virtual-scroll-viewport>
+      </div>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    @if (editable) {
+      <button matButton="filled" (click)="requestSave()" class="mat-shadow-2">保存出库操作</button>
+      <button matButton="filled" (click)="requestFinish()" style="background-color: var(--mat-sys-error)" class="mat-shadow-2">完成出库</button>
+      <button matButton="text" (click)="requestDelete()" style="color: var(--mat-sys-error)" class="mat-shadow-2">删除</button>
+    }
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+

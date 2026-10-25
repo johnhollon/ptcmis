@@ -1,0 +1,16 @@
+*
+
+!.idea
+!.idea/.gitignore
+
+!src
+!src/**
+
+!third-parties-nlohmann-json
+
+!CMakeLists.txt
+!json.cmake
+
+!COPYING
+!COPYRIGHT
+!copyright.md

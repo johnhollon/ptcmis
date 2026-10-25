@@ -1,0 +1,295 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  --border-color: color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  --border: 1px solid var(--border-color);
+
+  // 内容区
+  .drawer-opp-content {
+    --gap: var(--mat-sys-corner-small);
+    --col-width: 200px;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    //padding: var(--mat-sys-corner-medium);
+    background-color: var(--mat-sys-surface-container-lowest);
+    display: flex;
+    gap: var(--gap);
+
+
+    ::ng-deep .col-extra-small-2, ::ng-deep .colExtraSmall2 {
+      flex: 0 0 calc(var(--col-width) * 0.4);
+      width: calc(var(--col-width) * 0.4);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 0.4);
+        width: calc(var(--col-width) * 0.4);
+        min-width: 0;
+        box-sizing: border-box;
+        border: var(--border);
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-extra-small, ::ng-deep .colExtraSmall {
+      flex: 0 0 calc(var(--col-width) * 0.6);
+      width: calc(var(--col-width) * 0.6);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 0.6);
+        width: calc(var(--col-width) * 0.6);
+        min-width: 0;
+        box-sizing: border-box;
+        border: var(--border);
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-small, ::ng-deep .colSmall {
+      flex: 0 0 calc(var(--col-width) * 0.8);
+      width: calc(var(--col-width) * 0.8);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 0.8);
+        width: calc(var(--col-width) * 0.8);
+        min-width: 0;
+        box-sizing: border-box;
+        border: var(--border);
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-1, ::ng-deep .col1 {
+      flex: 0 0 var(--col-width);
+      width: var(--col-width);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 var(--col-width);
+        width: var(--col-width);
+        min-width: 0;
+        box-sizing: border-box;
+        border: var(--border);
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-2, ::ng-deep .col2 {
+      flex: 0 0 calc(var(--col-width) * 2 + var(--gap));
+      width: calc(var(--col-width) * 2 + var(--gap));
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 2 + var(--gap));
+        width: calc(var(--col-width) * 2 + var(--gap));
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-3, ::ng-deep .col3 {
+      flex: 0 0 calc(var(--col-width) * 3 + var(--gap) * 2);
+      width: calc(var(--col-width) * 3 + var(--gap) * 2);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 3 + var(--gap) * 2);
+        width: calc(var(--col-width) * 3 + var(--gap) * 2);
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+
+    ::ng-deep .col-2-3, ::ng-deep .col2-3, ::ng-deep .col2_3 {
+      flex: 0 0 calc((var(--col-width) * 3 + var(--gap)) / 2);
+      width: calc((var(--col-width) * 3 + var(--gap)) / 2);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc((var(--col-width) * 3 + var(--gap)) / 2);
+        width: calc((var(--col-width) * 3 + var(--gap)) / 2);
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .col-4, ::ng-deep .col4 {
+      flex: 0 0 calc(var(--col-width) * 4 + var(--gap) * 3);
+      width: calc(var(--col-width) * 4 + var(--gap) * 3);
+      display: block;
+
+      &.form-container {
+        flex: 0 0 calc(var(--col-width) * 4 + var(--gap) * 3);
+        width: calc(var(--col-width) * 4 + var(--gap) * 3);
+        min-width: 0;
+        box-sizing: border-box;
+      }
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    ::ng-deep .break {
+      flex-basis: 100%;
+      width: 0;
+      height: 0;
+      min-height: 0;
+      flex-shrink: 0;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    ::ng-deep .readonly {
+      .mat-mdc-text-field-wrapper {
+        background-color: var(--mat-sys-surface-container-high);
+      }
+    }
+
+    ::ng-deep .important {
+      --mat-select-enabled-trigger-text-color: var(--mat-sys-primary);
+      --mat-form-field-outlined-input-text-color: var(--mat-sys-primary);
+      --mat-form-field-outlined-label-text-color: var(--mat-sys-primary);
+    }
+
+    ::ng-deep .error {
+      @include mat.form-field-overrides((
+        outlined-input-text-color: var(--mat-sys-error),
+        outlined-label-text-color: var(--mat-sys-error),
+        outlined-focus-outline-color: var(--mat-sys-error),
+        outlined-hover-label-text-color: var(--mat-sys-error),
+        outlined-focus-label-text-color: var(--mat-sys-error),
+      ));
+      --mat-select-enabled-trigger-text-color: var(--mat-sys-error);
+    }
+
+    ::ng-deep .ignore {
+      --mat-select-enabled-trigger-text-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+      --mat-form-field-outlined-input-text-color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+    }
+
+    ::ng-deep .form-container {
+      flex: 1;
+      margin-inline: 0;
+      border: var(--border);
+      border-bottom: none;
+      border-radius: var(--mat-sys-corner-small);
+      font-size: var(--mat-sys-body-medium-size);
+      overflow-x: hidden;
+      padding: var(--mat-sys-corner-medium);
+
+      & + .form-container {
+        margin-left: var(--mat-sys-corner-medium);
+        box-shadow: var(--mat-sys-level2);
+        background-color: var(--mat-sys-surface);
+      }
+
+      &:not(:last-child) {
+        box-shadow: var(--mat-sys-level2);
+        background-color: var(--mat-sys-surface);
+      }
+
+      &:first-child {
+        border-bottom-left-radius: 0;
+      }
+
+      &:last-child {
+        border-bottom-right-radius: 0;
+      }
+
+      .edit-form, .form {
+        padding: var(--mat-sys-corner-medium) 0;
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--gap);
+        overflow-x: hidden;
+        align-content: flex-start;
+        min-height: 0;
+      }
+
+    }
+  }
+
+  // 操作区
+  .drawer-opp-toolbar {
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--mat-sys-corner-large);
+    background-color: var(--mat-sys-surface-container-highest);
+    box-shadow: var(--mat-sys-level2);
+    padding: var(--mat-sys-corner-medium);
+    border-top: var(--border);
+    @include mat.button-overrides((
+      filled-container-shape: var(--mat-sys-corner-medium),
+      text-container-shape: var(--mat-sys-corner-medium),
+    ));
+
+    ::ng-deep button {
+      min-width: 80px;
+    }
+  }
+}

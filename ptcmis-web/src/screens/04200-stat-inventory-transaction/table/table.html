@@ -1,0 +1,219 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<table mat-table [dataSource]="service.detailsDataSource">
+
+  <!-- Column -->
+  @if (service.columns.indexOf('index') > -1) {
+    <ng-container matColumnDef="head-index">
+      <th mat-header-cell *matHeaderCellDef>序号</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-index">
+      <th mat-header-cell *matHeaderCellDef>上期结转</th>
+    </ng-container>
+    <ng-container matColumnDef="index">
+      <td mat-cell *matCellDef="let row; let i = index;">{{ i + 1 }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-index">
+      <td mat-footer-cell *matFooterCellDef>期末余额</td>
+    </ng-container>
+  }
+
+
+  <!-- Column -->
+  @if (service.columns.indexOf('variety') > -1) {
+    <ng-container matColumnDef="head-variety">
+      <th mat-header-cell *matHeaderCellDef>品种</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-variety">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+    <ng-container matColumnDef="variety">
+      <td mat-cell *matCellDef="let item">{{ item.variety }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-variety">
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('varietyCode') > -1) {
+    <ng-container matColumnDef="head-varietyCode">
+      <th mat-header-cell *matHeaderCellDef matTooltip="品种编号">编号</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-varietyCode">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+    <ng-container matColumnDef="varietyCode">
+      <td mat-cell *matCellDef="let item">{{ item.varietyCode }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-varietyCode">
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('generation') > -1) {
+    <ng-container matColumnDef="head-generation">
+      <th mat-header-cell *matHeaderCellDef>代数</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-generation">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+    <ng-container matColumnDef="generation">
+      <td mat-cell *matCellDef="let item">{{ item.generation }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-generation">
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('bizType') > -1) {
+    <ng-container matColumnDef="head-bizType">
+      <th mat-header-cell *matHeaderCellDef>类型</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-bizType">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+    <ng-container matColumnDef="bizType">
+      <td mat-cell *matCellDef="let item">{{ item.bizType | inventoryTransactionBizType }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-bizType">
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('description') > -1) {
+    <ng-container matColumnDef="head-description">
+      <th mat-header-cell *matHeaderCellDef>摘要</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-description">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <td mat-cell *matCellDef="let item">{{ item.description }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-description">
+      <td mat-footer-cell *matFooterCellDef></td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('bottles') > -1) {
+    <ng-container matColumnDef="head-bottles">
+      <th mat-header-cell *matHeaderCellDef>瓶数</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-bottles">
+      <th class="number" mat-header-cell [class.text-error]="service.startData.bottles <= 5"
+          *matHeaderCellDef>{{ (service.startData.bottles ?? 0).toLocaleString() }}
+      </th>
+    </ng-container>
+    <ng-container matColumnDef="bottles">
+      <td class="number" mat-cell *matCellDef="let item">{{ item.bottles.toLocaleString() }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-bottles">
+      <td class="number" mat-footer-cell [class.text-error]="service.endData.bottles <= 5"
+          *matFooterCellDef>{{ (service.endData.bottles ?? 0).toLocaleString() }}
+      </td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('plants') > -1) {
+    <ng-container matColumnDef="head-plants">
+      <th mat-header-cell *matHeaderCellDef>株数</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-plants">
+      <th class="number" mat-header-cell [class.text-error]="service.startData.plants <= 5"
+          *matHeaderCellDef>{{ (service.startData.plants ?? 0).toLocaleString() }}
+      </th>
+    </ng-container>
+    <ng-container matColumnDef="plants">
+      <td class="number" mat-cell *matCellDef="let item">{{ item.plants.toLocaleString() }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-plants">
+      <td class="number" mat-footer-cell [class.text-error]="service.endData.plants <= 5"
+          *matFooterCellDef>{{ (service.endData.plants ?? 0).toLocaleString() }}
+      </td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('operateTime') > -1) {
+    <ng-container matColumnDef="head-operateTime">
+      <th mat-header-cell *matHeaderCellDef>时间</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-operateTime">
+      <th mat-header-cell *matHeaderCellDef>——</th>
+    </ng-container>
+    <ng-container matColumnDef="operateTime">
+      <td mat-cell *matCellDef="let item">{{ item.operateTime | timestamp }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-operateTime">
+      <td mat-footer-cell *matFooterCellDef>——</td>
+    </ng-container>
+  }
+
+  <!-- Column -->
+  @if (service.columns.indexOf('operatorName') > -1) {
+    <ng-container matColumnDef="head-operatorName">
+      <th mat-header-cell *matHeaderCellDef>人员</th>
+    </ng-container>
+    <ng-container matColumnDef="startData-operatorName">
+      <th mat-header-cell *matHeaderCellDef>——</th>
+    </ng-container>
+    <ng-container matColumnDef="operatorName">
+      <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="endData-operatorName">
+      <td mat-footer-cell *matFooterCellDef>——</td>
+    </ng-container>
+  }
+
+  <!-- ========== 明细过滤条件 ========== -->
+<!--  <ng-container matColumnDef="filterSpan">-->
+<!--    <th mat-header-cell *matHeaderCellDef [attr.colspan]="service.columns.length" class="filter-wrap-cell">-->
+<!--      <div class="filter-container">-->
+<!--        123-->
+<!--      </div>-->
+<!--    </th>-->
+<!--  </ng-container>-->
+
+  <!--thead 明细过滤条件-->
+<!--  <tr mat-header-row *matHeaderRowDef="['filterSpan']; sticky:true" class="filter-header-row"></tr>-->
+  <!--thead 表头-->
+  <tr mat-header-row *matHeaderRowDef="headColumnsSig(); sticky: true"></tr>
+  <!--thead 上期结转-->
+  <tr mat-header-row *matHeaderRowDef="startDataColumnsSig(); sticky:true" class="start-data-header-row"></tr>
+
+  <!--明细数据-->
+  <tr mat-row *matRowDef="let item; columns: service.columns;" [class.text-error]="item.bottles < 0 || item.plants < 0"></tr>
+
+
+  <!-- 期末余额 -->
+  <tr mat-footer-row *matFooterRowDef="endDataColumnsSig(); sticky:true" class="end-data-header-row"></tr>
+</table>
+

@@ -1,0 +1,86 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--目录区-->
+<div class="archive-doc-container">
+  <div class="archive-doc-title">
+    <h2>附件材料目录</h2>
+  </div>
+
+  <div class="archive-doc-content">
+    @for (archive of archives(); track archive.id) {
+      <div class="archive-doc-item" [class.selected]="selectedArchiveSig()?.id === archive.id" (click)="selectedArchiveSig.set(archive)">
+        <div class="doc-icon">
+          <mat-icon>image</mat-icon>
+        </div>
+        <div class="doc-content">
+          <div>{{ archive.bizType }}<span class="description" style="padding-left:4px;">{{archive.description}}</span></div>
+          <div>{{ archive.uploadTime | timestamp }} {{ archive.uploaderName }}</div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!--展示区-->
+<div class="archive-file-main-container">
+  <div class="archive-file-title">
+    @if (!!selectedArchiveSig()) {
+      <div class="archive-title">
+        <h2>
+          {{ selectedArchiveSig()!.bizType }}
+          <span class="description">{{selectedArchiveSig()!.description}}</span>
+        </h2>
+        <div class="archive-title-desc">
+          <span>{{ selectedArchiveSig()!.uploadTime | timestamp }}</span>
+          <span>{{ selectedArchiveSig()!.uploaderName }}</span>
+          <span>{{ selectedArchiveSig()!.fileName }}</span>
+        </div>
+      </div>
+      @if (editable) {
+        <div class="opp">
+          <button matIconButton (click)="onRequestDelete.emit(selectedArchiveSig()!.id)" matTooltip="删除此资料">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    }
+  </div>
+  <div #imageContainer class="archive-file-content-container">
+    @if (!!selectedArchiveSig()) {
+      <div class="image-file-container">
+        <div #image class="image-file">
+          <img src="" alt=""
+               class="image-overlay"
+               (on-loaded)="onImageLoaded($event)"
+               [opp-template]="imageOverlayOpp"
+               [archive-id-src]="selectedArchiveSig()?.id || ''">
+          <ng-template #imageOverlayOpp let-overlay>
+            <image-overlay-opp-common [overlayContainer]="overlay"></image-overlay-opp-common>
+          </ng-template>
+        </div>
+      </div>
+    }
+  </div>
+</div>

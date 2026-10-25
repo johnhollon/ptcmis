@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<div class="code-main">
+  @if (out) {
+    <div class="signal"></div>
+  }
+  <div class="content">
+    <div class="code">
+      <div class="self-id">{{ model.id }}</div>
+      <div class="plants text-primary">
+          <span>
+            {{ model.plantCount }}株
+          </span>
+      </div>
+    </div>
+    <div class="info">
+      <span>
+        品种：<span [matTooltip]="model.variety + ' ' + model.varietyCode">{{ model.varietyCode }}</span>
+      </span>
+    </div><div class="info">
+      <span>
+        批次：<span>{{ model.explantCollectionBatch || '——' }}</span>
+      </span>
+      <span>
+        代数：<span>{{ model.generation }}</span>
+      </span>
+    </div>
+    <div class="info">
+      <span>
+        操作：{{ model.lastOperatorName || '未知' }}
+      </span>
+      <span>
+        {{ (model.taskTime | timestamp) || '未知' }}
+      </span>
+    </div>
+  </div>
+</div>
+

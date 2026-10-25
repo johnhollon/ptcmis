@@ -1,0 +1,87 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<div class="top-level-toolbar">
+  <ng-content select='[data-conent-for="top-toolbar"]'></ng-content>
+</div>
+
+<mat-drawer-container class="top-level-content" autosize>
+  <mat-drawer #topLevelDrawer class="top-level-content-drawer" mode="side" opened>
+    <div class="top-level-side-nav">
+      <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="getChildren">
+        <!-- 叶子节点：允许选中 -->
+        <mat-tree-node matRipple *matTreeNodeDef="let node"
+                       matTreeNodePadding
+                       [matTreeNodePaddingIndent]="15"
+                       (click)="selectNode(node)"
+                       class="tree-node"
+                       [class.selected]="selectedTabsSig()[node.id]">
+          <mat-icon class="tree-spacer"></mat-icon>
+          <span class="tree-label">{{ node.name }}</span>
+        </mat-tree-node>
+
+        <!-- 可展开父节点：不可选中 -->
+        <mat-tree-node matRipple *matTreeNodeDef="let node; when: hasSubNav"
+                       matTreeNodePadding
+                       [matTreeNodePaddingIndent]="15"
+                       matTreeNodeToggle
+                       class="tree-node"
+                       [cdkTreeNodeTypeaheadLabel]="node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+          </mat-icon>
+          <span class="tree-label">{{ node.name }}</span>
+        </mat-tree-node>
+      </mat-tree>
+    </div>
+  </mat-drawer>
+
+  <div class="top-level-content-tabs">
+    <div class="top-level-tab-headers-container">
+      <div h-scroll class="top-level-tab-headers">
+        @for (tab of tabsOpenedSig(); track tab.id; let index = $index) {
+          <div class="chip" matRipple (click)="selectNode(tab)" [class.selected]="selectedTabsSig()[tab.id]">
+            <div>{{ tab.name }}</div>
+            <button matIconButton (click)="$event.stopPropagation(); removeTab(index)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+
+      <button matIconButton class="top-level-tab-headers-overflow-btn">
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+    </div>
+    <!--Tab页内容-->
+    <div class="top-level-tab-content">
+      <ng-container #topLevelTabContent></ng-container>
+    </div>
+  </div>
+
+</mat-drawer-container>
+
+
+

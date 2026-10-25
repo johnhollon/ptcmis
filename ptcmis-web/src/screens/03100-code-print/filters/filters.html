@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--过滤条件区域-->
+<ng-container [formGroup]="filterFormGroup">
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按类型过滤</mat-label>
+    <mat-select formControlName="tableName">
+      <mat-option value="">全部类型</mat-option>
+      <mat-option value="tissue_task">{{ 'tissue_task' | pipeCodePrintTableName }}</mat-option>
+      <mat-option value="bottle_code_complement_task">{{ 'bottle_code_complement_task' | pipeCodePrintTableName }}</mat-option>
+      <mat-option value="inventory_add_bottle">{{ 'inventory_add_bottle' | pipeCodePrintTableName }}</mat-option>
+      <mat-option value="bottle">{{ 'bottle' | pipeCodePrintTableName }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按备注过滤</mat-label>
+    <mat-select formControlName="description">
+      <mat-option value="">全部</mat-option>
+      <mat-option value="单独打印任务子瓶瓶码">单独打印任务子瓶瓶码</mat-option>
+      <mat-option value="批量打印任务子瓶瓶码">批量打印任务子瓶瓶码</mat-option>
+      <mat-option value="单独打印瓶体补码">单独打印瓶体补码</mat-option>
+      <mat-option value="批量打印瓶体补码">批量打印瓶体补码</mat-option>
+      <mat-option value="单独打印库存增瓶">单独打印库存增瓶</mat-option>
+      <mat-option value="批量打印库存增瓶">批量打印库存增瓶</mat-option>
+      <mat-option value="补打瓶码">补打瓶码</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按人员过滤</mat-label>
+    <input matInput formControlName="operatorName">
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <date-range formControlName="operateTime" label="按打印时间过滤"></date-range>
+
+  <button matIconButton matTooltip="刷新" (click)="requestQuery()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+</ng-container>

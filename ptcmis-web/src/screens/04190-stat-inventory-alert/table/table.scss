@@ -1,0 +1,46 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+.number {
+  text-align: end !important;
+  padding-right: var(--mat-sys-corner-medium) !important;
+}
+
+th td {
+  text-wrap: nowrap !important;
+}
+
+
+td {
+  &.mat-column-bottleBegin, &.mat-column-bottleEnd, &.mat-column-plantBegin, &.mat-column-plantEnd {
+    font-weight: 500;
+  }
+}
+
+th, td {
+  &.mat-column-group-bottle, &.mat-column-bottleBegin, &.mat-column-group-plant, &.mat-column-plantBegin {
+    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--mat-sys-outline) 80%, transparent), /* 左边框 */
+    inset 0 -1px 0 color-mix(in srgb, var(--mat-sys-outline) 30%, transparent) !important; /* 下边框 */
+  }
+}

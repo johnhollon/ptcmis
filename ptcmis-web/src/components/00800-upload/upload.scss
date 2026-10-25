@@ -1,0 +1,108 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+:host{
+  --mat-sys-shadow-color: color-mix(in srgb, var(--mat-sys-outline) 60%, transparent);
+  --border: 1px solid var(--mat-sys-shadow-color);
+}
+.upload-panel {
+  width: 480px;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mat-sys-corner-medium);
+  padding: var(--mat-sys-corner-large);
+  box-sizing: border-box;
+  background: var(--mat-sys-surface);
+  border: var(--border);
+  box-shadow: var(--mat-sys-level5);
+  border-radius: var(--mat-sys-corner-large);
+}
+
+h2 {
+  line-height: 1.3em;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  .close{
+    display: block;
+    float: right;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--mat-sys-surface-container);
+      color: var(--mat-sys-on-surface-container);
+    }
+  }
+}
+
+.drop-zone {
+  border: 2px dashed var(--mat-sys-outline);
+  border-radius: 8px;
+  padding: 20px 16px;
+  text-align: center;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+  user-select: none;
+
+  p{
+    margin: 12px 0;
+  }
+
+  &.hide {
+    display: none;
+  }
+}
+
+.drop-zone--over {
+  border-color: var(--mat-sys-primary);
+  background: rgba(var(--mat-sys-primary-rgb), 0.06);
+}
+
+.file-list {
+  overflow-y: auto;
+  .error{
+    @include mat.list-overrides((
+      list-item-label-text-color: var(--mat-sys-error),
+      list-item-leading-icon-color: var(--mat-sys-error),
+      list-item-supporting-text-color: var(--mat-sys-error),
+      list-item-hover-label-text-color: var(--mat-sys-error),
+      list-item-hover-leading-icon-color: var(--mat-sys-error),
+    ));
+  }
+}
+
+.file-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 8px;
+}

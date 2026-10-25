@@ -1,0 +1,32 @@
+root = true
+
+[*]
+# 1. 通用配置 (CSS, LESS, SCSS, SASS)
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+tab_width = 2
+ij_continuation_indent_size = 2
+insert_final_newline = true
+max_line_length = 120
+ij_formatter_off_tag = @formatter:off
+ij_formatter_on_tag = @formatter:on
+ij_formatter_tags_enabled = true
+
+# 4. XML 文件
+ij_xml_align_attributes = true
+
+# 5. Markdown 关闭表格格式化
+
+ij_markdown_continuation_indent_size = 4
+
+# 5. 纯文本文件
+[*.{md,txt}]
+max_line_length = 80
+
+[COPYING]
+max_line_length = 80
+
+[*.{cmd,bat}]
+end_of_line = crlf

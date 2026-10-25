@@ -1,0 +1,179 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  #pageRef
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+  (onDrawerClosed)="onDrawerClosed()"
+  (onDrawerOpened)="onDrawerOpened()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="库存基线信息"
+                                     data-content-for="title">
+    <!--标题补充信息及插槽 titleDescriptionOutlet-->
+    <ng-template cdkPortalOutlet #titleDescriptionOutlet data-content-for="description"></ng-template>
+    <!--标题按钮区域及插槽 titleButtonsOutlet-->
+    <ng-template cdkPortalOutlet #titleButtonsOutlet data-content-for="buttons"></ng-template>
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <layout-query-simple data-content-for="content">
+
+    <!--过滤条件区域-->
+    <ng-container data-content-for="filters" [formGroup]="filtersFormGroup">
+      <!--按品种名称或编号过滤-->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>按品种名称或编号过滤</mat-label>
+        <input matInput formControlName="keyword">
+      </mat-form-field>
+      <!--按代数过滤-->
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>按代数过滤</mat-label>
+        <input type="number" matInput formControlName="generation">
+      </mat-form-field>
+      <button matIconButton matTooltip="刷新" (click)="requestQuery()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </ng-container>
+
+    <!--查询结果区域-->
+    <table data-content-for="table"
+           mat-table
+           [dataSource]="tableDataSource"
+           [trackBy]="trackById">
+      <!-- Column 品种名称 -->
+      <ng-container matColumnDef="variety">
+        <th mat-header-cell *matHeaderCellDef>品种名称</th>
+        <td mat-cell *matCellDef="let item"> {{ item.variety }}</td>
+      </ng-container>
+      <!-- Column 品种编号 -->
+      <ng-container matColumnDef="varietyCode">
+        <th mat-header-cell *matHeaderCellDef>品种编号</th>
+        <td mat-cell *matCellDef="let item"> {{ item.varietyCode }}</td>
+      </ng-container>
+      <ng-container matColumnDef="generation">
+        <th mat-header-cell *matHeaderCellDef>代数</th>
+        <td mat-cell *matCellDef="let item"> {{ item.generation }}</td>
+      </ng-container>
+      <!-- Column 瓶数基线 -->
+      <ng-container matColumnDef="bottles">
+        <th mat-header-cell *matHeaderCellDef>瓶数基线</th>
+        <td mat-cell *matCellDef="let item"> {{ item.bottles }}</td>
+      </ng-container>
+      <!-- Column 株数基线 -->
+      <ng-container matColumnDef="plants">
+        <th mat-header-cell *matHeaderCellDef>株数基线</th>
+        <td mat-cell *matCellDef="let item"> {{ item.plants }}</td>
+      </ng-container>
+      <!-- Column 操作 -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>操作</th>
+        <td mat-cell *matCellDef="let item">
+          <button matIconButton matTooltip="操作菜单"
+                  [matMenuTriggerFor]="templateOppMenu"
+                  [matMenuTriggerData]="{ item: item}"
+                  (menuOpened)="onOppMenuOpened(item)"
+                  (menuClosed)="onOppMenuClosed()">
+            <mat-icon>apps</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <!--thead 模板-->
+      <tr mat-header-row *matHeaderRowDef="TABLE_COLUMNS; sticky: true"></tr>
+      <!--tbody 模板-->
+      <tr mat-row *matRowDef="let item; columns: TABLE_COLUMNS;"
+          [matContextMenuTriggerFor]="templateOppMenu"
+          [matContextMenuTriggerData]="{ item: item }"
+          (menuOpened)="onOppMenuOpened(item)"
+          (menuClosed)="onOppMenuClosed()"
+          [class.menu-opened]="oppMenuSelectedModelSig() === item"></tr>
+    </table>
+
+    <!--分页区域-->
+    <paginator data-content-for="pagination"
+               [page]="paginationSig()"
+               (change)="onPageChanged($event)"
+               aria-label="Select page">
+    </paginator>
+  </layout-query-simple>
+
+  <!--drawer区域及插槽 drawerOutlet-->
+  <ng-template cdkPortalOutlet #drawerOutlet data-content-for="drawer"></ng-template>
+</layout-page-function-simple>
+
+<!--标题附属信息模板-->
+<ng-container>
+  <!--标题附属信息模板 - 查看详情 - titleDescriptionPortalView-->
+  <ng-template #titleDescriptionPortalView>查看详情</ng-template>
+  <!--标题附属信息模板 - 编辑 - titleDescriptionPortalEdit-->
+  <ng-template #titleDescriptionPortalEdit>编辑</ng-template>
+</ng-container>
+
+<!--标题按钮区域模板-->
+<ng-container>
+  <!--标题按钮区域模板 - 新增 - titleButtonsPortalAdd-->
+  <ng-template #titleButtonsPortalAdd>
+    <button matButton="filled" (click)="requestAdd()">
+      <mat-icon>add</mat-icon>
+      新增
+    </button>
+  </ng-template>
+</ng-container>
+
+<!--编辑Drawer区域模板-->
+<ng-container>
+  <!--浏览Drawer区域模板 - 查看 - drawerPortalView-->
+  <ng-template #drawerPortalView>
+    <storage-inventory-baseline-viewer [model]="selectedModelSig()" (onCancel)="closeDrawer()"></storage-inventory-baseline-viewer>
+  </ng-template>
+  <!--编辑Drawer区域模板 - 编辑 - drawerPortalEdit-->
+  <ng-template #drawerPortalEdit>
+    <storage-inventory-baseline-editor [model]="selectedModelSig()" (onSave)="doSave($event)"
+                                       (onCancel)="closeDrawer()"></storage-inventory-baseline-editor>
+  </ng-template>
+</ng-container>
+
+<!--其它界面所需要的模板-->
+<ng-container>
+  <mat-menu #templateOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+      <button mat-menu-item (click)="requestView(item)">
+        <mat-icon>search</mat-icon>
+        查看
+      </button>
+      <button mat-menu-item (click)="requestEdit(item)">
+        <mat-icon>edit</mat-icon>
+        编辑
+      </button>
+      <button mat-menu-item>
+        <mat-icon>close</mat-icon>
+        关闭
+      </button>
+    </ng-template>
+  </mat-menu>
+
+</ng-container>

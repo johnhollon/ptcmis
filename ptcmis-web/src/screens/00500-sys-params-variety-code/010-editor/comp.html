@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset [formGroup]="form" data-content-for="content" class="form-container">
+    <legend>编辑品种编号信息</legend>
+    <div class="form">
+      <select-variety class="col2" formControlName="variety"></select-variety>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>品种编号</mat-label>
+        <input matInput formControlName="code">
+        @if (form.get('code')?.touched && form.get('code')?.invalid) {
+          <mat-error>{{ form.get('code')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+      <div class="col1">
+        <mat-radio-group class="col2" formControlName="important">
+          <mat-radio-button [value]="APIConst.booleans.BOOLEAN_TRUE">重点品种</mat-radio-button>
+          <mat-radio-button [value]="APIConst.booleans.BOOLEAN_FALSE">普通品种</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div class="break"></div>
+      <div class="col1">
+        <mat-radio-group class="col2" formControlName="enabled">
+          <mat-radio-button [value]="APIConst.booleans.BOOLEAN_TRUE">启用</mat-radio-button>
+          <mat-radio-button [value]="APIConst.booleans.BOOLEAN_FALSE">禁用</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+    <button matButton="filled" (click)="requestSave()">保存</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

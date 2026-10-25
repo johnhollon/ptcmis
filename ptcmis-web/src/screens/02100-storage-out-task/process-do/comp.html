@@ -1,0 +1,178 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-1">
+      <legend>基本情况</legend>
+
+      <mat-form-field appearance="outline" class="readonly col1 important">
+        <mat-label>出库瓶数</mat-label>
+        <input matInput [value]="-model.bottlesApplied" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1 important">
+        <mat-label>出库株数</mat-label>
+        <input matInput [value]="-model.plantsApplied" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>品种</mat-label>
+        <input matInput value="{{model.variety}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>品种编号</mat-label>
+        <input matInput value="{{model.varietyCode}}" readonly>
+      </mat-form-field>
+
+      @if (model.taskType === 'induction') {
+        <mat-form-field appearance="outline" class="readonly col1">
+          <mat-label>外植体采集批次</mat-label>
+          <input matInput value="{{model.explantCollectionBatch}}" readonly>
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>任务</mat-label>
+        <input matInput value="{{model.taskType | taskType}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>申请人</mat-label>
+        <input matInput value="{{model.applicantName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>申请时间</mat-label>
+        <input matInput value="{{model.applicantTime | timestamp}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>末次操作人</mat-label>
+        <input matInput value="{{model.operatorName}}" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="readonly col1">
+        <mat-label>末次操作时间</mat-label>
+        <input matInput value="{{model.operatorTime | timestamp}}" readonly>
+      </mat-form-field>
+
+    </fieldset>
+
+    <fieldset class="form-container left-2">
+      <legend>待用</legend>
+      <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+        <mat-icon style="margin-right: 8px;">warning</mat-icon>
+        操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+      </div>
+      <div style="display: flex;margin-bottom: 12px; gap:4px;">
+        <mat-form-field appearance="outline" class="important col-extra-small-2" style="flex: 1;">
+          <mat-label>按前缀过滤</mat-label>
+          <input #codePrefixInput matInput
+                 [matAutocomplete]="prefixAutoComplete"
+                 [formControl]="codePrefixFormControl"
+                 (input)="filterCodePrefixList()"
+                 (focus)="filterCodePrefixList()"
+          >
+          <mat-autocomplete requireSelection="true" #prefixAutoComplete="matAutocomplete">
+            @for (option of codePrefixFilteredSig(); track option) {
+              <mat-option [value]="option">{{ option }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="important col-extra-small-2" style="flex: 1;">
+          <mat-label>按序号过滤</mat-label>
+          <input matInput [formControl]="codeSeqFormControl" type="number">
+        </mat-form-field>
+        <button matButton="filled" style="margin-left: 1px;" (click)="requestScanUsed()">
+          <mat-icon>qr_code</mat-icon>
+          扫码出库
+        </button>
+      </div>
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+        <comp-code *cdkVirtualFor="let item of allFilteredSig()"
+                   [canEditPlantCount]="false"
+                   [colored]="true"
+                   [canOpp]="true"
+                   [updateVersion]="updateVersionSig()"
+                   assignTitle="出库"
+                   assignIconText="logout"
+                   revertTitle="还库"
+                   revertIconText="settings_backup_restore"
+                   [id]="item"
+                   [plantCount]="usedMap.get(item) ? usedMap.get(item)!.plantCountActual : allMap.get(item)?.plantCount || 0"
+                   [status]="usedMap.get(item) ? 'used' : 'none'"
+                   (onNone)="requestUpdateToNone($event)"
+                   (onUsed)="requestUpdateToUsed($event)"
+        ></comp-code>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+
+    <fieldset class="form-container left-3">
+      <legend class="text-primary">出库</legend>
+      <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">
+        <mat-icon style="margin-right: 8px;">warning</mat-icon>
+        操作完成后切记<span class="text-primary" style="cursor: pointer;" (click)="requestSave()" matTooltip="点击即可保存">保存</span>。
+      </div>
+      <div style="display: flex; gap:16px;">
+        <mat-form-field appearance="outline" class="important col-extra-small readonly" style="flex: 1;">
+          <mat-label>瓶数</mat-label>
+          <input matInput type="number" [value]="usedStatSig().bottles" readonly>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="important col-extra-small readonly" style="flex: 1;">
+          <mat-label>株数</mat-label>
+          <input matInput type="number" [value]="usedStatSig().plants" readonly>
+        </mat-form-field>
+      </div>
+      <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+        <comp-code *cdkVirtualFor="let item of usedSig()"
+                   [canEditPlantCount]="true"
+                   [colored]="true"
+                   [canOpp]="true"
+                   [updateVersion]="updateVersionSig()"
+                   assignTitle="出库"
+                   assignIconText="logout"
+                   revertTitle="还库"
+                   revertIconText="settings_backup_restore"
+                   [id]="item"
+                   [plantCount]="usedMap.get(item) ? usedMap.get(item)!.plantCountActual : allMap.get(item)?.plantCount || 0"
+                   [status]="usedMap.get(item) ? 'used' : 'none'"
+                   (onNone)="requestUpdateToNone($event)"
+                   (onUsed)="requestUpdateToUsed($event)"
+        ></comp-code>
+      </cdk-virtual-scroll-viewport>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="filled" (click)="requestSave()" class="mat-shadow-2">保存出库信息</button>
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+

@@ -1,0 +1,138 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: contents;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+
+  @include mat.form-field-overrides((
+    container-height: 40px,
+    container-vertical-padding: 0,
+    container-text-size:--mat-sys-body-size,
+    outlined-label-text-size:--mat-sys-body-size,
+    filled-label-text-size:--mat-sys-body-size,
+    container-text-line-height:40px,
+  ));
+
+  ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 13px;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+    height: 2px;
+  }
+
+  .left-fixed {
+    flex: 0 0 340px !important;
+    width: 340px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: var(--mat-sys-surface-container-lowest) !important;
+    box-shadow: none !important;
+    border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 50%, transparent) !important;
+
+    .form {
+      display: flex;
+      align-items: stretch;
+      flex-wrap: nowrap;
+
+      .form-container {
+        box-shadow: none;
+        border-bottom: var(--border);
+        border-radius: var(--mat-sys-corner-small);
+
+        mat-form-field {
+          margin-bottom: 12px;
+          width: 140px;
+        }
+
+        legend {
+          width: auto !important;
+        }
+
+        & + .form-container {
+          margin-left: 0;
+        }
+
+      }
+    }
+  }
+
+  .right {
+    flex: 1;
+    margin-left: var(--mat-sys-corner-medium);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    .toolbar {
+      background-color: var(--mat-sys-surface-container);
+      border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 50%, transparent);
+      border-radius: var(--mat-sys-corner-small);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: var(--mat-sys-corner-small);
+      box-shadow: var(--mat-sys-level3);
+      overflow-x: auto;
+      min-width: 0;
+
+      & > * {
+        text-wrap: nowrap !important;
+      }
+    }
+
+    .detail-container {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .bottles-cdk-scroll {
+          flex: 1;
+
+          .bottles-container {
+            padding: var(--mat-sys-corner-medium);
+          }
+        }
+      }
+
+    }
+  }
+}
+

@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--过滤条件区域-->
+<ng-container [formGroup]="filterFormGroup">
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按瓶码前缀过滤</mat-label>
+    <mat-select formControlName="codePrefix" tabindex="-1">
+      <mat-option value="">全部</mat-option>
+      @for (item of codePrefixList; track item) {
+        <mat-option [value]="item">{{ item }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按品种编号/人员过滤</mat-label>
+    <input matInput formControlName="keyword">
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按外植体采集批次过滤</mat-label>
+    <input matInput type="number" min="0" formControlName="explantCollectionBatch">
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <mat-form-field appearance="outline" floatLabel="always">
+    <mat-label>按代数过滤</mat-label>
+    <input matInput type="number" min="0" formControlName="generation">
+  </mat-form-field>
+
+  <!--过滤条件-->
+  <date-range formControlName="dateRange" label="按建瓶时间过滤"></date-range>
+
+</ng-container>

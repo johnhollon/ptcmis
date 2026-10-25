@@ -1,0 +1,31 @@
+db:
+  database: "mysql"
+  url: "jdbc:mysql://:3306/dev_ptcmis?useUnicode=true&characterEncoding=GB18030&autoReconnect=true&"
+  username: "username"
+  password: "password"
+java:
+  orm:
+    jpa:
+      noStubEntityInterfaces: false
+      stubEntityInterfacesSrc: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+      stubEntityInterfacesPackage: "chenhuiran.ptcmisserver.stubs.entities"
+      noPOClass: false
+      poSrc: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+      poPackage: "chenhuiran.ptcmisserver.stubs.entities"
+      noPOImplementsSpringPersistable: false
+      noDTOClass: false
+  consts:
+    src: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+    classes:
+      - classQualifiedName: "chenhuiran.ptcmisserver.stubs.entities.Const"
+        sqls:
+          - sql: "SELECT d.id, i.code, d.name AS dname, i.name AS iname FROM dictionary d, dictionary_item i WHERE d.id = i.id_dictionary ORDER BY d.name, i.code;"
+            propertyNameUseLowerCase: false
+            propertyNameColumnNames:
+              - "id"
+              - "code"
+            propertyValueColumnNames:
+              - "code"
+            propertyCommentColumnNames:
+              - "dname"
+              - "iname"

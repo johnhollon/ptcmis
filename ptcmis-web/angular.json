@@ -1,0 +1,84 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "ptcmis-web": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "node_modules/@material-design-icons/font/index.css",
+              "node_modules/@material-symbols/font-400/index.css",
+              "src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "define": {
+                "___$$$___MOCK___$$$___": "''",
+                "___$$$___API_ROOT___$$$___": "\"http://192.168.100.218:9005\""
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "10MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "500kB",
+                  "maximumError": "10MB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "define": {
+                "___$$$___MOCK___$$$___": "''",
+                "___$$$___API_ROOT___$$$___": "\"http://127.0.0.1:9005\""
+              },
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "ptcmis-web:build:production"
+            },
+            "development": {
+              "buildTarget": "ptcmis-web:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}

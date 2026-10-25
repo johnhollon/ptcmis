@@ -1,0 +1,363 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+  <ng-container data-content-for="content">
+    <div class="main-container">
+      @if (serviceTissueTaskProcess.taskSig(); as taskView) {
+        @if (serviceTissueTaskProcess.getOppGroupStat(''); as stat) {
+          <!-- 基本信息 -->
+          <fieldset class="stat-group">
+            <legend>基本信息</legend>
+            <table class="info-table">
+              <tbody>
+              <tr>
+                <td class="cell-label">任务类型</td>
+                <td>{{ taskView.task.taskType | taskType }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">任务状态</td>
+                <td>
+                  <span class="status-tag"
+                        [class.tag-success]="taskView.task.taskStatus === 'finished'"
+                        [class.tag-danger]="taskView.task.taskStatus !== 'finished'">
+                    {{ taskView.task.taskStatus | taskStatus }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-label">品种</td>
+                <td> {{ taskView.task.variety }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">品种编号</td>
+                <td>
+                  <span [matTooltip]="taskView.task.variety + ' ' + taskView.task.varietyCode">
+                    {{ taskView.task.varietyCode }}
+                  </span>
+                </td>
+              </tr>
+                @if (taskView.task.taskType === 'induction') {
+                  <tr>
+                    <td class="cell-label">外植体采集批次</td>
+                    <td> P{{ taskView.task.explantCollectionBatch || '00000000' }}</td>
+                  </tr>
+                }
+              <tr>
+                <td class="cell-label">任务创建时间</td>
+                <td> {{ taskView.task.createTime | timestamp }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">创建人</td>
+                <td> {{ taskView.task.creatorUserName }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">任务开始时间</td>
+                <td> {{ (taskView.task.startTime | timestamp) || '尚未开始' }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">任务完成时间</td>
+                <td> {{ (taskView.task.finishTime | timestamp) || '尚未完成' }}</td>
+              </tr>
+              <tr>
+                <td class="cell-label">质检员</td>
+                <td>
+                  @for (user of stat.inspectors; track user.id) {
+                    @if ($index !== 0) {
+                      <br />
+                    }
+                    <span
+                      [matTooltip]="(stat.inspectorMap.get(user.id)?.childPlantCountDiscard || 0) > 0 ? ('淘汰' + (stat.inspectorMap.get(user.id)?.childBottleCountDiscard || 0) + '瓶；' + (stat.inspectorMap.get(user.id)?.childPlantCountDiscard || 0) + '株') : ''"
+                      [class.text-error]="(stat.inspectorMap.get(user.id)?.childPlantCountDiscard || 0) > 0">
+                      {{ user.name }}
+                    </span>
+                  }
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-label">操作员</td>
+                <td>
+                  @for (user of stat.operators; track user.id) {
+                    @if ($index !== 0) {
+                      <br />
+                    }
+                    <span
+                      [matTooltip]="(stat.operatorMap.get(user.id)?.childPlantCountDiscard || 0) > 0 ? ('淘汰' + (stat.operatorMap.get(user.id)?.childBottleCountDiscard || 0) + '瓶；' + (stat.operatorMap.get(user.id)?.childPlantCountDiscard || 0) + '株') : ''"
+                      [class.text-error]="(stat.operatorMap.get(user.id)?.childPlantCountDiscard || 0) > 0">
+                      {{ user.name }}
+                    </span>
+                  }
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </fieldset>
+
+          <!-- 完成情况（带rowspan，hover整组高亮） -->
+          <fieldset class="stat-group">
+            <legend>完成情况</legend>
+            <table class="data-table merge-row-table">
+              <thead>
+              <tr>
+                <th>类型</th>
+                <th>子类</th>
+                <th class="cell-number">计划</th>
+                <th class="cell-number">已完成</th>
+                <th class="cell-number">已淘汰</th>
+                <th class="cell-number">完成度</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr data-row-group="g1">
+                @if (taskView.task.taskType !== 'induction') {
+                  <td rowspan="2" class="cell-label">母代使用</td>
+                  <td>瓶数</td>
+                  <td class="cell-number">{{ stat.parentBottleCountPlan.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ stat.parentBottleCountFinished.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">——</td>
+                  <td class="cell-number"
+                      [class.text-error]="taskView.task.taskStatus === 'finished' && stat.parentBottleCountFinished < stat.parentBottleCountPlan"
+                      [class.text-primary]="stat.parentBottleCountFinished >= stat.parentBottleCountPlan">
+                    {{ (stat.parentBottleCountFinished / stat.parentBottleCountPlan * 100).toFixed(2) + '%' }}
+                  </td>
+                } @else {
+                  <td class="cell-label">母代使用</td>
+                  <td>株数</td>
+                  <td class="cell-number">{{ stat.parentPlantCountPlan.toLocaleString() }} 株</td>
+                  <td class="cell-number">{{ stat.parentPlantCountFinished.toLocaleString() }} 株</td>
+                  <td class="cell-number">——</td>
+                  <td class="cell-number"
+                      [class.text-error]="taskView.task.taskStatus === 'finished' && stat.parentPlantCountFinished < stat.parentPlantCountPlan"
+                      [class.text-primary]="stat.parentPlantCountFinished >= stat.parentPlantCountPlan">
+                    {{ (stat.parentPlantCountFinished / stat.parentPlantCountPlan * 100).toFixed(2) + '%' }}
+                  </td>
+                }
+              </tr>
+                @if (taskView.task.taskType !== 'induction') {
+                  <tr data-row-group="g1">
+                    <td>株数</td>
+                    <td class="cell-number">{{ stat.parentPlantCountPlan.toLocaleString() }} 株</td>
+                    <td class="cell-number">{{ stat.parentPlantCountFinished.toLocaleString() }} 株</td>
+                    <td class="cell-number">——</td>
+                    <td class="cell-number"
+                        [class.text-error]="taskView.task.taskStatus === 'finished' && stat.parentPlantCountFinished < stat.parentPlantCountPlan"
+                        [class.text-primary]="stat.parentPlantCountFinished >= stat.parentPlantCountPlan">
+                      {{ (stat.parentPlantCountFinished / stat.parentPlantCountPlan * 100).toFixed(2) + '%' }}
+                    </td>
+                  </tr>
+                }
+                @if (taskView.task.taskType !== 'induction') {
+                  <tr data-row-group="g2">
+                    <td rowspan="2" class="cell-label">母代留种</td>
+                    <td>瓶数</td>
+                    <td class="cell-number">
+                      {{ (stat.parentKeepBottleCountPlan || stat.parentKeepBottleCountAssigned).toLocaleString() }}
+                      瓶
+                      @if (stat.parentKeepBottleCountPlan < 1 && stat.parentKeepBottleCountAssigned > 0) {
+                        <span class="small-tip-danger">计划外</span>
+                      }
+                    </td>
+                    <td class="cell-number">{{ stat.parentKeepBottleCountFinished.toLocaleString() }} 瓶</td>
+                    <td class="cell-number">——</td>
+                    <td class="cell-number"
+                        [class.text-error]="taskView.task.taskStatus === 'finished' && stat.parentKeepBottleCountPlan > 0 && stat.parentKeepBottleCountFinished < stat.parentKeepBottleCountPlan"
+                        [class.text-primary]="stat.parentKeepBottleCountPlan > 0 && stat.parentKeepBottleCountFinished >= stat.parentKeepBottleCountPlan">
+                      @if ((stat.parentKeepBottleCountPlan || stat.parentKeepBottleCountAssigned) < 1) {
+                        ——
+                      } @else {
+                        {{ (stat.parentKeepBottleCountFinished / (stat.parentKeepBottleCountPlan || stat.parentKeepBottleCountAssigned) * 100).toFixed(2) + '%' }}
+                      }
+                    </td>
+                  </tr>
+                  <tr data-row-group="g2">
+                    <td>株数</td>
+                    <td class="cell-number">
+                      {{ (stat.parentKeepPlantCountPlan || stat.parentKeepPlantCountAssigned).toLocaleString() }}
+                      株
+                      @if (stat.parentKeepPlantCountPlan < 1 && stat.parentKeepPlantCountAssigned > 0) {
+                        <span class="small-tip-danger">计划外</span>
+                      }
+                    </td>
+                    <td class="cell-number">{{ stat.parentKeepPlantCountFinished.toLocaleString() }} 株</td>
+                    <td class="cell-number">——</td>
+                    <td class="cell-number"
+                        [class.text-error]="taskView.task.taskStatus === 'finished' && stat.parentKeepPlantCountPlan > 0 && stat.parentKeepPlantCountFinished < stat.parentKeepPlantCountPlan"
+                        [class.text-primary]="stat.parentKeepPlantCountPlan > 0 && stat.parentKeepPlantCountFinished >= stat.parentKeepPlantCountPlan">
+                      @if ((stat.parentKeepBottleCountPlan || stat.parentKeepBottleCountAssigned) < 1) {
+                        ——
+                      } @else {
+                        {{ (stat.parentKeepPlantCountFinished / (stat.parentKeepPlantCountPlan || stat.parentKeepPlantCountAssigned) * 100).toFixed(2) + '%' }}
+                      }
+                    </td>
+                  </tr>
+                }
+                @if (taskView.task.taskType !== 'acclimatization') {
+                  <tr data-row-group="g3">
+                    <td rowspan="2" class="cell-label">子代生产</td>
+                    <td>瓶数</td>
+                    <td class="cell-number">{{ stat.childBottleCountPlan.toLocaleString() }} 瓶</td>
+                    <td class="cell-number">{{ stat.childBottleCountFinished.toLocaleString() }} 瓶</td>
+                    <td class="cell-number" [class.text-error]="stat.childBottleCountDiscard > 0">{{ stat.childBottleCountDiscard.toLocaleString() }}
+                      瓶
+                    </td>
+                    <td class="cell-number"
+                        [class.text-error]="taskView.task.taskStatus === 'finished' && stat.childBottleCountFinished < stat.childBottleCountPlan"
+                        [class.text-primary]="stat.childBottleCountFinished >= stat.childBottleCountPlan">
+                      {{ (stat.childBottleCountFinished / stat.childBottleCountPlan * 100).toFixed(2) + '%' }}
+                    </td>
+                  </tr>
+                  <tr data-row-group="g3">
+                    <td>株数</td>
+                    <td class="cell-number">{{ stat.childPlantCountPlan.toLocaleString() }} 株</td>
+                    <td class="cell-number">{{ stat.childPlantCountFinished.toLocaleString() }} 株</td>
+                    <td class="cell-number" [class.text-error]="stat.childPlantCountDiscard > 0">{{ stat.childPlantCountDiscard.toLocaleString() }}
+                      株
+                    </td>
+                    <td class="cell-number"
+                        [class.text-error]="taskView.task.taskStatus === 'finished' && stat.childPlantCountFinished < stat.childPlantCountPlan"
+                        [class.text-primary]="stat.childPlantCountFinished >= stat.childPlantCountPlan">
+                      {{ (stat.childPlantCountFinished / stat.childPlantCountPlan * 100).toFixed(2) + '%' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </fieldset>
+        }
+        @if (taskView.task.taskType !== 'induction') {
+          @if (serviceTissueTaskProcess.storageOutStatSig(); as model) {
+            <fieldset class="stat-group">
+              <legend>母代出库</legend>
+              <table class="data-table">
+                <thead>
+                <tr>
+                  <th>类型</th>
+                  <th class="cell-number">瓶数</th>
+                  <th class="cell-number">株数</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td class="cell-label text-primary">计划使用</td>
+                  <td class="cell-number">{{ model.planBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.planPlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label text-primary">累计申请</td>
+                  <td class="cell-number">{{ model.applyBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.applyPlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label text-primary">已备出</td>
+                  <td class="cell-number">{{ model.doneBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.donePlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label text-primary">已接收</td>
+                  <td class="cell-number"
+                      [class.text-error]="model.outBottles < model.planBottles"
+                      [class.text-primary]="model.outBottles >= model.planBottles">{{ model.outBottles.toLocaleString() }} 瓶
+                  </td>
+                  <td class="cell-number"
+                      [class.text-error]="model.outPlants < model.planPlants"
+                      [class.text-primary]="model.outPlants >= model.planPlants">{{ model.outPlants.toLocaleString() }} 株
+                  </td>
+                </tr>
+                <tr>
+                  <td class="cell-label">作业中</td>
+                  <td class="cell-number">{{ model.processBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.processPlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label">待作业</td>
+                  <td class="cell-number">{{ model.unProcessBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.unProcessPlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label">驳回库房</td>
+                  <td class="cell-number">{{ model.rejStoreBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.rejStorePlants.toLocaleString() }} 株</td>
+                </tr>
+                <tr>
+                  <td class="cell-label">驳回业务</td>
+                  <td class="cell-number">{{ model.rejBizBottles.toLocaleString() }} 瓶</td>
+                  <td class="cell-number">{{ model.rejBizPlants.toLocaleString() }} 株</td>
+                </tr>
+                </tbody>
+              </table>
+            </fieldset>
+          }
+        }
+
+        @if (serviceTissueTaskProcess.storageInSig(); as storageIn) {
+          <fieldset class="stat-group">
+            <legend>入库情况</legend>
+            <table class="data-table">
+              <tbody>
+              <tr style="margin-bottom: var(--mat-sys-corner-medium)">
+                <td class="cell-label">入库状态</td>
+                <td colspan="2" style="text-align: start;">
+                    <span class="status-tag"
+                          [class.tag-success]="storageIn.status === 'finished' || taskView.storageInStatus === 'none'"
+                          [class.tag-danger]="taskView.storageInStatus !== 'none' && (!storageIn.status || storageIn.status === 'rej_store' || storageIn.status === 'rej_biz')">
+                      {{ taskView.storageInStatus === 'none' ? '无需入库' : !storageIn.status ? '未申请入库' : (storageIn.status | storageInOutStatus) }}
+                    </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="cell-label">类型</td>
+                <td class="cell-label cell-number">瓶数</td>
+                <td class="cell-label cell-number">株数</td>
+              </tr>
+                @if (taskView.task.taskType !== 'induction') {
+                  <tr>
+                    <td class="cell-label">归还母代</td>
+                    <td class="cell-number">{{ bottleParentReturnStatSigReadonly().bottleCount.toLocaleString() }} 瓶</td>
+                    <td class="cell-number">{{ bottleParentReturnStatSigReadonly().plantCount.toLocaleString() }} 株</td>
+                  </tr>
+                  <tr>
+                    <td class="cell-label">留种入库</td>
+                    <td class="cell-number">{{ bottleParentKeepStatSigReadonly().bottleCount.toLocaleString() }} 瓶</td>
+                    <td class="cell-number">{{ bottleParentKeepStatSigReadonly().plantCount.toLocaleString() }} 株</td>
+                  </tr>
+                }
+                @if (taskView.task.taskType !== 'acclimatization') {
+                  <tr>
+                    <td class="cell-label">子代入库</td>
+                    <td class="cell-number">{{ bottleChildInStatSigReadonly().bottleCount.toLocaleString() }} 瓶</td>
+                    <td class="cell-number">{{ bottleChildInStatSigReadonly().plantCount.toLocaleString() }} 株</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </fieldset>
+        }
+
+      }
+    </div>
+  </ng-container>
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+</layout-drawer-opp-simple>

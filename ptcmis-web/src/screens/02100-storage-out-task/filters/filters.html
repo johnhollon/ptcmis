@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--过滤条件区域-->
+<ng-container [formGroup]="filterFormGroup">
+
+
+  <mat-form-field appearance="outline">
+    <mat-label>按品种/编号/人员过滤</mat-label>
+    <input matInput formControlName="keyword">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>按代数过滤</mat-label>
+    <input matInput type="number" formControlName="parentGeneration">
+  </mat-form-field>
+
+  <selector-storage-in-out-status formControlName="status" label="按出库状态过滤"></selector-storage-in-out-status>
+
+  <selector-tissue-task-type formControlName="taskType" label="按任务类别过滤"></selector-tissue-task-type>
+
+  <selector-tissue-task-status formControlName="taskStatus" label="按任务状态过滤"></selector-tissue-task-status>
+
+  <date-range formControlName="applicantTime" label="按申请时间过滤"></date-range>
+
+  <date-range formControlName="operatorTime" label="按操作时间过滤"></date-range>
+
+  <button matIconButton matTooltip="刷新" (click)="requestQuery()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+</ng-container>

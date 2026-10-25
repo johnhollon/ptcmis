@@ -1,0 +1,98 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset [formGroup]="form" data-content-for="content" class="form-container">
+    <legend>编辑绩效基线信息</legend>
+    <div class="form">
+      @if (userEditableSig()) {
+        <select-user [formControl]="fcUser" label="选择人员" [canSelectEmpty]="false" class="col2"></select-user>
+      } @else {
+        <mat-form-field appearance="outline" floatLabel="always" class="col2">
+          <mat-label>人员</mat-label>
+          <input matInput formControlName="userName" readonly>
+        </mat-form-field>
+      }
+      <div class="break"></div>
+      <mat-form-field appearance="outline" floatLabel="always" class="col2">
+        <mat-label>选择人员身份</mat-label>
+        <mat-select formControlName="userRole">
+          <mat-option value="operator">操作员</mat-option>
+          <mat-option value="inspector">质检员</mat-option>
+        </mat-select>
+        @if (form.get('userRole')?.touched && form.get('userRole')?.invalid) {
+          <mat-error>{{ form.get('userRole')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" floatLabel="always" class="col2">
+        <mat-label>选择绩效种类</mat-label>
+        <mat-select formControlName="bizType">
+          <mat-option value="child">子瓶生产</mat-option>
+          <mat-option value="parent_keep">母瓶留种</mat-option>
+          <mat-option value="discard">淘汰</mat-option>
+        </mat-select>
+        @if (form.get('bizType')?.touched && form.get('bizType')?.invalid) {
+          <mat-error>{{ form.get('bizType')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+      <select-variety-code formControlName="varietyCode" class="col2"></select-variety-code>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>代数</mat-label>
+        <input type="number" min="0" matInput formControlName="generation">
+        @if (form.get('generation')?.touched && form.get('generation')?.invalid) {
+          <mat-error>{{ form.get('generation')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>瓶数基线</mat-label>
+        <input type="number" min="0" matInput formControlName="bottles">
+        @if (form.get('bottles')?.touched && form.get('bottles')?.invalid) {
+          <mat-error>{{ form.get('bottles')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>株数基线</mat-label>
+        <input type="number" min="0" matInput formControlName="plants">
+        @if (form.get('plants')?.touched && form.get('plants')?.invalid) {
+          <mat-error>{{ form.get('plants')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+    <button matButton="filled" (click)="requestSave()">保存</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

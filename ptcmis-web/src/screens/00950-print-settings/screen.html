@@ -1,0 +1,59 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--页面主体-->
+<layout-page-function-simple
+  [loading]="loadingSig()"
+  [loadingMessage]="loadingMessageSig()"
+>
+
+  <!--标题区域-->
+  <layout-page-function-simple-title titleText="打印设置"
+                                     data-content-for="title">
+  </layout-page-function-simple-title>
+
+  <!--查询区域-->
+  <div data-content-for="content">
+    <layout-drawer-opp-simple>
+      <fieldset data-content-for="content" class="form-container">
+        <legend>选择打印机</legend>
+        <div class="form">
+          @if (printersSig().length > 0) {
+            <mat-selection-list [multiple]="false">
+              @for (printer of printersSig(); track printer.name) {
+                <mat-list-option togglePosition="before" [value]="printer.name" [selected]="printer.selected"
+                                 (click)="requestSetPrinter(printer.name)">{{ printer.name }}
+                </mat-list-option>
+              }
+            </mat-selection-list>
+          } @else {
+            <div style="margin:24px 0;">
+              没有找到打印机。应首先下载并安装<a href="http://192.168.100.218:9006/ptcmis-printer-drivers.zip" target="_blank">打印组件</a>。
+            </div>
+          }
+        </div>
+      </fieldset>
+    </layout-drawer-opp-simple>
+  </div>
+</layout-page-function-simple>

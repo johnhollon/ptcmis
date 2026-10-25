@@ -1,0 +1,217 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+.layout-query-simple {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  --border-color: color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  --border: 1px solid var(--border-color);
+
+  // 过滤条件区
+  .filters-container {
+    padding-right: var(--mat-sys-corner-medium);
+    padding-top: var(--mat-sys-corner-medium);
+    margin-inline: 0;
+    border: var(--border);
+    border-radius: var(--mat-sys-corner-small) var(--mat-sys-corner-small) 0 0;
+    font-size: var(--mat-sys-body-medium-size);
+    display: flex;
+    gap: var(--mat-sys-corner-small);
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    color: var(--mat-sys-outline);
+    background-color: var(--mat-sys-surface);
+
+    // mat‑form‑field外层：允许收缩，接收flex分配的空间
+    ::ng-deep mat-form-field {
+      flex: 1 1 0;
+      min-width: 150px;
+      max-width: 220px;
+      width: 100%;
+    }
+
+    // 穿透到内部wrapper，强制跟随父容器宽度
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      width: 100% !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      width: 100% !important;
+    }
+
+    ::ng-deep button {
+      flex: 0 0 0;
+    }
+
+    ::ng-deep input {
+      max-width: 150px;
+    }
+
+
+    @include mat.form-field-overrides((
+      container-height: 40px,
+      container-vertical-padding: 0,
+      container-text-size:--mat-sys-body-size,
+      outlined-label-text-size:--mat-sys-body-size,
+      filled-label-text-size:--mat-sys-body-size,
+      container-text-line-height:40px,
+    ));
+
+    @include mat.select-overrides((
+      trigger-text-size:--mat-sys-body-size,
+    ));
+
+    ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+      top: 13px;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper, .mat-mdc-form-field-bottom-align::before {
+      display: none;
+    }
+  }
+
+  // 表格容器
+  .table-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    padding-right: var(--mat-sys-corner-medium);
+    // 覆写 table 样式
+    @include mat.table-overrides((
+      background-color: var(--mat-sys-surface-container-lowest),
+      row-item-outline-color: var(--border-color),
+    ));
+
+
+    ::ng-deep .mat-mdc-table {
+      border-collapse: collapse;
+      border-spacing: 0;
+
+      thead {
+        background-color: var(--mat-sys-surface-container);
+      }
+
+      thead tr {
+        border:none;
+        background-color: var(--mat-sys-surface-container-high);
+      }
+
+      th,td {
+        height:56px;
+        border:none;
+        box-shadow:
+          inset 1px 0 0 var(--border-color),    /* 左边框 */
+          inset 0 -1px 0 var(--border-color);   /* 下边框 */
+        padding:0;
+        box-sizing: border-box;
+      }
+
+      tfoot{
+        th,td {
+          box-shadow: inset 1px 0 0 var(--border-color), /* 左边框 */
+          inset 0 -1px 0 var(--border-color),   /* 下边框 */
+          inset 0 1px 0 var(--border-color); /* 上边框（tfooter需要的顶线） */
+        }
+      }
+
+      td {
+        height:52px;
+        transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+        color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+
+        &.selected,
+        &.selected:hover {
+          background-color: var(--mat-sys-tertiary) !important;
+          color: var(--mat-sys-on-tertiary) !important;
+        }
+      }
+
+      tbody tr {
+        transition: background-color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate),
+        color var(--mat-sys-motion-duration-short1) var(--mat-sys-motion-easing-standard-accelerate);
+        border: none;
+
+        &:hover {
+          background-color: var(--mat-sys-surface-container-low) !important;
+        }
+
+        &.menu-opened {
+          background-color: var(--mat-sys-surface-container-high) !important;
+
+          &:hover {
+            background-color: var(--mat-sys-surface-container-high) !important;
+          }
+        }
+
+        &.selected,
+        &.selected:hover {
+          background-color: var(--mat-sys-tertiary) !important;
+          color: var(--mat-sys-on-tertiary) !important;
+        }
+      }
+
+      th, td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
+
+        &.start {
+          text-align: start;
+        }
+
+        &.end {
+          text-align: end;
+        }
+      }
+
+      --icon-size: calc(var(--mat-sys-body-medium-size) * 1.5);
+      // 更改图标样式
+      @include mat.icon-button-overrides((
+        icon-size: calc(var(--icon-size)),
+        container-shape: var(--mat-sys-corner-small),
+        state-layer-size: calc(var(--icon-size) * 1.45),
+        touch-target-size: calc(var(--icon-size) * 1.45),
+      ));
+      // 设置图标大小
+      .mat-icon {
+        height: var(--icon-size);
+        width: var(--icon-size);
+        font-size: var(--icon-size);
+      }
+
+      .mat-mdc-icon-button {
+        margin-right: var(--mat-sys-corner-extra-small);
+      }
+    }
+
+  }
+}

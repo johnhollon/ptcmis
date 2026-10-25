@@ -1,0 +1,107 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+:host {
+  .main-container {
+    display: flex;
+    align-items: stretch;
+    gap: var(--mat-sys-corner-medium);
+    font-size: var(--mat-sys-body-medium-size);
+    padding: 0 0 var(--mat-sys-corner-medium) 0;
+  }
+
+  .stat-group {
+    background:var(--mat-sys-surface-container-lowest);
+    border: 1px solid var(--mat-sys-surface-container-highest);
+    border-radius: 8px;
+    padding: var(--mat-sys-corner-extra-small) var(--mat-sys-corner-large)  var(--mat-sys-corner-large)  var(--mat-sys-corner-large);
+    min-width: 280px;
+    box-shadow: var(--mat-sys-level2);
+    overflow: auto;
+
+    legend {
+      font-size: 1.15em;
+      font-weight: 600;
+      margin: 0 0 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    td{
+      min-width: 40px;
+    }
+
+    .info-table {
+      td {
+        border: 1px solid var(--mat-sys-surface-container-highest);
+        padding: 7px 9px;
+      }
+    }
+
+    .data-table {
+      th, td {
+        border: 1px solid var(--mat-sys-surface-container-highest);
+        padding: 7px 9px;
+        text-align: center;
+      }
+      td.cell-number {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      th {
+        background: var(--mat-sys-surface-container);
+        text-align: center;
+        font-weight: 600;
+      }
+    }
+
+    .cell-label {
+      background-color: var(--mat-sys-surface-container-low);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .small-tip-danger {
+      font-size: 0.7em;
+      color: var(--mat-sys-error);
+    }
+
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      &.tag-success {
+        background: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
+      }
+      &.tag-danger {
+        background: var(--mat-sys-error);
+        color: var(--mat-sys-on-error);
+      }
+    }
+  }
+}

@@ -1,0 +1,154 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+@use "@angular/material" as mat;
+
+:host {
+  display: block;
+  height: 46px;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  padding: 6px 4px;
+  user-select: none;
+
+
+  .code-main {
+    background-color: var(--mat-sys-surface-container-low);
+
+    .signal {
+      flex: 0 0 4px;
+      width: 4px;
+      height: 100%;
+      background-color: var(--mat-sys-surface-container-highest);
+    }
+
+    &.used .signal {
+      background-color: var(--mat-sys-primary);
+    }
+
+    &:hover {
+      background-color: var(--mat-sys-surface-container-high);
+
+      .code {
+        color: var(--mat-sys-error)
+      }
+    }
+
+    box-shadow: var(--mat-sys-level1);
+    height: 40px;
+
+    border-radius: 4px;
+    padding: 4px 8px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    min-height: 0;
+    gap: 12px;
+
+    // 更改图标样式
+    ::ng-deep button {
+      @include mat.icon-button-overrides((
+        icon-size: calc(var(--icon-size)),
+        container-shape: var(--mat-sys-corner-small),
+        state-layer-size: calc(var(--icon-size) * 1.1),
+        touch-target-size: calc(var(--icon-size) * 1.1),
+      ));
+      // 设置图标大小
+      .mat-icon {
+        height: var(--icon-size);
+        width: var(--icon-size);
+        font-size: var(--icon-size);
+      }
+
+      margin-left: 8px;
+    }
+
+
+    .code {
+      font-weight: 700;
+      font-size: 1.2em;
+    }
+
+
+    .info {
+      font-weight: 700;
+      font-size: 1.1em;
+      color: var(--mat-sys-primary);
+      display: flex;
+      align-items: center;
+
+      &.editable span {
+        cursor: pointer;
+      }
+    }
+
+
+    ::ng-deep input {
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+
+    ::ng-deep .mdc-text-field--outlined {
+      padding: 0 4px;
+    }
+
+    .plants-editor {
+      --icon-size: calc(var(--mat-sys-body-medium-size) * 1.2);
+      display: none;
+      align-items: center;
+      margin-left: auto;
+
+      &.show {
+        display: flex;
+      }
+    }
+
+    .hide {
+      display: none;
+    }
+
+    .opp {
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      --icon-size: calc(var(--mat-sys-body-medium-size) * 1.2);
+
+      &.hide {
+        display: none;
+      }
+    }
+  }
+
+  p {
+    padding: 0;
+    margin: 0;
+  }
+}

@@ -1,0 +1,136 @@
+/*!
+ * Copyright (C) 2026 陈慧然
+ * (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+ * ORCID: https://orcid.org/0009-0004-5899-6928
+ * <chenhuiran@chenhuiran.com>
+ * <johnhollon@johnhollon.com>
+ *
+ * This file is part of PTCMIS.
+ *
+ * PTCMIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PTCMIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+.table-item {
+  // 主体背景色
+  --background-color: var(--mat-sys-surface-container-lowest);
+  //--background-color-hover: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+  --background-color-hover: var(--border-color);
+
+  direction: ltr;
+  position: relative;
+  width: 100%;
+  height: var(--query-item-height);
+  border-bottom: var(--border);
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  padding: var(--mat-sys-corner-large);
+  font-size: var(--mat-sys-body-medium-size);
+
+  &.sticky {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &:hover, &.selected {
+    background-color: var(--border-color);
+  }
+
+  // 右侧上方凹圆弧
+  &.selected {
+    &::before {
+      content: "";
+      position: absolute;
+      right: 0; // 扩展到右侧边界外（半径大小）
+      top: -16px; // 向上扩展半径大小
+      width: 16px; // 圆弧半径 r = 16px
+      height: 16px;
+      // 利用径向渐变切出右下角为实心、左上角透明的凹弧形
+      background: radial-gradient(circle at top left, transparent 16px, var(--background-color-hover) 16px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    // 右侧下方凹圆弧
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0; // 扩展到右侧边界外
+      bottom: -16px; // 向下扩展半径大小
+      width: 16px;
+      height: 16px;
+      // 利用径向渐变切出右上角为实心、左下角透明的凹弧形
+      background: radial-gradient(circle at bottom left, transparent 16px, var(--background-color-hover) 16px);
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
+  .item-title {
+    margin-bottom: var(--mat-sys-corner-small);
+    display: flex;
+    align-items: center;
+    gap: var(--mat-sys-corner-small);
+  }
+
+  .info-container {
+    margin-top: var(--mat-sys-corner-extra-small);
+  }
+
+  .status-container, .info-container {
+    display: flex;
+    gap: var(--mat-sys-corner-small);
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: hidden;
+    width: 100%;
+    font-size: var(--mat-sys-body-small-size);
+
+    .status {
+      display: inline-block;
+      margin-left: 2px;
+      font-size: var(--mat-sys-label-small-size);
+      padding: 2px 4px;
+      border-radius: 4px;
+      background-color: var(--mat-sys-surface-container);
+      color: var(--mat-sys-on-surface-container);
+      border: 1px solid var(--mat-sys-surface-container-highest);
+      font-weight: 400;
+      text-wrap: nowrap;
+    }
+
+    &.success {
+      color: var(--mat-sys-primary);
+
+      .status {
+        background-color: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
+        border: 1px solid var(--mat-sys-on-primary);
+      }
+    }
+
+    &.error {
+      color: var(--mat-sys-error);
+
+      .status {
+        background-color: var(--mat-sys-error);
+        color: var(--mat-sys-on-error);
+        border: 1px solid var(--mat-sys-on-error);
+      }
+    }
+  }
+}

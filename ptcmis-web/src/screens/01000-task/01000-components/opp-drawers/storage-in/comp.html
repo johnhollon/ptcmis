@@ -1,0 +1,253 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+  <ng-container data-content-for="content">
+    @if (serviceTissueTaskProcess.taskSig(); as taskView) {
+      @if (serviceTissueTaskProcess.storageInSig(); as storageIn) {
+        <div class="main">
+          <fieldset class="form-container left-container">
+            <legend>基本情况</legend>
+            <div class="left-1">
+
+              <mat-form-field appearance="outline" floatLabel="always"
+                              [class.important]="storageIn.status === 'finished' || taskView.storageInStatus === 'none'"
+                              [class.error]="taskView.storageInStatus !== 'none' && (!storageIn.status || storageIn.status === 'rej_store' || storageIn.status === 'rej_biz')"
+                              class="readonly no-error" style="width: 246px;">
+                <mat-label>入库状态</mat-label>
+                <input matInput
+                       value="{{taskView.storageInStatus === 'none' ? '无需入库' : !storageIn.status ? '未申请入库' : (storageIn.status | storageInOutStatus)}}"
+                       readonly>
+                @if (editable) {
+                  <button matSuffix matIconButton (click)="requestRefresh()">
+                    <mat-icon matTooltip="同步状态">sync</mat-icon>
+                  </button>
+                }
+              </mat-form-field>
+
+
+              <mat-divider></mat-divider>
+
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>组培任务类型</mat-label>
+                <input matInput value="{{taskView.task.taskType | taskType}}" readonly>
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>组培任务状态</mat-label>
+                <input matInput value="{{taskView.task.taskStatus | taskStatus}}" readonly>
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>品种</mat-label>
+                <input matInput [value]="taskView.task.variety" readonly>
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>品种编号</mat-label>
+                <input [matTooltip]="taskView.task.varietyCode" matInput [value]="taskView.task.varietyCode" readonly>
+              </mat-form-field>
+              @if (taskView.task.taskType === 'induction') {
+                <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error" style="width: 246px;">
+                  <mat-label>外植体采集批次</mat-label>
+                  <input matInput [value]="taskView.task.explantCollectionBatch" readonly>
+                </mat-form-field>
+              }
+
+
+              <mat-divider></mat-divider>
+
+
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>归还母代瓶数</mat-label>
+                <input matInput readonly [value]="bottleParentReturnStatSigReadonly().bottleCount">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>归还母代株数</mat-label>
+                <input matInput readonly [value]="bottleParentReturnStatSigReadonly().plantCount">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库留种瓶数</mat-label>
+                <input matInput readonly [value]="bottleParentKeepStatSigReadonly().bottleCount">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库留种株数</mat-label>
+                <input matInput readonly [value]="bottleParentKeepStatSigReadonly().plantCount">
+              </mat-form-field>
+
+
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库子代瓶数</mat-label>
+                <input matInput readonly [value]="bottleChildInStatSigReadonly().bottleCount">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库子代株数</mat-label>
+                <input matInput readonly [value]="bottleChildInStatSigReadonly().plantCount">
+              </mat-form-field>
+
+              <mat-divider></mat-divider>
+
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库申请人</mat-label>
+                <input matInput readonly value="{{!storageIn.status ? '' : storageIn.applicantName}}">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库申请时间</mat-label>
+                <input matInput readonly [matTooltip]="!storageIn.status ? '' : (storageIn.applicantTime | timestamp)"
+                       value="{{!storageIn.status ? '' : (storageIn.applicantTime | timestamp)}}">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库末次操作人</mat-label>
+                <input matInput readonly value="{{!storageIn.status ? '' : storageIn.operatorName}}">
+              </mat-form-field>
+              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+                <mat-label>入库末次操作时间</mat-label>
+                <input matInput readonly [matTooltip]="!storageIn.status ? '' : (storageIn.operatorTime | timestamp)"
+                       value="{{!storageIn.status ? '' : (storageIn.operatorTime | timestamp)}}">
+              </mat-form-field>
+
+            </div>
+          </fieldset>
+          <div class="right-container">
+            <div class="right-container-title">
+              <div class="right-tabs-title-container">
+                <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'process'" (click)="subModuleSelectedSig.set('process')">
+                  入库明细
+                </div>
+                <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'logs'" (click)="subModuleSelectedSig.set('logs')">
+                  办理日志
+                </div>
+                <div class="tab-title-item" [class.selected]="subModuleSelectedSig() === 'archive'" (click)="subModuleSelectedSig.set('archive')">
+                  附件资料
+                </div>
+              </div>
+            </div>
+            <div class="right-container-content">
+              <div class="process-detail-container" [class.hidden]="subModuleSelectedSig() !== 'process'">
+                @if (taskView.task.taskType !== 'induction') {
+                  <fieldset class="form-container left-2">
+                    <legend>归还母瓶明细</legend>
+                    <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly
+                             [value]="bottleParentReturnStatSigReadonly().bottleCount + '/' + bottleParentReturnStatSigReadonly().plantCount">
+                    </mat-form-field>
+                    <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                      <code-item-task-storage-in *cdkVirtualFor="let bottle of bottleParentReturnListSig()"
+                                                 [model]="bottle"
+                      ></code-item-task-storage-in>
+                    </cdk-virtual-scroll-viewport>
+                  </fieldset>
+                  <fieldset class="form-container left-2">
+                    <legend>留种入库明细</legend>
+                    <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly
+                             [value]="bottleParentKeepStatSigReadonly().bottleCount + '/' + bottleParentKeepStatSigReadonly().plantCount">
+                    </mat-form-field>
+                    <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                      <code-item-task-storage-in *cdkVirtualFor="let bottle of bottleParentKeepListSig()"
+                                                 [model]="bottle"
+                      ></code-item-task-storage-in>
+                    </cdk-virtual-scroll-viewport>
+                  </fieldset>
+                }
+                @if (taskView.task.taskType !== 'acclimatization') {
+                  <fieldset class="form-container left-2">
+                    <legend>子瓶入库明细</legend>
+                    <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly [value]="bottleChildInStatSigReadonly().bottleCount + '/' + bottleChildInStatSigReadonly().plantCount">
+                    </mat-form-field>
+                    <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                      <code-item-task-storage-in *cdkVirtualFor="let bottle of bottleChildInListSig()"
+                                                 [model]="bottle"
+                      ></code-item-task-storage-in>
+                    </cdk-virtual-scroll-viewport>
+                  </fieldset>
+                }
+              </div>
+              <div class="form-container logs" [class.hidden]="subModuleSelectedSig() !== 'logs'">
+                <div style="height: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                  <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+                    <table mat-table [dataSource]="tableLogsDataSource" [trackBy]="logTrackById">
+
+                      <ng-container matColumnDef="operatorTime">
+                        <th mat-header-cell *matHeaderCellDef>办理时间</th>
+                        <td mat-cell *matCellDef="let item">{{ item.operatorTime | timestamp }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="operatorName">
+                        <th mat-header-cell *matHeaderCellDef>办理人</th>
+                        <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef>状态</th>
+                        <td mat-cell *matCellDef="let item">{{ item.status | storageInOutStatus }}</td>
+                      </ng-container>
+
+                      <ng-container matColumnDef="oppReason">
+                        <th mat-header-cell *matHeaderCellDef>备注</th>
+                        <td mat-cell *matCellDef="let item">{{ item.oppReason }}</td>
+                      </ng-container>
+
+                      <!--thead 模板-->
+                      <tr mat-header-row *matHeaderRowDef="tableColumnsLogStorageOut; sticky: true"></tr>
+                      <!--tbody 模板-->
+                      <tr mat-row *matRowDef="let item; columns: tableColumnsLogStorageOut;"
+                          [class.text-primary]="item.status === 'done' || item.status === 'finished'"
+                          [class.text-error]="item.status === 'rej_store' || item.status === 'rej_biz'"
+                      ></tr>
+                    </table>
+                  </cdk-virtual-scroll-viewport>
+                </div>
+              </div>
+              <archive-panel [class.hidden]="subModuleSelectedSig() !== 'archive'"
+                             [editable]="false"
+                             [archives]="archivesSig()"
+                             style="margin: var(--mat-sys-corner-large) 0 0  var(--mat-sys-corner-large)"
+              ></archive-panel>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </ng-container>
+
+
+  <ng-container data-content-for="toolbar">
+
+    @if (editable && serviceTissueTaskProcess.taskSig().storageInStatus !== 'none') {
+      @if ((serviceTissueTaskProcess.storageInSig()?.status || '____'); as status) {
+        @if (status === '____' || status === 'rej_biz') {
+          <button matButton="filled" (click)="requestApply()">{{ status === 'rej_biz' ? '重新申请' : '申请入库' }}</button>
+        }
+        @if (status === 'apply' || status === 'rej_biz') {
+          <button matButton="filled" style="background-color: var(--mat-sys-error)" (click)="requestDelete()">删除申请</button>
+        }
+      }
+    }
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+
+  </ng-container>
+</layout-drawer-opp-simple>

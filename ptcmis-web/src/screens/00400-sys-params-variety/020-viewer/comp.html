@@ -1,0 +1,50 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset [formGroup]="form" data-content-for="content" class="form-container">
+    <legend>查看品种信息</legend>
+    <div class="form">
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>品种名称</mat-label>
+        <input matInput formControlName="name" readonly>
+      </mat-form-field>
+      <div class="break"></div>
+      <mat-form-field appearance="outline" class="col2" floatLabel="always">
+        <mat-label>启用状态</mat-label>
+        <input matInput [value]="form.get('enabled')?.value === APIConst.booleans.BOOLEAN_FALSE ? '已禁用' : '启用'" readonly>
+      </mat-form-field>
+    </div>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

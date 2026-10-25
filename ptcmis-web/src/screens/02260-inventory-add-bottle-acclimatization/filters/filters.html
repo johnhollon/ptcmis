@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<!--过滤条件区域-->
+<ng-container [formGroup]="filterFormGroup">
+
+  <!--过滤条件-->
+  @if (filterFields.indexOf('keyword') > -1) {
+    <mat-form-field appearance="outline">
+      <mat-label>按人员过滤</mat-label>
+      <input matInput formControlName="keyword">
+    </mat-form-field>
+  }
+  <!--过滤条件-->
+  @if (filterFields.indexOf('status') > -1) {
+    <selector-storage-in-out-status formControlName="status" label="按状态过滤"
+                                    [showOptions]="['started','finished']"></selector-storage-in-out-status>
+  }
+  <!--过滤条件-->
+  @if (filterFields.indexOf('applicantTime') > -1) {
+    <date-range formControlName="applicantTime" label="按创建时间过滤"></date-range>
+  }
+  <!--过滤条件-->
+  @if (filterFields.indexOf('operatorTime') > -1) {
+    <date-range formControlName="operatorTime" label="按操作时间过滤"></date-range>
+  }
+
+  <button matIconButton matTooltip="刷新" (click)="requestQuery()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+</ng-container>

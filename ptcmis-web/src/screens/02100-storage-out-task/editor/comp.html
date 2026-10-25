@@ -1,0 +1,96 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <!--编辑区-->
+  <fieldset class="form-container" data-content-for="content">
+    <form [formGroup]="form" class="form">
+
+      <mat-form-field appearance="outline" floatLabel="always" tabindex="-1" class="col2">
+        <mat-label>任务类别</mat-label>
+        <mat-select formControlName="taskType" tabIndex="-1">
+          <mat-option value="differentiation">{{ 'differentiation' | taskType }}</mat-option>
+<!--          <mat-option value="multiplication">{{ 'multiplication' | taskType }}</mat-option>-->
+          <mat-option value="rooting">{{ 'rooting' | taskType }}</mat-option>
+<!--          <mat-option value="acclimatization">{{ 'acclimatization' | taskType }}</mat-option>-->
+        </mat-select>
+        @if (form.get('taskType')?.touched && form.get('taskType')?.invalid) {
+          <mat-error>{{ form.get('taskType')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+      <div class="break"></div>
+
+      <select-variety-code formControlName="varietyCode" class="col2"></select-variety-code>
+      <div class="break"></div>
+
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>计划母代留种瓶数</mat-label>
+        <input type="number" min="0" matInput formControlName="estimatedParentKeepBottles">
+        @if (form.get('estimatedParentKeepBottles')?.touched && form.get('estimatedParentKeepBottles')?.invalid) {
+          <mat-error>{{ form.get('estimatedParentKeepBottles')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="col1" floatLabel="always">
+        <mat-label>计划母代留种株数</mat-label>
+        <input type="number" min="0" matInput formControlName="estimatedParentKeepPlants">
+        @if (form.get('estimatedParentKeepPlants')?.touched && form.get('estimatedParentKeepPlants')?.invalid) {
+          <mat-error>{{ form.get('estimatedParentKeepPlants')?.errors?.['error'] || '' }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="break"></div>
+
+      @if (form.get('taskType')?.value !== 'acclimatization') {
+        <mat-form-field appearance="outline" class="col1" floatLabel="always">
+          <mat-label>计划生产子代瓶数</mat-label>
+          <input type="number" min="0" matInput formControlName="estimatedChildrenBottles">
+          @if (form.get('estimatedChildrenBottles')?.touched && form.get('estimatedChildrenBottles')?.invalid) {
+            <mat-error>{{ form.get('estimatedChildrenBottles')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col1" floatLabel="always">
+          <mat-label>计划生产子代株数</mat-label>
+          <input type="number" min="0" matInput formControlName="estimatedChildrenPlants">
+          @if (form.get('estimatedChildrenPlants')?.touched && form.get('estimatedChildrenPlants')?.invalid) {
+            <mat-error>{{ form.get('estimatedChildrenPlants')?.errors?.['error'] || '' }}</mat-error>
+          }
+        </mat-form-field>
+        <div class="break"></div>
+      }
+
+    </form>
+  </fieldset>
+
+  <!--操作按钮区-->
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="requestCancel()">取消</button>
+    <button matButton="filled" (click)="requestSave()">保存</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+

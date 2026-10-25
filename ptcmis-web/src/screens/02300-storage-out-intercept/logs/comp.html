@@ -1,0 +1,105 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+    <fieldset class="form-container right" style="flex-direction: column;display: flex;">
+      <legend>状态及操作日志</legend>
+      <div style="flex:1;display: flex;flex-direction: column;align-items: stretch; gap:12px;">
+        <fieldset class="form-container status" style="border-radius: 0; flex:0 0 auto;">
+          <legend>状态</legend>
+
+          <mat-form-field appearance="outline" class="readonly colExtraSmall">
+            <mat-label>出库状态</mat-label>
+            <input matInput value="{{model.status | storageInOutStatus}}" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly colExtraSmall">
+            <mat-label>申请人</mat-label>
+            <input matInput value="{{model.applicantName}}" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>申请时间</mat-label>
+            <input matInput value="{{model.applicantTime | timestamp}}" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly colExtraSmall">
+            <mat-label>末次操作人</mat-label>
+            <input matInput value="{{model.operatorName}}" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>末次操作时间</mat-label>
+            <input matInput value="{{model.operatorTime | timestamp}}" readonly>
+          </mat-form-field>
+
+        </fieldset>
+        <fieldset class="form-container" style="margin-left: 0;border-radius: 0;flex:1;">
+          <legend>办理日志</legend>
+          <div style="height: 100%; display: flex; flex-direction: column; align-items: stretch;">
+            <cdk-virtual-scroll-viewport class="table-container" [itemSize]="52" [maxBufferPx]="2080" [minBufferPx]="840">
+              <table mat-table [dataSource]="tableLogsDataSource" [trackBy]="logTrackById">
+
+                <ng-container matColumnDef="operatorTime">
+                  <th mat-header-cell *matHeaderCellDef>办理时间</th>
+                  <td mat-cell *matCellDef="let item">{{ item.operatorTime | timestamp }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="operatorName">
+                  <th mat-header-cell *matHeaderCellDef>办理人</th>
+                  <td mat-cell *matCellDef="let item">{{ item.operatorName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>状态</th>
+                  <td mat-cell *matCellDef="let item">{{ item.status | storageInOutStatus }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="oppReason">
+                  <th mat-header-cell *matHeaderCellDef>备注</th>
+                  <td mat-cell *matCellDef="let item">{{ item.oppReason }}</td>
+                </ng-container>
+
+                <!--thead 模板-->
+                <tr mat-header-row *matHeaderRowDef="tableColumnsLogStorageOut; sticky: true"></tr>
+                <!--tbody 模板-->
+                <tr mat-row *matRowDef="let item; columns: tableColumnsLogStorageOut;"
+                ></tr>
+              </table>
+            </cdk-virtual-scroll-viewport>
+          </div>
+        </fieldset>
+      </div>
+    </fieldset>
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+

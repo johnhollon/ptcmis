@@ -1,3 +1,6 @@
 [submodule "ptcmis-printer/third-parties-nlohmann-json"]
 	path = ptcmis-printer/third-parties-nlohmann-json
 	url = git@github.com:nlohmann/json.git
+	shallow = true
+	ignore = all 
+	update = rebase

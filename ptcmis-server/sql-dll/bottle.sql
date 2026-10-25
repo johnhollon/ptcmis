@@ -1,0 +1,58 @@
+DROP TABLE IF EXISTS `bottle`;
+CREATE TABLE `bottle` (
+  `id` VARCHAR(32) NOT NULL COMMENT '瓶码ID',
+  `variety` VARCHAR(32) NOT NULL COMMENT '品种',
+  `variety_code` VARCHAR(32) NOT NULL COMMENT '品种编号（子品种）',
+  `explant_collection_batch` INT NOT NULL DEFAULT 0 COMMENT '外植体采集批次',
+  `generation` TINYINT NOT NULL DEFAULT 0 COMMENT '代数',
+  `plant_count` SMALLINT NOT NULL DEFAULT 0 COMMENT '瓶内株数',
+  `task_time` BIGINT NOT NULL DEFAULT 0 COMMENT '形成该瓶的任务执行时间 UTC毫秒',
+  `source_type` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '产生来源，培养瓶产生于哪个业务。dictionary.storage_reason',
+
+  `id_parent` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '母瓶ID，空串代表母瓶为系统上线前的母瓶',
+  `parent_generation` TINYINT NOT NULL DEFAULT 0 COMMENT '母瓶代数',
+
+  `current_id_task` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前所在任务ID。 tissue_task.id',
+  `current_id_opp_group` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前操作分配组ID。 tissue_task_opp_group.id',
+  `current_culture_stage` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前工序。 dictionary.tissue_task_type',
+  `current_role_in_task` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前任务角色。 dictionary.bottle_task_role',
+  `current_parent_keep` VARCHAR(32) NOT NULL DEFAULT '0' COMMENT '当前本瓶作为母代的留种情况：若作为母瓶使用，是否留种。 dictionary.boolean',
+  `current_parent_keep_plant_count` SMALLINT NOT NULL DEFAULT 0 COMMENT '当前本瓶作为母代的留种情况：若作为母瓶使用，且留种，留种株数。',
+  `current_operate_status` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前操作状态。 dictionary.bottle_operate_status',
+  `current_inspector_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前质检员ID。 user.id',
+  `current_inspector_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前质检员姓名。 user.name',
+  `current_operator_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前操作员ID。 user.id',
+  `current_operator_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '当前操作员姓名。 user.name',
+
+  `last_id_task` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次任务ID。 tissue_task.id',
+  `last_id_opp_group` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次操作分配组ID。 tissue_task_opp_group.id',
+  `last_culture_stage` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次工序。 dictionary.tissue_task_type',
+  `last_role_in_task` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次任务角色。 dictionary.bottle_task_role',
+  `last_parent_keep` VARCHAR(32) NOT NULL DEFAULT '0' COMMENT '末次本瓶作为母代的留种情况：若作为母瓶使用，是否留种。 dictionary.boolean',
+  `last_parent_keep_plant_count` SMALLINT NOT NULL DEFAULT 0 COMMENT '末次本瓶作为母代的留种情况：若作为母瓶使用，且留种，留种株数。',
+  `last_operate_status` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次操作状态。 dictionary.bottle_operate_status',
+  `last_inspector_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次质检员ID。 user.id',
+  `last_inspector_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次质检员姓名。 user.name',
+  `last_operator_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次操作员ID。 user.id',
+  `last_operator_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次操作员姓名。 user.name',
+
+  `current_storage_status` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '仓储状态。 dictionary.bottle_storage_status',
+  `last_received_user_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次入库用户ID。 user.id',
+  `last_received_user_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次入库人姓名。 user.name',
+  `last_received_time` BIGINT NOT NULL DEFAULT 0 COMMENT '末次入库时间 UTC毫秒',
+  `last_received_reason` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '末次入库原因。 dictionary.storage_reason',
+  `last_issued_user_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次出库用户ID。 user.id',
+  `last_issued_user_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次出库人姓名。 user.name',
+  `last_issued_time` BIGINT NOT NULL DEFAULT 0 COMMENT '末次出库时间 UTC毫秒',
+  `last_issued_reason` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '末次出库原因。 dictionary.storage_reason',
+
+  `discarded` VARCHAR(1) NOT NULL DEFAULT '0' COMMENT '是否淘汰。dictionary = boolean',
+  `performance_included` VARCHAR(1) NOT NULL DEFAULT '1' COMMENT '是否计入绩效。dictionary = boolean',
+  `discard_reason` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '淘汰原因。 dictionary.bottle_discard_reason',
+  `discard_reason_desc` VARCHAR(128) NOT NULL DEFAULT '' COMMENT '淘汰备注',
+  `discard_time` BIGINT NOT NULL DEFAULT 0 COMMENT '淘汰时间 UTC毫秒',
+  `discard_user_id` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '淘汰执行人ID。 user.id',
+  `discard_user_name` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '淘汰执行人姓名。 user.name',
+
+  PRIMARY KEY (`id`)
+) COMMENT='组培瓶';

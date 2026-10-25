@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<div class="upload-panel">
+  <h2>上传文件 <span class="close" (click)="requestClose()">&times;</span></h2>
+  <div class="drop-zone" [class.hide]="uploading()"
+       [class.drop-zone--over]="isDragOver"
+       (dragenter)="onDragEnter($event)"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)">
+    <mat-icon>cloud_upload</mat-icon>
+    <p>拖拽文件到此处</p>
+    <input #fileInput type="file" multiple style="display:none" [accept]="accept" (change)="onFileSelect($event)" />
+    <button matButton (click)="fileInput.click()" [disabled]="uploading()">选择文件</button>
+  </div>
+
+  @if (fileItems.length > 0) {
+    <mat-list class="file-list">
+      @for (item of fileItems; track item.name; ) {
+        <mat-list-item [class.error]="!!item.error">
+          <mat-icon matListItemIcon>
+            {{ !!item.error ? 'warning' : 'insert_drive_file' }}
+          </mat-icon>
+          <span matListItemTitle class="file-name">{{ item.name }}</span>
+          <span matListItemLine class="file-size" [matTooltip]="item.error">{{ !!item.error ? item.error : formatSize(item.size) }}</span>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+  <div class="panel-footer">
+    <button matButton="text" (click)="clearAll()" [disabled]="fileItems.length < 1 || uploading()">清空</button>
+    <button matButton="filled" (click)="onTriggerUpload()" [showProgress]="uploading()" [disabled]="fileItems.length < 1 || uploading()">
+      开始上传
+      <mat-progress-spinner
+        progressIndicator
+        mode="indeterminate"
+        diameter="20"
+        tabindex=""
+      />
+    </button>
+  </div>
+</div>

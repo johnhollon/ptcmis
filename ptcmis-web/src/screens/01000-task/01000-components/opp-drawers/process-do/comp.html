@@ -1,0 +1,855 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+  <ng-container data-content-for="content">
+    <div class="main-container">
+      <div class="container fixed"
+           [class.readonly]="!editableSig()"
+           [class.induction]="serviceTissueTaskProcess.taskSig().task.taskType === 'induction'"
+           [class.acclimatization]="serviceTissueTaskProcess.taskSig().task.taskType === 'acclimatization'"
+      >
+        @if (editableSig()) {
+          <div class="text-error warning">
+            <mat-icon style="flex: 0 0 24px;">warning</mat-icon>
+            <div>关闭页面数据会被丢弃。应及时
+              <span class="text-primary"
+                    style="cursor:pointer;"
+                    matTooltip="点击即可保存"
+                    (click)="requestSave()"
+              >保存</span>
+              ，与服务器同步数据。
+            </div>
+          </div>
+          <fieldset class="form-container fixed row" style="flex: 0 0 auto;">
+            <legend><span class="text-primary">任务分配默认参数</span></legend>
+            <select-user class="col1 no-error" style="flex: 0 0 130px;width: 130px;" [formControl]="inspectorDefaultFormControl" label="质检员"
+                         groupNameImportant="任务内"
+                         groupNameOther="任务外"
+                         [toolTip]="inspectorDefaultFormControl.value ? (inspectorDefaultFormControl.value.name + '-' + inspectorDefaultFormControl.value.code) : ''"
+                         [usersImportant]="serviceTissueTaskProcess.processSettingsSig().inspectors"></select-user>
+            <select-user class="col1 no-error" style="flex: 0 0 130px;width: 130px;" [formControl]="operatorDefaultFormControl" label="操作员"
+                         groupNameImportant="任务内"
+                         groupNameOther="任务外"
+                         [toolTip]="operatorDefaultFormControl.value ? (operatorDefaultFormControl.value.name + '-' + operatorDefaultFormControl.value.code) : ''"
+                         [usersImportant]="serviceTissueTaskProcess.processSettingsSig().operators"></select-user>
+            @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'acclimatization') {
+              <mat-form-field appearance="outline" class="col1 no-error" floatLabel="always" style="flex:  0 0 130px;">
+                <mat-label>子瓶默认株数</mat-label>
+                <button
+                  tabindex="-1"
+                  matIconButton
+                  matSuffix
+                  type="button"
+                  matTooltip="恢复为任务设置默认值"
+                  (click)="defaultPlantsPerChildBottleField.setValue(serviceTissueTaskProcess.processSettingsSig().defaultPlantsPerChildBottle,{ onlySelf: true, emitEvent: false })"
+                >
+                  <mat-icon>replay</mat-icon>
+                </button>
+                <input matInput type="number" min="1" [formControl]="defaultPlantsPerChildBottleField">
+              </mat-form-field>
+            }
+            <button matIconButton="filled" tabIndex="-1" matTooltip="设置任务相关员工及默认参数" (click)="requestSetProcessSettings()"
+                    style="color:var(--mat-sys-primary);">
+              <mat-icon>settings</mat-icon>
+            </button>
+          </fieldset>
+        }
+        <div class="column">
+          @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+            <fieldset class="form-container code-item-container">
+              <legend>
+                母瓶待用
+                @if (editableSig()) {
+                  (<span class="text-primary">点击分配</span>)
+                  <button matIconButton style="color:var(--mat-sys-primary);"
+                          matTooltip="扫码分配"
+                          tabIndex="-1"
+                          (click)="requestOppGroupAssignByScan()"
+                  >
+                    <mat-icon>qr_code</mat-icon>
+                  </button>
+                }
+              </legend>
+              @if (bottleParentUnAssignedStatSig(); as stat) {
+                <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error">
+                  <mat-label>瓶数/株数</mat-label>
+                  <input matInput readonly [value]="stat.bottleCount + '/' + stat.plantCount">
+                </mat-form-field>
+              }
+              <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                <comp-code-item-simple-tissue-task *cdkVirtualFor="let item of serviceTissueTaskProcess.bottleParentUnAssignedSig()"
+                                                   [model]="item"
+                                                   (click)="requestOppGroupAssign(item.idBottle, undefined)"
+                ></comp-code-item-simple-tissue-task>
+              </cdk-virtual-scroll-viewport>
+            </fieldset>
+          } @else {
+            @if (editableSig()) {
+              <fieldset class="form-container code-item-container" style="min-width: 0;">
+                <legend>母代株数</legend>
+                <mat-form-field appearance="outline" class="no-error">
+                  <mat-label>输入株数</mat-label>
+                  <input type="number" matInput min="0" max="999" #parentPlantCount>
+                </mat-form-field>
+                <button matButton="filled"
+                        tabIndex="-1"
+                        (click)="requestOppGroupAssign(undefined, parentPlantCount.value);parentPlantCount.value='0'">
+                  分配
+                </button>
+              </fieldset>
+            }
+          }
+          @if (editableSig() && serviceTissueTaskProcess.taskSig().task.taskType !== 'acclimatization') {
+            <fieldset class="form-container code-item-container">
+              <legend>
+                子瓶待用
+                @if (editableSig()) {
+                  <button matIconButton
+                          tabIndex="-1"
+                          style="color:var(--mat-sys-primary);"
+                          matTooltip="分配子瓶瓶码"
+                          (click)="requestBottleChildAssignCodeToTask()"
+                  >
+                    <mat-icon>add_chart</mat-icon>
+                  </button>
+                }
+              </legend>
+              <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error">
+                <mat-label>瓶数</mat-label>
+                <input matInput readonly [value]="serviceTissueTaskProcess.bottleChildUnAssignedSig().length">
+              </mat-form-field>
+              <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                <comp-code-item-simple-tissue-task *cdkVirtualFor="let bottle of serviceTissueTaskProcess.bottleChildUnAssignedSig()"
+                                                   [model]="bottle"
+                ></comp-code-item-simple-tissue-task>
+              </cdk-virtual-scroll-viewport>
+            </fieldset>
+          }
+        </div>
+      </div>
+      <div class="container opp-group-container">
+        <!--目录区-->
+        <div class="opp-group-doc-container">
+          <div class="opp-group-doc-title">
+            <h2>操作组</h2>
+          </div>
+          <div class="opp-group-doc-content">
+            @for (oppGroupStatId of serviceTissueTaskProcess.oppGroupStatSig(); track oppGroupStatId; ) {
+              @if (serviceTissueTaskProcess.getOppGroupStat(oppGroupStatId); as oppGroupStat) {
+                <div class="opp-group-doc-item"
+                     [class.selected]="oppGroupStatId === oppGroupSelectedSig()"
+                     (click)="oppGroupSelectedSig.set(oppGroupStatId)"
+                >
+                  <div class="doc-content">
+                    <div class="doc-content-title">
+                      {{ oppGroupStat.nameOppGroup }}
+                      <div class="doc-content-title-status">
+                        @if (!!oppGroupStat.finishTime) {
+                          <div class="status">已完成</div>
+                        } @else {
+                          <div class="status">操作中</div>
+                        }
+                        @if (oppGroupStat.parentKeepBottleCountAssigned > 0 && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                          @if (oppGroupStatId !== '') {
+                            <div class="status" [matTooltip]="'留种' + oppGroupStat.parentKeepPlantCountAssigned + '株'">
+                              留种 {{ oppGroupStat.parentKeepPlantCountAssigned }}
+                            </div>
+                          } @else {
+                            <div class="status"
+                                 [matTooltip]="'留种' + oppGroupStat.parentKeepBottleCountAssigned + '瓶 / ' + oppGroupStat.parentKeepPlantCountAssigned + '株'">
+                              留种 {{ oppGroupStat.parentKeepBottleCountAssigned }} / {{ oppGroupStat.parentKeepPlantCountAssigned }}
+                            </div>
+                          }
+                        }
+                      </div>
+                    </div>
+
+                    @if (oppGroupStatId === '' && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                      <div class="doc-content-info">
+                        <span class="status">母瓶</span>
+                        <tissue-task-chart-bar-parent-bottles [model]="oppGroupStat"></tissue-task-chart-bar-parent-bottles>
+                        @if (oppGroupStat.parentKeepBottleCountPlan > 0 || oppGroupStat.parentKeepBottleCountAssigned > 0) {
+                          <tissue-task-chart-bar-parent-bottles-keep [model]="oppGroupStat"></tissue-task-chart-bar-parent-bottles-keep>
+                        }
+                      </div>
+                    }
+
+                    @if (oppGroupStatId !== '' && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                      <div class="doc-content-info">
+                        <span class="status">母株</span>
+                        @if (oppGroupStat.parentKeepPlantCountAssigned > 0) {
+                          <span>留种{{ oppGroupStat?.parentKeepPlantCountAssigned ?? 0 }}株</span>
+                          <span>原瓶{{ oppGroupStat?.parentPlantCountAssigned ?? 0 }}株</span>
+                        } @else {
+                          <span>{{ oppGroupStat?.parentPlantCountAssigned ?? 0 }}株</span>
+                        }
+                      </div>
+                    } @else if (oppGroupStatId === '') {
+                      <div class="doc-content-info">
+                        <span class="status">母株</span>
+                        <tissue-task-chart-bar-parent-plants [model]="oppGroupStat"></tissue-task-chart-bar-parent-plants>
+                        @if (oppGroupStat.parentKeepPlantCountPlan > 0 || oppGroupStat.parentKeepPlantCountAssigned > 0) {
+                          <tissue-task-chart-bar-parent-plants-keep [model]="oppGroupStat"></tissue-task-chart-bar-parent-plants-keep>
+                        }
+                      </div>
+                    }
+
+                    @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'acclimatization') {
+                      <div class="doc-content-info">
+                        <span class="status">子代</span>
+                        @if (oppGroupStatId !== '') {
+                          <tissue-task-chart-bar-child-bottles-opp-group [model]="oppGroupStat"></tissue-task-chart-bar-child-bottles-opp-group>
+                          <tissue-task-chart-bar-child-plants-opp-group [model]="oppGroupStat"></tissue-task-chart-bar-child-plants-opp-group>
+                        } @else {
+                          <tissue-task-chart-bar-child-bottles-task [model]="oppGroupStat"></tissue-task-chart-bar-child-bottles-task>
+                          <tissue-task-chart-bar-child-plants-task [model]="oppGroupStat"></tissue-task-chart-bar-child-plants-task>
+                        }
+                      </div>
+                    }
+
+                    @if (oppGroupStatId !== '') {
+                      @if (serviceTissueTaskProcess.getOppGroup(oppGroupStatId); as oppGroup) {
+                        <div class="doc-content-info">
+                          @if (!!oppGroup.finishTime) {
+                            <span matTooltip="完成时间">{{ (oppGroup.finishTime ?? 0) | timestamp }}</span>
+                          } @else {
+                            <span matTooltip="分配时间">{{ (oppGroup.allocateTime ?? 0) | timestamp }}</span>
+                          }
+                          <span matTooltip="分配人">{{ oppGroup.allocatorName ?? '' }}</span>
+                        </div>
+                        <div class="doc-content-info">
+                          <span matTooltip="质检人">{{ oppGroup.inspectorName ?? '' }}</span>
+                          <span matTooltip="操作人">{{ oppGroup.operatorName ?? '' }}</span>
+                        </div>
+                      }
+                    } @else {
+                      <div class="doc-content-info">
+                        @if (serviceTissueTaskProcess.taskSig().task.finishTime; as time) {
+                          <span matTooltip="完成时间">{{ time | timestamp }}</span>
+                        }
+                        @if (serviceTissueTaskProcess.taskSig().task.startTime; as time) {
+                          <span matTooltip="开始时间">{{ time | timestamp }}</span>
+                        }
+                      </div>
+                    }
+
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+        <!--展示区-->
+        <div class="opp-group-detail-main-container">
+          <div class="opp-group-detail-title">
+            @if (serviceTissueTaskProcess.getOppGroupStat(oppGroupSelectedSig()); as oppGroupStat) {
+              <h2>
+                {{ oppGroupStat.nameOppGroup }}
+                @if (!!oppGroupStat.finishTime) {
+                  <span class="status">已完成</span>
+                } @else {
+                  <span class="status">操作中</span>
+                }
+                @if (oppGroupStat.parentKeepBottleCountAssigned > 0 && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                  @if (oppGroupStat.idOppGroup !== '') {
+                    <span class="status"
+                          [matTooltip]="'留种' + oppGroupStat.parentKeepPlantCountAssigned + '株'">留种 {{ oppGroupStat.parentKeepPlantCountAssigned }}</span>
+                  } @else {
+                    <span class="status"
+                          [matTooltip]="'留种' + oppGroupStat.parentKeepBottleCountAssigned + '瓶 / ' + oppGroupStat.parentKeepPlantCountAssigned + '株'">
+                      留种 {{ oppGroupStat.parentKeepBottleCountAssigned }} / {{ oppGroupStat.parentKeepPlantCountAssigned }}
+                    </span>
+                  }
+                }
+              </h2>
+              <div class="opp-group-detail-title-desc">
+                @if (oppGroupStat.idOppGroup !== '') {
+                  @if (serviceTissueTaskProcess.getOppGroup(oppGroupStat.idOppGroup); as oppGroup) {
+                    <span [matTooltip]="!!oppGroup.finishTime ? '完成时间' : '分配时间'">
+                    {{ (oppGroup.finishTime || oppGroup.allocateTime) | timestamp }}
+                  </span>
+                  }
+                } @else {
+                  @if (serviceTissueTaskProcess.taskSig().task.finishTime; as time) {
+                    <span matTooltip="完成时间">{{ time | timestamp }}</span>
+                  }
+                  @if (serviceTissueTaskProcess.taskSig().task.startTime; as time) {
+                    <span matTooltip="开始时间">{{ time | timestamp }}</span>
+                  }
+                }
+              </div>
+            }
+            @if (editableSig()) {
+              <div class="text-error warning">
+                <mat-icon style="flex: 0 0 24px;">warning</mat-icon>
+                <div>关闭页面数据会被丢弃。应及时<span class="text-primary" style="cursor:pointer;" (click)="requestSave()"
+                                                      matTooltip="点击即可保存">保存</span>，与服务器同步数据。
+                </div>
+              </div>
+            }
+          </div>
+          <div class="opp-group-detail-content-container">
+            @if (oppGroupSelectedSig() !== '') {
+              @if (serviceTissueTaskProcess.getOppGroup(oppGroupSelectedSig()); as oppGroup) {
+                <fieldset class="opp-group-detail-stat-container">
+                  <legend>基本情况</legend>
+                  @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                    <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 130px;">
+                      <mat-label>母瓶</mat-label>
+                      <input matInput readonly [value]="oppGroup.idParentBottle">
+                    </mat-form-field>
+                  }
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 80px;">
+                    <mat-label>母代株数</mat-label>
+                    <input matInput readonly [value]="oppGroup.parentPlantCount || 0">
+                  </mat-form-field>
+                  @if (oppGroup.parentKeep === '1' && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                    <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 80px;">
+                      <mat-label>留种株数</mat-label>
+                      <input matInput readonly [value]="oppGroup.parentKeepPlantCount">
+                    </mat-form-field>
+                  }
+                  <mat-divider [vertical]="true" style="height: 40px;margin:0 var(--space-size);"></mat-divider>
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 110px;">
+                    <mat-label>质检员</mat-label>
+                    <input matInput readonly [value]="oppGroup.inspectorName">
+                  </mat-form-field>
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 110px;">
+                    <mat-label>操作员</mat-label>
+                    <input matInput readonly [value]="oppGroup.operatorName">
+                  </mat-form-field>
+                  <mat-divider [vertical]="true" style="height: 40px;margin:0 var(--space-size);"></mat-divider>
+                  @if (editableSig()) {
+                    @if (!!oppGroup.finishTime) {
+                      <button matButton="filled" style="flex:0 0 120px; background-color: var(--mat-sys-error)"
+                              (click)="requestOppGroupToProcess(oppGroup.id)">
+                        恢复操作
+                      </button>
+                    } @else {
+                      <button matButton="filled" style="flex:0 0 80px;" (click)="requestOppGroupToFinish(oppGroup.id)">
+                        完成
+                      </button>
+                      <button matButton="text" style="flex:0 0 60px;" (click)="requestOppGroupUpdate(oppGroup.id)">
+                        更正
+                      </button>
+                      <button matButton="text" style="flex:0 0 60px; color:var(--mat-sys-error)" (click)="requestOppGroupDelete(oppGroup.id)">
+                        删除
+                      </button>
+                    }
+                  }
+                </fieldset>
+              }
+            } @else {
+              @if (serviceTissueTaskProcess.getOppGroupStat(''); as st) {
+                <fieldset class="opp-group-detail-stat-container-for-all">
+                  <legend>基本情况</legend>
+                  <p>
+                    <span class="title">母代</span>：
+                    @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                      <span class="stat-value-fixed">
+                        瓶数完成度:
+                        <span
+                          [matTooltip]="'计划使用' + st.parentBottleCountPlan + '瓶；已使用' + st.parentBottleCountFinished + '瓶；操作中' + st.parentBottleCountProcessing + '瓶。'"
+                          [class.text-primary]="st.parentBottleCountFinished >= st.parentBottleCountPlan">
+                          {{ (st.parentBottleCountFinished / st.parentBottleCountPlan * 100).toFixed(2) }}%
+                        </span>
+                      </span>
+                    }
+                    <span class="stat-value-fixed">
+                      株数完成度:
+                      <span
+                        [matTooltip]="'计划使用' + st.parentPlantCountPlan + '株；已使用' + st.parentPlantCountFinished + '株；操作中' + st.parentPlantCountProcessing + '株。'"
+                        [class.text-primary]="st.parentPlantCountFinished >= st.parentPlantCountPlan">
+                        {{ (st.parentPlantCountFinished / st.parentPlantCountPlan * 100).toFixed(2) }}%
+                      </span>
+                    </span>
+                    @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                      @if (st.parentKeepPlantCountPlan > 0 || st.parentKeepPlantCountAssigned > 0) {
+                        <span class="stat-value-fixed">
+                          留种瓶数完成度:
+                          <span
+                            [matTooltip]="'计划留种' + st.parentKeepBottleCountPlan + '瓶；已留种' + st.parentKeepBottleCountFinished + '瓶；操作中' + st.parentKeepBottleCountProcessing + '瓶。'"
+                            [class.text-primary]="st.parentKeepBottleCountFinished >= st.parentKeepBottleCountPlan">
+                            {{ (st.parentKeepBottleCountFinished / (st.parentKeepBottleCountPlan || st.parentKeepBottleCountAssigned) * 100).toFixed(2) }}
+                            %
+                          </span>
+                        </span>
+                        <span class="stat-value-fixed">
+                          留种株数完成度:
+                          <span
+                            [matTooltip]="'计划留种' + st.parentKeepPlantCountPlan + '株；已留种' + st.parentKeepPlantCountFinished + '株；操作中' + st.parentKeepPlantCountProcessing + '株。'"
+                            [class.text-primary]="st.parentKeepPlantCountFinished >= st.parentKeepPlantCountPlan">
+                            {{ (st.parentKeepPlantCountFinished / (st.parentKeepPlantCountPlan || st.parentKeepPlantCountAssigned) * 100).toFixed(2) }}
+                            %
+                          </span>
+                        </span>
+                      }
+                    }
+                  </p>
+                  @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'acclimatization') {
+                    <p>
+                      <span class="title">子代</span>：
+                      <span class="stat-value-fixed">
+                        瓶数完成度:
+                        <span
+                          [matTooltip]="'计划生产' + st.childBottleCountPlan + '瓶；已生产' + st.childBottleCountFinished + '瓶；操作中' + st.childBottleCountProcessing + '瓶。'"
+                          [class.text-primary]="st.childBottleCountFinished >= st.childBottleCountPlan">
+                          {{ (st.childBottleCountFinished / st.childBottleCountPlan * 100).toFixed(2) }}%
+                        </span>
+                      </span>
+                      <span class="stat-value-fixed">
+                        株数完成度:
+                        <span
+                          [matTooltip]="'计划生产' + st.childPlantCountPlan + '株；已生产' + st.childPlantCountFinished + '株；操作中' + st.childPlantCountProcessing + '株。'"
+                          [class.text-primary]="st.childPlantCountFinished >= st.childPlantCountPlan">
+                          {{ (st.childPlantCountFinished / st.childPlantCountPlan * 100).toFixed(2) }}%
+                        </span>
+                      </span>
+                    </p>
+                  }
+                  @if (st.inspectors.length > 0) {
+                    <p>
+                      <span class="title">质检员</span>：
+                      @for (inspector of st.inspectors; track inspector.id) {
+                        <span class="stat-value-fixed-employee">
+                          <span class="stat-value-fixed-employee-name" [matTooltip]="'质检员: ' + inspector.name">{{ inspector.name }}</span>【
+                          @if (st.childPlantCountFinished > 0) {
+                            <span
+                              [matTooltip]="'个人产量' + (st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) + '株；总产量' + st.childPlantCountFinished + '株。'">
+                              {{ ((st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) / st.childPlantCountFinished * 100).toFixed(2) }}%
+                            </span>
+                          } @else {
+                            <span matTooltip="产量占比">0.00%</span>
+                          }
+
+                          ,
+
+                          @if ((st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) > 0 && (st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0) > 0) {
+                            <span
+                              [matTooltip]="'淘汰' + (st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0) + '株；完成产量' + (st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) + '株；操作完成' + ((st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) + (st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0)) + '株。'"
+                              [class.text-error]="(st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0) > 0">
+                              {{ ((st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0) / ((st.inspectorMap.get(inspector.id)?.childPlantCountFinished || 0) + (st.inspectorMap.get(inspector.id)?.childPlantCountDiscard || 0)) * 100).toFixed(2) }}
+                              %
+                            </span>
+                          } @else {
+                            <span matTooltip="淘汰率">0.00%</span>
+                          }
+                          】
+                        </span>
+                      }
+                    </p>
+                  }
+                  @if (st.operators.length > 0) {
+                    <p><span class="title">操作员</span>：
+                      @for (operator of st.operators; track operator.id) {
+                        <span class="stat-value-fixed-employee">
+                          <span class="stat-value-fixed-employee-name" [matTooltip]="'操作员: ' + operator.name">{{ operator.name }}</span>【
+                          @if (st.childPlantCountFinished > 0) {
+                            <span
+                              [matTooltip]="'个人产量' + (st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) + '株；总产量' + st.childPlantCountFinished + '株。'">
+                              {{ ((st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) / st.childPlantCountFinished * 100).toFixed(2) }}%
+                            </span>
+                          } @else {
+                            <span matTooltip="产量占比">0.00%</span>
+                          }
+
+                          ,
+
+                          @if ((st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) > 0 && (st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0) > 0) {
+                            <span
+                              [matTooltip]="'淘汰' + (st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0) + '株；完成产量' + (st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) + '株；操作完成' + ((st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) + (st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0)) + '株。'"
+                              [class.text-error]="(st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0) > 0">
+                              {{ ((st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0) / ((st.operatorMap.get(operator.id)?.childPlantCountFinished || 0) + (st.operatorMap.get(operator.id)?.childPlantCountDiscard || 0)) * 100).toFixed(2) }}
+                              %
+                            </span>
+                          } @else {
+                            <span matTooltip="淘汰率">0.00%</span>
+                          }
+                          】
+                        </span>
+                      }
+                    </p>
+                  }
+                </fieldset>
+              }
+            }
+            <div class="opp-group-detail-bottles-main-container">
+              @if (oppGroupSelectedSig() === '' && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
+                <fieldset class="form-container code-item-container">
+                  <legend>母瓶 (已分配)
+                    @if (editableSig() || oppGroupSelectedSig() === '') {
+                      <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+                      <span>右键操作</span>
+                    }
+                  </legend>
+                  @if (bottleParentAssignedStatSig(); as stat) {
+                    <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly [value]="stat.bottleCount + '/' + stat.plantCount">
+                    </mat-form-field>
+                  }
+                  <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                    <comp-code-item-with-opp-tissue-task *cdkVirtualFor="let item of bottleParentAssignedSig()"
+                                                         [model]="item"
+                                                         [updateVersion]="serviceTissueTaskProcess.updateVersionOfProcessInfoSig()"
+                                                         [matContextMenuTriggerFor]="bottleOppMenu"
+                                                         [matContextMenuTriggerData]="{ item: item }"
+                                                         [matContextMenuTriggerDisabled]="!editableSig() && oppGroupSelectedSig() !== ''"
+                                                         (menuOpened)="onBottleOppMenuOpened(item)"
+                                                         (menuClosed)="onBottleOppMenuClosed()"
+                                                         [class.menu-opened]="bottleOppMenuSelectedSig() === item"
+                    ></comp-code-item-with-opp-tissue-task>
+                  </cdk-virtual-scroll-viewport>
+                </fieldset>
+              }
+              @if (serviceTissueTaskProcess.taskSig().task.taskType !== 'acclimatization') {
+                @if (editableSig()) {
+                  <fieldset class="form-container code-item-container">
+                    <legend>子瓶 (操作中)
+                      @if (editableSig()) {
+                        @if (oppGroupSelectedSig(); as idOppGroup; ) {
+                          @if (!!idOppGroup && !serviceTissueTaskProcess.getOppGroup(idOppGroup)?.finishTime) {
+                            <button matIconButton
+                                    tabIndex="-1"
+                                    style="color:var(--mat-sys-primary);"
+                                    matTooltip="一键完成"
+                                    class="text-error"
+                                    (click)="requestBottleChildToFinishedBatch(idOppGroup)"
+                            >
+                              <mat-icon>fact_check</mat-icon>
+                            </button>
+                            <button matIconButton
+                                    tabIndex="-1"
+                                    style="color:var(--mat-sys-primary);"
+                                    matTooltip="向操作组追加子瓶"
+                                    (click)="requestOppGroupAddChildBottle(idOppGroup)"
+                            >
+                              <mat-icon>add</mat-icon>
+                            </button>
+                          }
+                        }
+                      }
+                      @if (editableSig() || oppGroupSelectedSig() === '') {
+                        <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+                        <span>右键操作</span>
+                      }
+                    </legend>
+                    @if (bottleChildAssignedStatSig(); as stat) {
+                      <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error">
+                        <mat-label>瓶数/株数</mat-label>
+                        <input matInput readonly [value]="stat.bottleCount + '/' + stat.plantCount">
+                      </mat-form-field>
+                    }
+                    <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                      <comp-code-item-with-opp-tissue-task *cdkVirtualFor="let item of bottleChildAssignedSig()"
+                                                           [model]="item"
+                                                           [updateVersion]="serviceTissueTaskProcess.updateVersionOfProcessInfoSig()"
+                                                           [matContextMenuTriggerFor]="bottleOppMenu"
+                                                           [matContextMenuTriggerData]="{ item: item }"
+                                                           [matContextMenuTriggerDisabled]="!editableSig() && oppGroupSelectedSig() !== ''"
+                                                           (menuOpened)="onBottleOppMenuOpened(item)"
+                                                           (menuClosed)="onBottleOppMenuClosed()"
+                                                           [class.menu-opened]="bottleOppMenuSelectedSig() === item"
+                      ></comp-code-item-with-opp-tissue-task>
+                    </cdk-virtual-scroll-viewport>
+                  </fieldset>
+                }
+                <fieldset class="form-container code-item-container">
+                  <legend>
+                    <span class="text-primary">子瓶 (已完成)</span>
+                    @if (editableSig()) {
+                      @if (oppGroupSelectedSig(); as idOppGroup; ) {
+                        @if (!!idOppGroup && !serviceTissueTaskProcess.getOppGroup(idOppGroup)?.finishTime) {
+                          <button matIconButton
+                                  tabIndex="-1"
+                                  style="color:var(--mat-sys-primary);"
+                                  matTooltip="批量打印瓶码"
+                                  (click)="requestBottleChildToPrintedBatch(idOppGroup)"
+                          >
+                            <mat-icon>print</mat-icon>
+                          </button>
+                          <button matIconButton
+                                  tabIndex="-1"
+                                  style="color:var(--mat-sys-primary);"
+                                  matTooltip="扫码核对"
+                                  (click)="requestBottleChildToCheckedScan()"
+                          >
+                            <mat-icon>qr_code</mat-icon>
+                          </button>
+                          <button matIconButton
+                                  tabIndex="-1"
+                                  style="color:var(--mat-sys-primary);"
+                                  matTooltip="一键核对"
+                                  class="text-error"
+                                  (click)="requestBottleChildToCheckedBatch(idOppGroup)"
+                          >
+                            <mat-icon>fact_check</mat-icon>
+                          </button>
+                        }
+                      }
+                    }
+                    @if (editableSig() || oppGroupSelectedSig() === '') {
+                      <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+                      <span>右键操作</span>
+                    }
+                  </legend>
+                  @if (bottleChildFinishedStatSig(); as stat) {
+                    <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly [value]="stat.bottleCount + '/' + stat.plantCount">
+                    </mat-form-field>
+                  }
+                  <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                    <comp-code-item-with-opp-tissue-task *cdkVirtualFor="let item of bottleChildFinishedSig()"
+                                                         [model]="item"
+                                                         [updateVersion]="serviceTissueTaskProcess.updateVersionOfProcessInfoSig()"
+                                                         [matContextMenuTriggerFor]="bottleOppMenu"
+                                                         [matContextMenuTriggerData]="{ item: item }"
+                                                         [matContextMenuTriggerDisabled]="!editableSig() && oppGroupSelectedSig() !== ''"
+                                                         (menuOpened)="onBottleOppMenuOpened(item)"
+                                                         (menuClosed)="onBottleOppMenuClosed()"
+                                                         [class.menu-opened]="bottleOppMenuSelectedSig() === item"
+                    ></comp-code-item-with-opp-tissue-task>
+                  </cdk-virtual-scroll-viewport>
+                </fieldset>
+                <fieldset class="form-container code-item-container">
+                  <legend>
+                    <span class="text-error">子瓶 (已淘汰)</span>
+                    @if (editableSig()) {
+                      @if (oppGroupSelectedSig(); as idOppGroup; ) {
+                        @if (!!idOppGroup && !serviceTissueTaskProcess.getOppGroup(idOppGroup)?.finishTime) {
+                          <button matIconButton
+                                  tabIndex="-1"
+                                  style="color:var(--mat-sys-primary);"
+                                  matTooltip="一键取消打印状态"
+                                  class="text-error"
+                                  (click)="requestBottleChildRevertToNoneForDiscardBatch(idOppGroup)"
+                          >
+                            <mat-icon>print_disabled</mat-icon>
+                          </button>
+                        }
+                      }
+                    }
+                    @if (editableSig() || oppGroupSelectedSig() === '') {
+                      <mat-divider [vertical]="true" style="height: 1em; margin:0 6px;"></mat-divider>
+                      <span>右键操作</span>
+                    }
+                  </legend>
+                  @if (bottleChildDiscardStatSig(); as stat) {
+                    <mat-form-field floatLabel="always" appearance="outline" class="readonly no-error error">
+                      <mat-label>瓶数/株数</mat-label>
+                      <input matInput readonly [value]="stat.bottleCount + '/' + stat.plantCount">
+                    </mat-form-field>
+                  }
+                  <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
+                    <comp-code-item-with-opp-tissue-task *cdkVirtualFor="let item of bottleChildDiscardSig()"
+                                                         [model]="item"
+                                                         [updateVersion]="serviceTissueTaskProcess.updateVersionOfProcessInfoSig()"
+                                                         [matContextMenuTriggerFor]="bottleOppMenu"
+                                                         [matContextMenuTriggerData]="{ item: item }"
+                                                         [matContextMenuTriggerDisabled]="!editableSig() && oppGroupSelectedSig() !== ''"
+                                                         (menuOpened)="onBottleOppMenuOpened(item)"
+                                                         (menuClosed)="onBottleOppMenuClosed()"
+                                                         [class.menu-opened]="bottleOppMenuSelectedSig() === item"
+                    ></comp-code-item-with-opp-tissue-task>
+                  </cdk-virtual-scroll-viewport>
+                </fieldset>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <ng-container data-content-for="toolbar">
+    @if (editableSig()) {
+      @if (serviceTissueTaskProcess.taskSig().task.taskStatus !== 'finished') {
+        <button style="min-width: 120px;" matButton="filled" (click)="requestSave()">保存</button>
+        <button style="min-width: 120px; background-color: var(--mat-sys-error)"
+                matButton="filled" (click)="requestTaskFinish()">
+          完成任务
+        </button>
+      }
+    }
+    @if (editable && serviceTissueTaskProcess.taskSig().task.taskStatus === 'finished') {
+      <button style="min-width: 120px; background-color: var(--mat-sys-error)"
+              matButton="filled" (click)="requestUpdateTaskStatusFromFinishToProcess()">
+        恢复执行
+      </button>
+    }
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
+<!--瓶码右键上下文操作菜单-->
+<ng-container>
+  <mat-menu #bottleOppMenu="matMenu" [hasBackdrop]="true">
+    <ng-template matMenuContent let-item="item">
+
+      @if (!oppGroupSelectedSig()) {
+        <button mat-menu-item (click)="oppGroupSelectedSig.set(item.idOppGroup)">
+          <mat-icon>search</mat-icon>
+          查看操作组
+        </button>
+      }
+
+      @if (editableSig()) {
+        @if (item.roleInTask === 'parent') {
+          @if (item.operateStatus === 'assigned') {
+            <button mat-menu-item class="text-primary" (click)="requestOppGroupToFinish(item.idOppGroup)">
+              <mat-icon>check_circle_outline</mat-icon>
+              完成
+            </button>
+            <button mat-menu-item (click)="requestOppGroupUpdate(item.idOppGroup)">
+              <mat-icon>edit</mat-icon>
+              更正
+            </button>
+            <button mat-menu-item (click)="requestOppGroupAddChildBottle(item.idOppGroup)">
+              <mat-icon>add_to_drive</mat-icon>
+              增瓶
+            </button>
+            <button mat-menu-item class="text-error" (click)="requestOppGroupDelete(item.idOppGroup)">
+              <mat-icon>delete</mat-icon>
+              删除
+            </button>
+          } @else if (item.operateStatus === 'finished') {
+            <button mat-menu-item class="text-error" (click)="requestOppGroupToProcess(item.idOppGroup)">
+              <mat-icon>replay</mat-icon>
+              恢复操作
+            </button>
+          }
+        } @else if (item.roleInTask === 'child') {
+          @if (serviceTissueTaskProcess.getOppGroup(item.idOppGroup); as oppGroup) {
+            @if (item.operateStatus === 'assigned') {
+              @if (!oppGroup.finishTime) {
+                <button mat-menu-item class="text-primary" (click)="requestBottleChildToFinished(item.idBottle)">
+                  <mat-icon>fact_check</mat-icon>
+                  完成操作
+                </button>
+                <button mat-menu-item class="text-error" (click)="requestBottleChildToDiscard(item.idBottle)">
+                  <mat-icon>bug_report</mat-icon>
+                  淘汰子瓶
+                </button>
+                <button mat-menu-item class="text-error" (click)="requestBottleChildToUnAssigned(item.idBottle)">
+                  <mat-icon>replay</mat-icon>
+                  恢复待用
+                </button>
+              } @else if (!!oppGroupSelectedSig()) {
+                <button class="text-error" mat-menu-item>
+                  已完成 无法操作
+                </button>
+              }
+            }
+            @if (item.operateStatus === 'finished') {
+              @if (!oppGroup.finishTime) {
+                @if (item.childCodeStatus !== 'checked') {
+                  <button mat-menu-item (click)="requestBottleChildUpdatePlant(item.idBottle)">
+                    <mat-icon>edit</mat-icon>
+                    更正株数
+                  </button>
+                }
+                @if (item.childCodeStatus === 'none') {
+                  <button mat-menu-item class="text-primary" (click)="requestBottleChildToPrinted(item.idBottle)">
+                    <mat-icon>print</mat-icon>
+                    打印瓶码
+                  </button>
+                }
+                @if (item.childCodeStatus === 'printed') {
+                  <button mat-menu-item (click)="requestBottleChildToPrinted(item.idBottle)">
+                    <mat-icon>print</mat-icon>
+                    重打瓶码
+                  </button>
+                  <button mat-menu-item class="text-primary" (click)="requestBottleChildToChecked(item.idBottle)">
+                    <mat-icon>fact_check</mat-icon>
+                    核对无误
+                  </button>
+                  <button mat-menu-item class="text-error" (click)="requestBottleChildRevertPrinted(item.idBottle)">
+                    <mat-icon>print_disabled</mat-icon>
+                    取消打印
+                  </button>
+                }
+                @if (item.childCodeStatus === 'checked') {
+                  <button mat-menu-item class="text-error" (click)="requestBottleChildRevertChecked(item.idBottle)">
+                    <mat-icon>fact_check</mat-icon>
+                    取消核对
+                  </button>
+                }
+                @if (item.childCodeStatus === 'none') {
+                  <button mat-menu-item class="text-error" (click)="requestBottleChildToDiscard(item.idBottle)">
+                    <mat-icon>bug_report</mat-icon>
+                    转入淘汰
+                  </button>
+                  <button mat-menu-item class="text-error" (click)="requestBottleChildToAssigned(item.idBottle)">
+                    <mat-icon>replay</mat-icon>
+                    恢复操作
+                  </button>
+                }
+              } @else if (!!oppGroupSelectedSig()) {
+                <button class="text-error" mat-menu-item>
+                  已完成 无法操作
+                </button>
+              }
+            } @else if (item.operateStatus === 'discard') {
+              @if (!oppGroup.finishTime) {
+                <button mat-menu-item (click)="requestBottleChildUpdatePlant(item.idBottle)">
+                  <mat-icon>edit</mat-icon>
+                  更正株数
+                </button>
+                <button mat-menu-item (click)="requestBottleChildUpdateDiscardReason(item.idBottle)">
+                  <mat-icon>edit_calendar</mat-icon>
+                  更正原因
+                </button>
+                @if (item.childCodeStatus === 'printed' || item.childCodeStatus === 'checked') {
+                  <button mat-menu-item (click)="requestBottleChildRevertToNoneForDiscard(item.idBottle)">
+                    <mat-icon>fact_check</mat-icon>
+                    取消打印
+                  </button>
+                }
+                <button mat-menu-item class="text-error" (click)="requestBottleChildToAssigned(item.idBottle)">
+                  <mat-icon>replay</mat-icon>
+                  恢复操作
+                </button>
+              } @else if (!!oppGroupSelectedSig()) {
+                <button class="text-error" mat-menu-item>
+                  已完成 无法操作
+                </button>
+              }
+            } @else if (item.operateStatus === 'finished' && !!oppGroupSelectedSig()) {
+              <button class="text-error" mat-menu-item>
+                已完成 无法操作
+              </button>
+            }
+          }
+        }
+      }
+
+    </ng-template>
+  </mat-menu>
+
+</ng-container>
+

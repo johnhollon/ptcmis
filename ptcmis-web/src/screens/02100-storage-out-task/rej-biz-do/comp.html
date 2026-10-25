@@ -1,0 +1,91 @@
+<!--
+  ~ Copyright (C) 2026 陈慧然
+  ~ (aka: Huiran Chen, chenhuiran, John Hollon, johnhollon)
+  ~ ORCID: https://orcid.org/0009-0004-5899-6928
+  ~ <chenhuiran@chenhuiran.com>
+  ~ <johnhollon@johnhollon.com>
+  ~
+  ~ This file is part of PTCMIS.
+  ~
+  ~ PTCMIS is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ PTCMIS is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<layout-drawer-opp-simple>
+
+  <div class="form-container main-container" data-content-for="content">
+
+    <fieldset class="form-container left-fixed" [formGroup]="formGroup">
+      <legend>驳回出库申请</legend>
+
+      <form [formGroup]="formGroup" class="form width-fixed">
+        <fieldset class="form-container" style="display: flex;flex-wrap: wrap;gap: 12px;align-content: flex-start;">
+          <legend>驳回申请信息</legend>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>申请出库瓶数</mat-label>
+            <input matInput [value]="-model.bottlesApplied" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>实际出库瓶数</mat-label>
+            <input matInput [value]="-model.bottlesActual" readonly>
+          </mat-form-field>
+
+          <div class="break"></div>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>申请出库株数</mat-label>
+            <input matInput [value]="-model.plantsApplied" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>实际出库株数</mat-label>
+            <input matInput [value]="-model.plantsActual" readonly>
+          </mat-form-field>
+
+          <div class="break"></div>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>申请人</mat-label>
+            <input matInput [value]="model.applicantName" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="readonly col1">
+            <mat-label>申请时间</mat-label>
+            <input matInput [value]="model.applicantTime | timestamp" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="important col2">
+            <mat-label>驳回原因</mat-label>
+            <input matInput formControlName="oppReason">
+            @if (formGroup.get('oppReason')?.touched && formGroup.get('oppReason')?.invalid) {
+              <mat-error>{{ formGroup.get('oppReason')?.errors?.['error'] || '' }}</mat-error>
+            }
+          </mat-form-field>
+        </fieldset>
+
+      </form>
+    </fieldset>
+
+  </div>
+
+
+  <ng-container data-content-for="toolbar">
+    <button matButton="filled" (click)="requestSave()" class="mat-shadow-2">驳回</button>
+    <button matButton="text" (click)="onCancel.emit()">关闭</button>
+  </ng-container>
+
+</layout-drawer-opp-simple>
+
