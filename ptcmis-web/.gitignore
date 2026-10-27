@@ -21,6 +21,7 @@
 !tsconfig.app.json
 !tsconfig.json
 !tsconfig.spec.json
+!nginx.conf
 
 !COPYING
 !COPYRIGHT
