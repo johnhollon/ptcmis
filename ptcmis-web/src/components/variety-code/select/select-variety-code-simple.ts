@@ -25,6 +25,7 @@
 import {
   Component,
   computed,
+  ElementRef,
   inject,
   Input,
   OnChanges,
@@ -32,7 +33,8 @@ import {
   OnInit,
   signal,
   SimpleChanges,
-  ViewChild,
+  viewChild,
+  ViewChild
 } from '@angular/core';
 import {
   ControlContainer,
@@ -40,20 +42,21 @@ import {
   FormControl,
   FormControlDirective,
   NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import { MatIconButton } from '@angular/material/button';
 import { MatFormFieldAppearance, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { MatError, MatFormField, MatLabel } from '@angular/material/input';
+import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/select';
 import { MatTooltip } from '@angular/material/tooltip';
 import { finalize, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VarietyCode } from '../../../entities/models/VarietyCode';
 import { ActionVarietyCode } from '../../../services/actions/action-variety-code';
 import { ServiceShowMessage } from '../../../services/ui/service-show-error-message.service';
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'select-variety-code-simple',
@@ -61,14 +64,24 @@ import { ServiceShowMessage } from '../../../services/ui/service-show-error-mess
   template: `
     <mat-form-field [appearance]="appearance" floatLabel="always" tabindex="-1">
       <mat-label>{{ label }}</mat-label>
-      <mat-select [formControl]="control" tabindex="-1">
+      <input
+        #input
+        type="text"
+        tabindex="-1"
+        matInput
+        (input)="filter()"
+        (focus)="filter()"
+        [formControl]="control"
+        [matAutocomplete]="autocomplete"
+      />
+      <mat-autocomplete requireSelection="true" #autocomplete="matAutocomplete">
         @if (canSelectEmpty) {
           <mat-option value="">{{ optionEmptyText }}</mat-option>
         }
-        @for (code of listSig(); track code) {
-          <mat-option [value]="code">{{ code }}</mat-option>
+        @for (item of filteredOptionsSig(); track item.code) {
+          <mat-option [value]="item.code">{{ item.code }} </mat-option>
         }
-      </mat-select>
+      </mat-autocomplete>
       @if (showRefreshButton) {
         <button
           matIconButton
@@ -111,7 +124,9 @@ import { ServiceShowMessage } from '../../../services/ui/service-show-error-mess
     ReactiveFormsModule,
     MatSuffix,
     MatOption,
-    MatSelect,
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatInput,
   ],
 })
 export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, OnDestroy, OnChanges {
@@ -133,6 +148,7 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
   protected hasErrorsSig = signal(false);
   protected errorMessageSig = signal('必须填写品种编号');
   protected refreshingSig = signal(false);
+  protected filteredOptionsSig = signal<VarietyCode[]>([]);
 
   @Input() formControl?: FormControl;
   @Input() formControlName = '';
@@ -144,6 +160,7 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
     );
   }
   @ViewChild(FormControlDirective, { static: true }) childControl!: FormControlDirective;
+  private input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
   private actionVarietyCode = inject(ActionVarietyCode);
   private serviceShowMessage = inject(ServiceShowMessage);
@@ -172,6 +189,20 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
   ngOnChanges(changes: SimpleChanges): void {
     const { variety } = changes;
     if (variety) this.updateVersionSig.update((v) => v + 1);
+  }
+
+  filter(): void {
+    const filterValue = this.input().nativeElement.value.toLowerCase();
+    const models = this.varietyCodeListSig();
+    let filtered = models.filter(
+      (model) =>
+        (!this.variety || this.variety === model.variety) &&
+        model.code.toLowerCase().includes(filterValue),
+    );
+    if (!filtered || filtered.length < 1) {
+      filtered = models;
+    }
+    this.filteredOptionsSig.set([...filtered]);
   }
 
   calculateErrors() {
