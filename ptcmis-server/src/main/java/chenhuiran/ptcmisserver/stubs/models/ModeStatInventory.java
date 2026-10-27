@@ -37,6 +37,7 @@ import java.io.Serializable;
 public class ModeStatInventory implements Serializable {
   private String variety;
   private String varietyCode;
+  private String important;
   private Integer generation;
 
   private Long bottleBegin;

@@ -42,6 +42,7 @@ public interface StatDAO extends JpaRepository<InventoryTransactionPO, Long> {
     select new chenhuiran.ptcmisserver.stubs.models.ModeStatInventory(
         vc.variety,
         vc.code,
+        vc.important,
         t.generation,
     
         0L,
@@ -63,8 +64,8 @@ public interface StatDAO extends JpaRepository<InventoryTransactionPO, Long> {
       and (:varietyCode is null or :varietyCode = '' or vc.code = :varietyCode)
       and (:varietyCodeImportant is null or :varietyCodeImportant = '' or vc.important = :varietyCodeImportant)
       and (:generation is null or :generation < 0 or t.generation = :generation)
-    group by vc.variety, vc.code, t.generation
-    order by vc.variety, vc.code, t.generation
+    group by vc.variety, vc.code, vc.important, t.generation
+    order by vc.variety, vc.code, vc.important, t.generation
     """)
   List<ModeStatInventory> statInventorySimple(
     @Param("endTime") Long endTime,
@@ -78,6 +79,7 @@ public interface StatDAO extends JpaRepository<InventoryTransactionPO, Long> {
     select new chenhuiran.ptcmisserver.stubs.models.ModeStatInventory(
         vc.variety,
         vc.code,
+        vc.important,
         t.generation,
     
         sum(case when t.operateTime < :startTime then t.bottles else 0 end),
@@ -99,8 +101,8 @@ public interface StatDAO extends JpaRepository<InventoryTransactionPO, Long> {
       and (:varietyCode is null or :varietyCode = '' or vc.code = :varietyCode)
       and (:varietyCodeImportant is null or :varietyCodeImportant = '' or vc.important = :varietyCodeImportant)
       and (:generation is null or :generation < 0 or t.generation = :generation)
-    group by vc.variety, vc.code, t.generation
-    order by vc.variety, vc.code, t.generation
+    group by vc.variety, vc.code, vc.important, t.generation
+    order by vc.variety, vc.code, vc.important, t.generation
     """)
   List<ModeStatInventory> statInventory(
     @Param("startTime") Long startTime,

@@ -133,7 +133,9 @@ export class CompFilters implements OnInit, OnDestroy {
         condition.userId = this.fcUser.value?.id ?? '';
 
         const varietyCodeModel = this.actionVarietyCode.varietyCodeEnabledList.find(
-          (v) => v.code === condition.varietyCode && v.variety === condition.variety,
+          (v) =>
+            v.code === condition.varietyCode &&
+            (!condition.variety || v.variety === condition.variety),
         );
         condition.varietyCode = varietyCodeModel?.code || '';
 

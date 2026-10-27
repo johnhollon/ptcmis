@@ -45,6 +45,7 @@ export class ServiceStatInventorySimple implements OnDestroy {
   endData: ModeStatInventorySimpleRecord = {
     variety: '合计',
     varietyCode: '',
+    important: '',
     generationMap: {},
     bottleSum: 0,
     plantSum: 0,
@@ -78,9 +79,9 @@ export class ServiceStatInventorySimple implements OnDestroy {
       ),
       tap((result) => {
         this.generationCount = result.maxGeneration + 1;
-        const groupColumns: string[] = ['group-variety', 'group-varietyCode'];
+        const groupColumns: string[] = ['group-variety', 'group-varietyCode', 'group-important'];
         const headerColumns: string[] = [];
-        const columns: string[] = ['variety', 'varietyCode'];
+        const columns: string[] = ['variety', 'varietyCode', 'important'];
         for (let generation = 0; generation <= result.maxGeneration; generation++) {
           groupColumns.push('group-g' + generation);
           headerColumns.push('plant' + generation, 'bottle' + generation);

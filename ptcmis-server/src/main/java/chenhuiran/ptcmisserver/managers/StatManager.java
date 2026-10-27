@@ -57,6 +57,7 @@ public class StatManager {
     var sum = new ModeStatInventorySimpleRecord(
       "合计",
       StringUtil.EMPTY,
+      StringUtil.EMPTY,
       new HashMap<>(),
       0L,
       0L
@@ -68,6 +69,7 @@ public class StatManager {
         var record = varietyCodeMap.computeIfAbsent(varietyCode, k -> new ModeStatInventorySimpleRecord(
           model.getVariety(),
           varietyCode,
+          model.getImportant(),
           new HashMap<>(),
           0L,
           0L

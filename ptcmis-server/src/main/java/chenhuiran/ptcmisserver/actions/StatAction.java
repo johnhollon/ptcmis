@@ -89,8 +89,10 @@ public class StatAction {
   public void excelStatInventorySimple(@RequestBody QueryConditionStatInventory condition, HttpServletResponse response) {
     var statModel = statManager.statInventorySimple(condition);
     var maxGeneration = statModel.getMaxGeneration();
-    //  增加 品种/品种编号/合计，共3列
-    var columnsCount = (maxGeneration + 1) + 3;
+    //  增加 品种/品种编号/重点品种合计，共4列
+    var columnsCount = (maxGeneration + 1) + 4;
+    var minColumnsCount = 9;
+    var dataColumnIndex = 3;
 
     var sbFilename = new StringBuilder("库存简报[" + Rq.formatCompactYMD(Rq.getNow()) + "]");
     var sbConditionDesc = new StringBuilder();
@@ -203,25 +205,25 @@ public class StatAction {
         Cell cellConditionDesc = sheet.getRow(1).getCell(0);
         cellConditionDesc.setCellValue(conditionDesc);
         // 统计周期
-        Cell cellConditionDateDesc = sheet.getRow(1).getCell(5);
+        Cell cellConditionDateDesc = sheet.getRow(1).getCell(6);
         CellStyle styleConditionDateDesc = workbook.createCellStyle();
         styleConditionDateDesc.cloneStyleFrom(cellConditionDateDesc.getCellStyle());
-        region = new CellRangeAddress(1, 1, 5, columnsCount - 1);
+        region = new CellRangeAddress(1, 1, 6, columnsCount - 1);
         sheet.addMergedRegion(region);
         cellConditionDateDesc.setCellStyle(styleConditionDateDesc);
         cellConditionDateDesc.setCellValue(conditionDateDesc);
 
         // 复制表头样式
         CellStyle styleHeader = workbook.createCellStyle();
-        styleHeader.cloneStyleFrom(sheet.getRow(ROW_INDEX_START - 1).getCell(2).getCellStyle());
+        styleHeader.cloneStyleFrom(sheet.getRow(ROW_INDEX_START - 1).getCell(3).getCellStyle());
         // 按需增加表头
-        if (columnsCount > 8) {
+        if (columnsCount > minColumnsCount) {
           var row = sheet.getRow(ROW_INDEX_START - 1);
           // 之所以-1，是因为要给合计留一列
-          for (var columnIndex = 8; columnIndex < columnsCount - 1; columnIndex++) {
+          for (var columnIndex = minColumnsCount; columnIndex < columnsCount - 1; columnIndex++) {
             var cell = row.createCell(columnIndex);
             cell.setCellStyle(styleHeader);
-            cell.setCellValue((6 + columnIndex - 8) + "代株数");
+            cell.setCellValue((6 + columnIndex - minColumnsCount) + "代株数");
             // 2926约为80磅
             sheet.setColumnWidth(columnIndex, 2926);
           }
@@ -236,7 +238,7 @@ public class StatAction {
         CellStyle style1 = workbook.createCellStyle();
         style1.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(1).getCellStyle());
         CellStyle style2 = workbook.createCellStyle();
-        style2.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(2).getCellStyle());
+        style2.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(3).getCellStyle());
 
         Row delRow = sheet.getRow(ROW_INDEX_START);
         if (delRow != null) {
@@ -256,13 +258,15 @@ public class StatAction {
           cell = row.createCell(1);
           cell.setCellStyle(style1);
           cell.setCellValue(stat.getVarietyCode());
-          var dataColumnIndex = 2;
+          cell = row.createCell(2);
+          cell.setCellStyle(style1);
+          cell.setCellValue(stat.getImportant() != null && stat.getImportant().equals(Const.BOOLEAN_1) ? "重点品种" : StringUtil.EMPTY);
           // 之所以-1，是因为要给合计留一列
           for (var columnIndex = dataColumnIndex; columnIndex < columnsCount - 1; columnIndex++) {
             cell = row.createCell(columnIndex);
             cell.setCellStyle(style2);
             var model = stat.getGenerationMap().getOrDefault(columnIndex - dataColumnIndex, null);
-            if (model != null) {
+            if (model != null && model.getPlant() != null && model.getPlant() != 0) {
               cell.setCellValue(model.getPlant());
             }
           }
@@ -295,25 +299,25 @@ public class StatAction {
         Cell cellConditionDesc = sheet.getRow(1).getCell(0);
         cellConditionDesc.setCellValue(conditionDesc);
         // 统计周期
-        Cell cellConditionDateDesc = sheet.getRow(1).getCell(5);
+        Cell cellConditionDateDesc = sheet.getRow(1).getCell(6);
         CellStyle styleConditionDateDesc = workbook.createCellStyle();
         styleConditionDateDesc.cloneStyleFrom(cellConditionDateDesc.getCellStyle());
-        region = new CellRangeAddress(1, 1, 5, columnsCount - 1);
+        region = new CellRangeAddress(1, 1, 6, columnsCount - 1);
         sheet.addMergedRegion(region);
         cellConditionDateDesc.setCellStyle(styleConditionDateDesc);
         cellConditionDateDesc.setCellValue(conditionDateDesc);
 
         // 复制表头样式
         CellStyle styleHeader = workbook.createCellStyle();
-        styleHeader.cloneStyleFrom(sheet.getRow(ROW_INDEX_START - 1).getCell(2).getCellStyle());
+        styleHeader.cloneStyleFrom(sheet.getRow(ROW_INDEX_START - 1).getCell(3).getCellStyle());
         // 按需增加表头
-        if (columnsCount > 8) {
+        if (columnsCount > minColumnsCount) {
           var row = sheet.getRow(ROW_INDEX_START - 1);
           // 之所以-1，是因为要给合计留一列
-          for (var columnIndex = 8; columnIndex < columnsCount - 1; columnIndex++) {
+          for (var columnIndex = minColumnsCount; columnIndex < columnsCount - 1; columnIndex++) {
             var cell = row.createCell(columnIndex);
             cell.setCellStyle(styleHeader);
-            cell.setCellValue((6 + columnIndex - 8) + "代瓶数");
+            cell.setCellValue((6 + columnIndex - minColumnsCount) + "代瓶数");
             // 2926约为80磅
             sheet.setColumnWidth(columnIndex, 2926);
           }
@@ -328,7 +332,7 @@ public class StatAction {
         CellStyle style1 = workbook.createCellStyle();
         style1.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(1).getCellStyle());
         CellStyle style2 = workbook.createCellStyle();
-        style2.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(2).getCellStyle());
+        style2.cloneStyleFrom(sheet.getRow(ROW_INDEX_START).getCell(3).getCellStyle());
 
         Row delRow = sheet.getRow(ROW_INDEX_START);
         if (delRow != null) {
@@ -348,13 +352,15 @@ public class StatAction {
           cell = row.createCell(1);
           cell.setCellStyle(style1);
           cell.setCellValue(stat.getVarietyCode());
-          var dataColumnIndex = 2;
+          cell = row.createCell(2);
+          cell.setCellStyle(style1);
+          cell.setCellValue(stat.getImportant() != null && stat.getImportant().equals(Const.BOOLEAN_1) ? "重点品种" : StringUtil.EMPTY);
           // 之所以-1，是因为要给合计留一列
           for (var columnIndex = dataColumnIndex; columnIndex < columnsCount - 1; columnIndex++) {
             cell = row.createCell(columnIndex);
             cell.setCellStyle(style2);
             var model = stat.getGenerationMap().getOrDefault(columnIndex - dataColumnIndex, null);
-            if (model != null) {
+            if (model != null && model.getBottle() != null && model.getBottle() != 0) {
               cell.setCellValue(model.getBottle());
             }
           }
@@ -387,6 +393,7 @@ public class StatAction {
     var sumModel = new ModeStatInventory(
       "合计",
       StringUtil.EMPTY,
+      StringUtil.EMPTY,
       -1,
       0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L
     );
@@ -396,10 +403,12 @@ public class StatAction {
     for (var stat : statList) {
       String variety = stat.getVariety();
       String varietyCode = stat.getVarietyCode();
+      String important = stat.getImportant();
 
       var varietyStat = varietyMap.computeIfAbsent(variety, k -> new ModeStatInventory(
         variety,
-        "",
+        StringUtil.EMPTY,
+        StringUtil.EMPTY,
         -1,
         0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L
       ));
@@ -417,6 +426,7 @@ public class StatAction {
       var varietyCodeStat = varietyCodeMap.computeIfAbsent(variety, k -> new HashMap<>()).computeIfAbsent(varietyCode, k -> new ModeStatInventory(
         variety,
         varietyCode,
+        important,
         -1,
         0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L
       ));

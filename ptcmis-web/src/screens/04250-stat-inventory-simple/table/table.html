@@ -40,18 +40,26 @@
     <td mat-footer-cell *matFooterCellDef>{{ service.endData.varietyCode }}</td>
   </ng-container>
 
+  <ng-container matColumnDef="group-important">
+    <th mat-header-cell rowspan="2" *matHeaderCellDef>重点品种</th>
+  </ng-container>
+  <ng-container matColumnDef="important">
+    <td mat-cell *matCellDef="let item">{{ item.important === '1' ? '重点品种' : '' }}</td>
+    <td mat-footer-cell *matFooterCellDef></td>
+  </ng-container>
+
   @for (i of generationsSig(); track i) {
     <ng-container matColumnDef="{{'group-g' + i}}">
       <th mat-header-cell colspan="2" *matHeaderCellDef>{{ i + '代' }}</th>
     </ng-container>
     <ng-container matColumnDef="{{'plant' + i}}">
       <th mat-header-cell *matHeaderCellDef>株数</th>
-      <td mat-cell *matCellDef="let item">{{ (item.generationMap[i]?.plant ?? 0).toLocaleString() }}</td>
+      <td mat-cell *matCellDef="let item">{{ item.generationMap[i]?.plant ? (item.generationMap[i]?.plant ?? 0).toLocaleString() : '' }}</td>
       <td mat-footer-cell *matFooterCellDef>{{ (service.endData.generationMap[i]?.plant ?? 0).toLocaleString() }}</td>
     </ng-container>
     <ng-container matColumnDef="{{'bottle' + i}}">
       <th mat-header-cell *matHeaderCellDef>瓶数</th>
-      <td mat-cell *matCellDef="let item">{{ (item.generationMap[i]?.bottle ?? 0).toLocaleString() }}</td>
+      <td mat-cell *matCellDef="let item">{{ item.generationMap[i]?.bottle ? (item.generationMap[i]?.bottle ?? 0).toLocaleString() : '' }}</td>
       <td mat-footer-cell *matFooterCellDef>{{ (service.endData.generationMap[i]?.bottle ?? 0).toLocaleString() }}</td>
     </ng-container>
   }

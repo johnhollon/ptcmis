@@ -39,6 +39,7 @@ import java.util.Map;
 public class ModeStatInventorySimpleRecord implements Serializable {
   private String variety;
   private String varietyCode;
+  private String important;
   private Map<Integer, ModeStatInventorySimpleRecordGenerationItem> generationMap;
   private Long bottleSum;
   private Long plantSum;
