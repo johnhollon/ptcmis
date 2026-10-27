@@ -5,7 +5,8 @@
 
 # 创建临时表
 
-# 7代株数：
+# 创建临时表7代株数：
+DROP TABLE IF EXISTS `inv_temp`;
 CREATE TABLE `inv_temp` (
   `variety` varchar(32) NOT NULL,
   `variety_code` varchar(32) NOT NULL,
@@ -19,7 +20,8 @@ CREATE TABLE `inv_temp` (
   `g7` int DEFAULT NULL,
   PRIMARY KEY (`variety_code`)
 ) ;
-# 7代瓶数：
+# 创建临时表7代瓶数：
+DROP TABLE IF EXISTS `inv_temp_1`;
 CREATE TABLE `inv_temp_1` (
   `variety` varchar(32) NOT NULL,
   `variety_code` varchar(32) NOT NULL,
@@ -132,3 +134,7 @@ AND NOT EXISTS (
       AND tx.variety_code = w.variety_code
       AND tx.generation = num.g
 );
+
+# 删除临时表
+DROP TABLE IF EXISTS `inv_temp`;
+DROP TABLE IF EXISTS `inv_temp_1`;
