@@ -28,6 +28,7 @@ export interface TissueTaskOppGroup {
   id: string;
   // 所属任务ID
   idTask: string;
+  varietyCode: string;
   parentPlantCount: number;
   idParentBottle: string;
   parentKeep: string;

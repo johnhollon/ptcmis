@@ -231,7 +231,6 @@ public class TissueTaskManager {
     Assert.notNull(task.getExplantCollectionBatch(), "外植体采集批次不能为空");
     Assert.hasText(task.getTaskType(), "任务类别不能为空");
     Assert.hasText(task.getVariety(), "品种不能为空");
-    Assert.hasText(task.getVarietyCode(), "子品种编号不能为空");
     int explantCollectionBatch = task.getExplantCollectionBatch();
     if (!ExplantCollectionBatchUtil.check(explantCollectionBatch)) {
       throw new ErrorMessageException("外植体采集批次只能是0，或符合 YYYYMMDD 格式的整数，如 20260101");
@@ -265,7 +264,6 @@ public class TissueTaskManager {
     TissueTaskPO po = new TissueTaskPO();
     po.setId(id);
     po.setVariety(task.getVariety());
-    po.setVarietyCode(task.getVarietyCode());
     po.setExplantCollectionBatch(task.getExplantCollectionBatch() == null ? 0 : task.getExplantCollectionBatch());
     po.setEstimatedParentBottles(task.getEstimatedParentBottles() == null ? 0 : task.getEstimatedParentBottles());
     po.setEstimatedParentPlants(task.getEstimatedParentPlants() == null ? 0 : task.getEstimatedParentPlants());
@@ -384,7 +382,6 @@ public class TissueTaskManager {
     Assert.notNull(task.getExplantCollectionBatch(), "外植体采集批次不能为空");
     Assert.hasText(task.getTaskType(), "任务类别不能为空");
     Assert.hasText(task.getVariety(), "品种不能为空");
-    Assert.hasText(task.getVarietyCode(), "子品种编号不能为空");
 
     int explantCollectionBatch = task.getExplantCollectionBatch();
     if (!ExplantCollectionBatchUtil.check(explantCollectionBatch)) {
@@ -428,7 +425,6 @@ public class TissueTaskManager {
 
     // 业务字段更新
     po.setVariety(task.getVariety());
-    po.setVarietyCode(task.getVarietyCode());
     po.setExplantCollectionBatch(task.getExplantCollectionBatch() == null ? 0 : task.getExplantCollectionBatch());
     if (task.getTaskType().equals(Const.TISSUE_TASK_TYPE_INDUCTION)) {
       po.setEstimatedParentPlants(task.getEstimatedParentPlants() == null ? 0 : task.getEstimatedParentPlants());
@@ -457,7 +453,6 @@ public class TissueTaskManager {
     if (bottleCount == null || bottleCount < 1 || bottleCount > 9999) {
       throw new ErrorMessageException("子代培养瓶数量必须大于 0 且小于 9999");
     }
-    Assert.hasText(task.getVarietyCode(), "子品种编号不能为空");
     TissueTaskPO po = tissueTaskDAO.findById(task.getId()).orElse(null);
     if (po == null) throw new ErrorMessageException("无法找到此任务信息。");
     var taskStatus = po.getTaskStatus() == null ? Const.TISSUE_TASK_STATUS_CREATED : po.getTaskStatus();
@@ -475,6 +470,8 @@ public class TissueTaskManager {
       // 新建任务培养瓶信息。
       TissueTaskBottlePO taskBottle = new TissueTaskBottlePO();
       taskBottle.setIdTask(task.getId());
+      taskBottle.setVariety(StringUtil.EMPTY);
+      taskBottle.setVarietyCode(StringUtil.EMPTY);
       taskBottle.setIdOppGroup(StringUtil.EMPTY);
       taskBottle.setIdBottle(bottleId);
       taskBottle.setPlantCountOriginal(0);
@@ -565,6 +562,8 @@ public class TissueTaskManager {
       // 新建任务培养瓶信息。
       TissueTaskBottlePO taskBottle = new TissueTaskBottlePO();
       taskBottle.setIdTask(po.getId());
+      taskBottle.setVariety(StringUtil.EMPTY);
+      taskBottle.setVarietyCode(StringUtil.EMPTY);
       taskBottle.setIdOppGroup(StringUtil.EMPTY);
       taskBottle.setIdBottle(bottleId);
       taskBottle.setPlantCountOriginal(0);
@@ -721,7 +720,7 @@ public class TissueTaskManager {
       // 校验库内培养瓶
       long bottleCount = bottleDAO.countBottles1(
         task.getVariety(),
-        task.getVarietyCode(),
+        StringUtil.EMPTY,
         Const.BOTTLE_STORAGE_STATUS_IN,
         Const.BOOLEAN_0,
         usedList.stream().map(ModelStorageInOutDetail::getIdBottle).toList()
@@ -760,8 +759,8 @@ public class TissueTaskManager {
     // 组织关联瓶信息/任务母瓶信息
     var inOutBottles = new ArrayList<StorageInOutBottlePO>();
     var taskBottles = new ArrayList<TissueTaskBottlePO>();
-    // 库存流水。bizType/generation/
-    var inventoryTransactionPOMap = new HashMap<String, Map<Integer, InventoryTransactionPO>>();
+    // 仓储流水。 bizType/variety/varietyCode/generation
+    var inventoryTransactionMap = new HashMap<String, Map<String, Map<String, Map<Integer, InventoryTransactionPO>>>>();
 
     // 查询出库瓶
     var bottlePOs = bottleDAO.findAllByIdIn(usedList.stream().map(ModelStorageInOutDetail::getIdBottle).toList());
@@ -792,6 +791,8 @@ public class TissueTaskManager {
       // 任务母瓶信息
       var tb = new TissueTaskBottlePO();
       tb.setIdTask(task.getId());
+      tb.setVariety(bottle.getVariety());
+      tb.setVarietyCode(bottle.getVarietyCode());
       tb.setIdOppGroup(StringUtil.EMPTY);
       tb.setIdBottle(used.getIdBottle());
       tb.setExplantCollectionBatch(bottle.getExplantCollectionBatch());
@@ -863,7 +864,9 @@ public class TissueTaskManager {
 
       // 株数调差
       if (!Objects.equals(bottle.getPlantCount(), used.getPlantCountActual())) {
-        var transactionPOModel = inventoryTransactionPOMap.computeIfAbsent(Const.INVENTORY_TX_BIZ_TYPE_ADJUSTMENT, key -> new HashMap<>())
+        var transactionPOModel = inventoryTransactionMap.computeIfAbsent(Const.INVENTORY_TX_BIZ_TYPE_ADJUSTMENT, key -> new HashMap<>())
+          .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+          .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
           .computeIfAbsent(bottle.getGeneration(), key -> {
             InventoryTransactionPO transactionPO = new InventoryTransactionPO();
             transactionPO.setId(Id.g());
@@ -887,7 +890,9 @@ public class TissueTaskManager {
       }
 
       // 出库流水
-      var transactionPOModel = inventoryTransactionPOMap.computeIfAbsent(Const.INVENTORY_TX_BIZ_TYPE_OUT, key -> new HashMap<>())
+      var transactionPOModel = inventoryTransactionMap.computeIfAbsent(Const.INVENTORY_TX_BIZ_TYPE_OUT, key -> new HashMap<>())
+        .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+        .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
         .computeIfAbsent(bottle.getGeneration(), key -> {
           InventoryTransactionPO transactionPO = new InventoryTransactionPO();
           transactionPO.setId(Id.g());
@@ -1002,11 +1007,18 @@ public class TissueTaskManager {
 
     // 组织仓储流水
     var transactionList = new ArrayList<InventoryTransactionPO>();
-    var bizTypes = inventoryTransactionPOMap.keySet();
+    var bizTypes = inventoryTransactionMap.keySet();
     for (var bizType : bizTypes) {
-      var generations = inventoryTransactionPOMap.get(bizType).keySet();
-      for (var generation : generations) {
-        transactionList.add(inventoryTransactionPOMap.get(bizType).get(generation));
+      var varieties = inventoryTransactionMap.get(bizType).keySet();
+      for (var variety : varieties) {
+        var varietyCodes = inventoryTransactionMap.get(bizType).get(variety).keySet();
+        for (var varietyCode : varietyCodes) {
+          var generations = inventoryTransactionMap.get(bizType).get(variety).get(varietyCode).keySet();
+          for (var generation : generations) {
+            var stat = inventoryTransactionMap.get(bizType).get(variety).get(varietyCode).get(generation);
+            transactionList.add(stat);
+          }
+        }
       }
     }
     // 插入仓储流水

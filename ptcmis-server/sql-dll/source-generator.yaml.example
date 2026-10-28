@@ -1,21 +1,21 @@
 db:
   database: "mysql"
-  url: "jdbc:mysql://:3306/dev_ptcmis?useUnicode=true&characterEncoding=GB18030&autoReconnect=true&"
-  username: "username"
-  password: "password"
+  url: "jdbc:mysql://127.0.0.1:9007/ptcmis?useUnicode=true&characterEncoding=GB18030&autoReconnect=true&"
+  username: "ptcmis"
+  password: "ptcmis"
 java:
   orm:
     jpa:
       noStubEntityInterfaces: false
-      stubEntityInterfacesSrc: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+      stubEntityInterfacesSrc: "D:\\workspace\\ptcmis-prod\\ptcmis-server\\src\\main\\java\\"
       stubEntityInterfacesPackage: "chenhuiran.ptcmisserver.stubs.entities"
       noPOClass: false
-      poSrc: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+      poSrc: "D:\\workspace\\ptcmis-prod\\ptcmis-server\\src\\main\\java\\"
       poPackage: "chenhuiran.ptcmisserver.stubs.entities"
       noPOImplementsSpringPersistable: false
       noDTOClass: false
   consts:
-    src: "D:\\workspace\\ptcmis\\ptcmis-server\\src\\main\\java\\"
+    src: "D:\\workspace\\ptcmis-prod\\ptcmis-server\\src\\main\\java\\"
     classes:
       - classQualifiedName: "chenhuiran.ptcmisserver.stubs.entities.Const"
         sqls:

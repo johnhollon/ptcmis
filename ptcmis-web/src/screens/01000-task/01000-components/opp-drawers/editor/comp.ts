@@ -37,6 +37,7 @@ import {
   TissueTaskType,
 } from '../../../../../entities/models/TissueTask';
 import { isYmd8Number } from '../../../../../services/utils/date';
+import { SelectVariety } from '../../../../../components/variety/select/select-variety';
 
 @Component({
   selector: 'tissue-task-editor',
@@ -50,6 +51,7 @@ import { isYmd8Number } from '../../../../../services/utils/date';
     MatButton,
     LayoutDrawerOppSimple,
     SelectVarietyCode,
+    SelectVariety,
   ],
   standalone: true,
 })
@@ -61,9 +63,6 @@ export class CompEditor implements OnInit, OnDestroy {
   @Input() taskType: TissueTaskType | '' = '';
   @Input() set model(model: TissueTaskView) {
     const entity = { ...(model?.task || {}) };
-    if (!!entity.variety && !!entity.varietyCode) {
-      entity.varietyCode = `${entity.variety}\u200B${entity.varietyCode}`;
-    }
     this.form.patchValue(entity);
   }
   dispose$ = new Subject<void>();
@@ -76,10 +75,10 @@ export class CompEditor implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.form.get('varietyCode')?.addValidators((control) => {
+    this.form.get('variety')?.addValidators((control) => {
       if (!control.value) {
         return {
-          error: '应选择品种编号。',
+          error: '应选择品种。',
         };
       }
       return null;
@@ -90,7 +89,7 @@ export class CompEditor implements OnInit, OnDestroy {
         control.value === null ||
         control.value === undefined ||
         control.value < 1 ||
-        !Number.isInteger(control.value)||
+        !Number.isInteger(control.value) ||
         !isYmd8Number(control.value)
       ) {
         return {
@@ -196,17 +195,6 @@ export class CompEditor implements OnInit, OnDestroy {
     model.startTime = model.startTime ?? 0;
     model.finishTime = model.finishTime ?? 0;
     model.modifiable = model.modifiable ?? APIConst.booleans.BOOLEAN_FALSE;
-    const varietyCode = model.varietyCode;
-    if (!!varietyCode) {
-      const varietyCodeSplit = varietyCode.split('\u200B');
-      if (varietyCodeSplit.length > 0) {
-        model.variety = varietyCodeSplit[0].trim().toUpperCase();
-      }
-      if (varietyCodeSplit.length > 1) {
-        model.varietyCode = varietyCodeSplit[1].trim().toUpperCase();
-      }
-    }
-
     this.onSave.emit(model);
   }
 

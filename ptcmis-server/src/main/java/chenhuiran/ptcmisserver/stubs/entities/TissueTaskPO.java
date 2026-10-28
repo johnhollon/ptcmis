@@ -72,18 +72,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
   private String variety;
 
   /**
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  @Column(
-      name = "variety_code"
-  )
-  private String varietyCode;
-
-  /**
    * <p>外植体采集批次，仅用于诱导任务</p>
    * <ul>
    *   <li>COLUMN : <code>explant_collection_batch</code></li>
@@ -329,12 +317,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
    *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
    * </ul>
    *
-   * @param varietyCode <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   *
    * @param explantCollectionBatch <p>外植体采集批次，仅用于诱导任务</p>
    * <ul>
    *   <li>COLUMN : <code>explant_collection_batch</code></li>
@@ -444,7 +426,7 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
    * </ul>
    *
    */
-  public TissueTaskPO(String id, String variety, String varietyCode, Integer explantCollectionBatch,
+  public TissueTaskPO(String id, String variety, Integer explantCollectionBatch,
       Integer estimatedParentBottles, Integer estimatedParentPlants,
       Integer estimatedParentKeepBottles, Integer estimatedParentKeepPlants,
       Integer estimatedChildrenBottles, Integer estimatedChildrenPlants,
@@ -453,7 +435,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
       Long createTime, Long startTime, Long finishTime, String modifiable) {
     this.id = id;
     this.variety = variety;
-    this.varietyCode = varietyCode;
     this.explantCollectionBatch = explantCollectionBatch;
     this.estimatedParentBottles = estimatedParentBottles;
     this.estimatedParentPlants = estimatedParentPlants;
@@ -486,7 +467,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
   public TissueTaskPO(TissueTask model) {
     this.id = model.getId();
     this.variety = model.getVariety();
-    this.varietyCode = model.getVarietyCode();
     this.explantCollectionBatch = model.getExplantCollectionBatch();
     this.estimatedParentBottles = model.getEstimatedParentBottles();
     this.estimatedParentPlants = model.getEstimatedParentPlants();
@@ -546,18 +526,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
   @Override
   public String getVariety() {
     return variety;
-  }
-
-  /**
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  @Override
-  public String getVarietyCode() {
-    return varietyCode;
   }
 
   /**
@@ -806,22 +774,6 @@ public class TissueTaskPO implements Cloneable, Persistable<String>, TissueTask 
    */
   public void setVariety(String variety) {
     this.variety = variety;
-  }
-
-  /**
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   * @param varietyCode <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  public void setVarietyCode(String varietyCode) {
-    this.varietyCode = varietyCode;
   }
 
   /**

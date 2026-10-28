@@ -151,8 +151,8 @@ export class TissueTaskProcessStatDo implements OnDestroy {
     return {
       idInOut: idInOut,
       idBottle: bottle.idBottle,
-      variety: task.variety,
-      varietyCode: task.varietyCode,
+      variety: bottle.variety,
+      varietyCode: bottle.varietyCode,
       explantCollectionBatch: task.explantCollectionBatch,
       // generation: bottle.roleInTask === 'parent' ? task.parentGeneration : task.childGeneration,
       generation:0,

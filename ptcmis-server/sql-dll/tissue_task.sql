@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS `tissue_task`;
 CREATE TABLE `tissue_task` (
   `id` VARCHAR(32) NOT NULL COMMENT '任务ID',
   `variety` VARCHAR(32) NOT NULL COMMENT '品种 variety.name',
-  `variety_code` VARCHAR(32) NOT NULL COMMENT '品种编号（子品种） variety_code.code',
   `explant_collection_batch` INT NOT NULL DEFAULT 0 COMMENT '外植体采集批次，仅用于诱导任务',
   `estimated_parent_bottles` INT NOT NULL DEFAULT 0 COMMENT '预计使用母代瓶数',
   `estimated_parent_plants` INT NOT NULL DEFAULT 0 COMMENT '预计使用母代株数',

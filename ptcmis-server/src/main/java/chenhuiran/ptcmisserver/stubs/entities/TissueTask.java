@@ -64,26 +64,6 @@ public interface TissueTask extends Serializable {
   String TABLE_CL_NAME_VARIETY = "variety";
 
   /**
-   * <p>属性（<code>varietyCode</code>）的 JavaBean 属性名（<code>varietyCode</code>）。</p>
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  String BP_NAME_VARIETYCODE = "varietyCode";
-
-  /**
-   * <p>属性（<code>varietyCode</code>）对应的数据库字段名（<code>variety_code</code>）。</p>
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  String TABLE_CL_NAME_VARIETYCODE = "variety_code";
-
-  /**
    * <p>属性（<code>explantCollectionBatch</code>）的 JavaBean 属性名（<code>explantCollectionBatch</code>）。</p>
    * <p>外植体采集批次，仅用于诱导任务</p>
    * <ul>
@@ -460,15 +440,6 @@ public interface TissueTask extends Serializable {
    * </ul>
    */
   String getVariety();
-
-  /**
-   * <p>品种编号（子品种） variety_code.code</p>
-   * <ul>
-   *   <li>COLUMN : <code>variety_code</code></li>
-   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
-   * </ul>
-   */
-  String getVarietyCode();
 
   /**
    * <p>外植体采集批次，仅用于诱导任务</p>

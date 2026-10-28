@@ -134,16 +134,12 @@ public class StorageInOutManager {
         if (conditionModel.getVariety() != null && !conditionModel.getVariety().isBlank()) {
           predicates.add(cb.equal(ttRoot.get(TissueTask.BP_NAME_VARIETY), conditionModel.getVariety()));
         }
-        if (conditionModel.getVarietyCode() != null && !conditionModel.getVarietyCode().isBlank()) {
-          predicates.add(cb.equal(ttRoot.get(TissueTask.BP_NAME_VARIETYCODE), conditionModel.getVarietyCode()));
-        }
         if (conditionModel.getKeyword() != null && !conditionModel.getKeyword().isBlank()) {
           String likeVal = "%" + conditionModel.getKeyword().trim() + "%";
           Predicate p1 = cb.like(root.get(StorageInOut.BP_NAME_OPERATORNAME), likeVal);
           Predicate p2 = cb.like(root.get(StorageInOut.BP_NAME_APPLICANTNAME), likeVal);
           Predicate p3 = cb.like(ttRoot.get(TissueTask.BP_NAME_VARIETY), likeVal);
-          Predicate p4 = cb.like(ttRoot.get(TissueTask.BP_NAME_VARIETYCODE), likeVal);
-          predicates.add(cb.or(p1, p2, p3, p4));
+          predicates.add(cb.or(p1, p2, p3));
         }
       }
       return predicates;
@@ -165,7 +161,7 @@ public class StorageInOutManager {
       root.get("reason"), root.get("status"), root.get("oppReason"), root.get("idTask"),
       root.get("idInspection"), root.get("applicantId"), root.get("applicantName"),
       root.get("applicantTime"), root.get("operatorId"), root.get("operatorName"),
-      root.get("operatorTime"), ttRoot.get("variety"), ttRoot.get("varietyCode"), ttRoot.get("explantCollectionBatch"),
+      root.get("operatorTime"), ttRoot.get("variety"), ttRoot.get("explantCollectionBatch"),
       ttRoot.get("taskType"), ttRoot.get("taskStatus"),
       ttRoot.get("creatorUserId"), ttRoot.get("creatorUserName"), ttRoot.get("createTime"),
       ttRoot.get("startTime"), ttRoot.get("finishTime")
@@ -312,7 +308,7 @@ public class StorageInOutManager {
       }
       long bottleCount = bottleDAO.countBottles1(
         task.getVariety(),
-        task.getVarietyCode(),
+        StringUtil.EMPTY,
         Const.BOTTLE_STORAGE_STATUS_IN,
         Const.BOOLEAN_0,
         usedList.stream().map(ModelStorageInOutDetail::getIdBottle).toList()
@@ -436,7 +432,7 @@ public class StorageInOutManager {
       }
       long bottleCount = bottleDAO.countBottles1(
         task.getVariety(),
-        task.getVarietyCode(),
+        StringUtil.EMPTY,
         Const.BOTTLE_STORAGE_STATUS_IN,
         Const.BOOLEAN_0,
         usedList.stream().map(ModelStorageInOutDetail::getIdBottle).toList()
@@ -629,8 +625,8 @@ public class StorageInOutManager {
           var bottleInPo = new StorageInOutBottlePO();
           bottleInPo.setIdInOut(inOutId);
           bottleInPo.setIdBottle(bottle.getIdBottle());
-          bottleInPo.setVariety(task.getVariety());
-          bottleInPo.setVarietyCode(task.getVarietyCode());
+          bottleInPo.setVariety(bottle.getVariety());
+          bottleInPo.setVarietyCode(bottle.getVarietyCode());
           bottleInPo.setExplantCollectionBatch(bottle.getExplantCollectionBatch());
           bottleInPo.setGeneration(bottle.getGeneration());
           bottleInPo.setIgnoreStats(Const.BOOLEAN_0);
@@ -648,7 +644,7 @@ public class StorageInOutManager {
     if (!parentBottleIdList.isEmpty()) {
       long bottleCount = bottleDAO.countBottles1(
         task.getVariety(),
-        task.getVarietyCode(),
+        StringUtil.EMPTY,
         Const.BOTTLE_STORAGE_STATUS_OUT,
         Const.BOOLEAN_0,
         parentBottleIdList
@@ -696,10 +692,10 @@ public class StorageInOutManager {
     List<BottlePO> childBottles = new ArrayList<>();
     // 实际用到的母瓶ID
     Set<String> parentIds = new HashSet<>();
-    // 工作量流水。 bizType/role/userId/
+    // 工作量流水。 bizType/role/userId/variety/varietyCode/generation
     var workloadTransactionMap = new HashMap<String, HashMap<String, HashMap<String, HashMap<String, Map<String, Map<Integer, WorkloadTransactionPO>>>>>>();
-    // 仓储流水。 bizType/generation
-    var inventoryTransactionMap = new HashMap<String, Map<Integer, InventoryTransactionPO>>();
+    // 仓储流水。 bizType/variety/varietyCode/generation
+    var inventoryTransactionMap = new HashMap<String, Map<String, Map<String, Map<Integer, InventoryTransactionPO>>>>();
 
     for (var bottle : bottlesList) {
       // 子代培养瓶
@@ -715,8 +711,8 @@ public class StorageInOutManager {
         BottlePO childBottle = new BottlePO();
         // 基本信息
         childBottle.setId(bottle.getIdBottle());
-        childBottle.setVariety(task.getVariety());
-        childBottle.setVarietyCode(task.getVarietyCode());
+        childBottle.setVariety(bottle.getVariety());
+        childBottle.setVarietyCode(bottle.getVarietyCode());
         childBottle.setExplantCollectionBatch(parent == null ? task.getExplantCollectionBatch() : parent.getExplantCollectionBatch());
         if (parent == null) {
           childBottle.setGeneration(0);
@@ -845,6 +841,8 @@ public class StorageInOutManager {
         workloadTransactionPO.setPlants(workloadTransactionPO.getPlants() + childBottle.getPlantCount());
         // 仓储流水
         var inventoryTransactionPO = inventoryTransactionMap.computeIfAbsent(Const.STORAGE_IN_OUT_BOTTLE_TYPE_CHILD_IN, k -> new HashMap<>())
+          .computeIfAbsent(childBottle.getVariety(), (k) -> new HashMap<>())
+          .computeIfAbsent(childBottle.getVarietyCode(), (k) -> new HashMap<>())
           .computeIfAbsent(childBottle.getGeneration(), (k) -> {
             InventoryTransactionPO transactionPO = new InventoryTransactionPO();
             transactionPO.setId(Id.g());
@@ -943,8 +941,8 @@ public class StorageInOutManager {
           var workloadTransactionPO = workloadTransactionMap.computeIfAbsent(workloadTransactionBizType, (k) -> new HashMap<>())
             .computeIfAbsent(Const.TISSUE_TASK_USER_ROLE_OPERATOR, (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getOperatorId(), (k) -> new HashMap<>())
-            .computeIfAbsent(task.getVariety(), (k) -> new HashMap<>())
-            .computeIfAbsent(task.getVarietyCode(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getGeneration(), (k) -> {
               WorkloadTransactionPO workloadTxPO = new WorkloadTransactionPO();
               workloadTxPO.setId(Id.g());
@@ -954,8 +952,8 @@ public class StorageInOutManager {
               workloadTxPO.setBizType(workloadTransactionBizType);
               workloadTxPO.setTableName(TissueTask.TB_NAME);
               workloadTxPO.setRecordId(task.getId());
-              workloadTxPO.setVariety(task.getVariety());
-              workloadTxPO.setVarietyCode(task.getVarietyCode());
+              workloadTxPO.setVariety(bottle.getVariety());
+              workloadTxPO.setVarietyCode(bottle.getVarietyCode());
               workloadTxPO.setGeneration(bottle.getGeneration());
               workloadTxPO.setBottles(0);
               workloadTxPO.setPlants(0);
@@ -972,8 +970,8 @@ public class StorageInOutManager {
           workloadTransactionPO = workloadTransactionMap.computeIfAbsent(workloadTransactionBizType, (k) -> new HashMap<>())
             .computeIfAbsent(Const.TISSUE_TASK_USER_ROLE_INSPECTOR, (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getInspectorId(), (k) -> new HashMap<>())
-            .computeIfAbsent(task.getVariety(), (k) -> new HashMap<>())
-            .computeIfAbsent(task.getVarietyCode(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getGeneration(), (k) -> {
               WorkloadTransactionPO workloadTxPO = new WorkloadTransactionPO();
               workloadTxPO.setId(Id.g());
@@ -983,8 +981,8 @@ public class StorageInOutManager {
               workloadTxPO.setBizType(workloadTransactionBizType);
               workloadTxPO.setTableName(TissueTask.TB_NAME);
               workloadTxPO.setRecordId(task.getId());
-              workloadTxPO.setVariety(task.getVariety());
-              workloadTxPO.setVarietyCode(task.getVarietyCode());
+              workloadTxPO.setVariety(bottle.getVariety());
+              workloadTxPO.setVarietyCode(bottle.getVarietyCode());
               workloadTxPO.setGeneration(bottle.getGeneration());
               workloadTxPO.setBottles(0);
               workloadTxPO.setPlants(0);
@@ -999,14 +997,16 @@ public class StorageInOutManager {
           workloadTransactionPO.setPlants(workloadTransactionPO.getPlants() + bottle.getParentKeepPlantCount());
           // 仓储流水
           var inventoryTransactionPO = inventoryTransactionMap.computeIfAbsent(Const.STORAGE_IN_OUT_BOTTLE_TYPE_PARENT_KEEP_IN, k -> new HashMap<>())
+            .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getGeneration(), (k) -> {
               InventoryTransactionPO transactionPO = new InventoryTransactionPO();
               transactionPO.setId(Id.g());
               transactionPO.setBizType(Const.INVENTORY_TX_BIZ_TYPE_IN);
               transactionPO.setTableName(StorageInOut.TB_NAME);
               transactionPO.setRecordId(po.getId());
-              transactionPO.setVariety(task.getVariety());
-              transactionPO.setVarietyCode(task.getVarietyCode());
+              transactionPO.setVariety(bottle.getVariety());
+              transactionPO.setVarietyCode(bottle.getVarietyCode());
               transactionPO.setGeneration(bottle.getGeneration());
               transactionPO.setBottles(0);
               transactionPO.setPlants(0);
@@ -1021,14 +1021,16 @@ public class StorageInOutManager {
         } else if (inOutBottleType.equals(Const.STORAGE_IN_OUT_BOTTLE_TYPE_PARENT_IN)) {
           // 仓储流水
           var inventoryTransactionPO = inventoryTransactionMap.computeIfAbsent(Const.STORAGE_IN_OUT_BOTTLE_TYPE_PARENT_IN, k -> new HashMap<>())
+            .computeIfAbsent(bottle.getVariety(), (k) -> new HashMap<>())
+            .computeIfAbsent(bottle.getVarietyCode(), (k) -> new HashMap<>())
             .computeIfAbsent(bottle.getGeneration(), (k) -> {
               InventoryTransactionPO transactionPO = new InventoryTransactionPO();
               transactionPO.setId(Id.g());
               transactionPO.setBizType(Const.INVENTORY_TX_BIZ_TYPE_IN);
               transactionPO.setTableName(StorageInOut.TB_NAME);
               transactionPO.setRecordId(po.getId());
-              transactionPO.setVariety(task.getVariety());
-              transactionPO.setVarietyCode(task.getVarietyCode());
+              transactionPO.setVariety(bottle.getVariety());
+              transactionPO.setVarietyCode(bottle.getVarietyCode());
               transactionPO.setGeneration(bottle.getGeneration());
               transactionPO.setBottles(0);
               transactionPO.setPlants(0);
@@ -1120,10 +1122,16 @@ public class StorageInOutManager {
     var inventoryTransactionList = new ArrayList<InventoryTransactionPO>();
     var bizTypes1 = inventoryTransactionMap.keySet();
     for (var bizType : bizTypes1) {
-      var generations = inventoryTransactionMap.get(bizType).keySet();
-      for (var generation : generations) {
-        var stat = inventoryTransactionMap.get(bizType).get(generation);
-        inventoryTransactionList.add(stat);
+      var varieties = inventoryTransactionMap.get(bizType).keySet();
+      for (var variety : varieties) {
+        var varietyCodes = inventoryTransactionMap.get(bizType).get(variety).keySet();
+        for (var varietyCode : varietyCodes) {
+          var generations = inventoryTransactionMap.get(bizType).get(variety).get(varietyCode).keySet();
+          for (var generation : generations) {
+            var stat = inventoryTransactionMap.get(bizType).get(variety).get(varietyCode).get(generation);
+            inventoryTransactionList.add(stat);
+          }
+        }
       }
     }
 

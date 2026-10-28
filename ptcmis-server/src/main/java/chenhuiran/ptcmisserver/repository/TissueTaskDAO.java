@@ -53,7 +53,6 @@ public interface TissueTaskDAO extends JpaRepository<TissueTaskPO, String>, JpaS
   @Query(value = "SELECT DISTINCT t FROM TissueTaskPO t " +
     "WHERE (:keyword IS NULL OR :keyword = '' " +
     "OR t.variety LIKE :kw " +
-    "OR t.varietyCode LIKE :kw " +
     "OR t.creatorUserName LIKE :kw " +
     "OR t.codePrefix LIKE :kw " +
     "OR t.id IN (SELECT o.idTask FROM TissueTaskOppGroupPO o WHERE o.inspectorName LIKE :kw OR o.operatorName LIKE :kw OR o.assigneeInspectorName LIKE :kw OR o.assigneeOperatorName LIKE :kw) " +
@@ -72,7 +71,6 @@ public interface TissueTaskDAO extends JpaRepository<TissueTaskPO, String>, JpaS
     countQuery = "SELECT COUNT(DISTINCT t) FROM TissueTaskPO t " +
       "WHERE (:keyword IS NULL OR :keyword = '' " +
       "OR t.variety LIKE :kw " +
-      "OR t.varietyCode LIKE :kw " +
       "OR t.creatorUserName LIKE :kw " +
       "OR t.codePrefix LIKE :kw " +
       "OR t.id IN (SELECT o.idTask FROM TissueTaskOppGroupPO o WHERE o.inspectorName LIKE :kw OR o.operatorName LIKE :kw OR o.assigneeInspectorName LIKE :kw OR o.assigneeOperatorName LIKE :kw) " +

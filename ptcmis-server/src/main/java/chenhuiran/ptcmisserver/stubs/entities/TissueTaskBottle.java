@@ -45,6 +45,46 @@ public interface TissueTaskBottle extends Serializable {
   String TABLE_CL_NAME_IDTASK = "id_task";
 
   /**
+   * <p>属性（<code>variety</code>）的 JavaBean 属性名（<code>variety</code>）。</p>
+   * <p>品种 variety.name</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String BP_NAME_VARIETY = "variety";
+
+  /**
+   * <p>属性（<code>variety</code>）对应的数据库字段名（<code>variety</code>）。</p>
+   * <p>品种 variety.name</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String TABLE_CL_NAME_VARIETY = "variety";
+
+  /**
+   * <p>属性（<code>varietyCode</code>）的 JavaBean 属性名（<code>varietyCode</code>）。</p>
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), NULLABLE, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String BP_NAME_VARIETYCODE = "varietyCode";
+
+  /**
+   * <p>属性（<code>varietyCode</code>）对应的数据库字段名（<code>variety_code</code>）。</p>
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), NULLABLE, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String TABLE_CL_NAME_VARIETYCODE = "variety_code";
+
+  /**
    * <p>属性（<code>idOppGroup</code>）的 JavaBean 属性名（<code>idOppGroup</code>）。</p>
    * <p>操作分配组ID。 tissue_task_opp_group.id。联合主键，联合唯一索引</p>
    * <ul>
@@ -432,6 +472,24 @@ public interface TissueTaskBottle extends Serializable {
    * </ul>
    */
   String getIdTask();
+
+  /**
+   * <p>品种 variety.name</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String getVariety();
+
+  /**
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), NULLABLE, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String getVarietyCode();
 
   /**
    * <p>操作分配组ID。 tissue_task_opp_group.id。联合主键，联合唯一索引</p>

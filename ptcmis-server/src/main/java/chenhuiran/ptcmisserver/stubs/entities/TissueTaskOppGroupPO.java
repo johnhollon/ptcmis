@@ -72,6 +72,18 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
   private String idTask;
 
   /**
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  @Column(
+      name = "variety_code"
+  )
+  private String varietyCode = "";
+
+  /**
    * <p>母瓶株数。</p>
    * <ul>
    *   <li>COLUMN : <code>parent_plant_count</code></li>
@@ -293,6 +305,12 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
    *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT NULL</code></li>
    * </ul>
    *
+   * @param varietyCode <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   *
    * @param parentPlantCount <p>母瓶株数。</p>
    * <ul>
    *   <li>COLUMN : <code>parent_plant_count</code></li>
@@ -390,13 +408,15 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
    * </ul>
    *
    */
-  public TissueTaskOppGroupPO(String id, String idTask, Integer parentPlantCount,
-      String idParentBottle, String parentKeep, Integer parentKeepPlantCount, String allocatorId,
-      String allocatorName, Long allocateTime, Long finishTime, String assigneeInspectorId,
-      String assigneeInspectorName, String assigneeOperatorId, String assigneeOperatorName,
-      String inspectorId, String inspectorName, String operatorId, String operatorName) {
+  public TissueTaskOppGroupPO(String id, String idTask, String varietyCode,
+      Integer parentPlantCount, String idParentBottle, String parentKeep,
+      Integer parentKeepPlantCount, String allocatorId, String allocatorName, Long allocateTime,
+      Long finishTime, String assigneeInspectorId, String assigneeInspectorName,
+      String assigneeOperatorId, String assigneeOperatorName, String inspectorId,
+      String inspectorName, String operatorId, String operatorName) {
     this.id = id;
     this.idTask = idTask;
+    this.varietyCode = varietyCode;
     this.parentPlantCount = parentPlantCount;
     this.idParentBottle = idParentBottle;
     this.parentKeep = parentKeep;
@@ -427,6 +447,7 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
   public TissueTaskOppGroupPO(TissueTaskOppGroup model) {
     this.id = model.getId();
     this.idTask = model.getIdTask();
+    this.varietyCode = model.getVarietyCode();
     this.parentPlantCount = model.getParentPlantCount();
     this.idParentBottle = model.getIdParentBottle();
     this.parentKeep = model.getParentKeep();
@@ -484,6 +505,18 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
   @Override
   public String getIdTask() {
     return idTask;
+  }
+
+  /**
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  @Override
+  public String getVarietyCode() {
+    return varietyCode;
   }
 
   /**
@@ -708,6 +741,22 @@ public class TissueTaskOppGroupPO implements Cloneable, Persistable<String>, Tis
    */
   public void setIdTask(String idTask) {
     this.idTask = idTask;
+  }
+
+  /**
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   * @param varietyCode <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  public void setVarietyCode(String varietyCode) {
+    this.varietyCode = varietyCode;
   }
 
   /**

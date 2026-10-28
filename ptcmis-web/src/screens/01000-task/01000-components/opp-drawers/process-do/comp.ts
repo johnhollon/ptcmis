@@ -107,6 +107,7 @@ import { TissueTaskChartBarChildPlantsTask } from './charts/chart-bar-child-plan
 import { TissueTaskChartBarChildBottlesOppGroup } from './charts/chart-bar-child-bottles-opp-group';
 import { TissueTaskChartBarChildPlantsOppGroup } from './charts/chart-bar-child-plants-opp-group';
 import { ServiceGlobalCodeScanner } from '../../../../../services/ui/service-global-code-scanner';
+import { SelectVarietyCodeSimple } from '../../../../../components/variety-code/select/select-variety-code-simple';
 
 @Component({
   standalone: true,
@@ -143,6 +144,7 @@ import { ServiceGlobalCodeScanner } from '../../../../../services/ui/service-glo
     TissueTaskChartBarChildPlantsTask,
     TissueTaskChartBarChildBottlesOppGroup,
     TissueTaskChartBarChildPlantsOppGroup,
+    SelectVarietyCodeSimple,
   ],
   styleUrls: ['comp.scss'],
 })
@@ -241,6 +243,7 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
   protected readonly inspectorDefaultFormControl = new FormControl<User | undefined | null>(null);
   protected readonly operatorDefaultFormControl = new FormControl<User | undefined | null>(null);
   protected readonly defaultPlantsPerChildBottleField = new FormControl<number | null>(null);
+  protected readonly varietyCodeForInductionFormControl = new FormControl<string | null>(null);
 
   constructor() {}
 
@@ -349,18 +352,24 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
       )
       .subscribe((bottle) => {
         this.serviceGlobalCodeScanner.close();
-        this.requestOppGroupAssign(bottle.idBottle, undefined);
+        this.requestOppGroupAssign(bottle.idBottle, undefined, undefined);
       });
   }
 
   protected requestOppGroupAssign(
     idParentBottle: string | undefined,
     parentPlantCount: string | number | undefined | null,
+    varietyCode: string | undefined,
   ) {
     if (!this.editableSig()) return;
     const taskView = this.serviceTissueTaskProcess.taskSig();
     let parentBottlePlantCount = 0;
+    let varietyCodeInput = varietyCode;
     if (taskView.task.taskType === 'induction') {
+      if (!varietyCode) {
+        this.serviceShowMessage.showError('应选择品种编号。');
+        return;
+      }
       if (!parentPlantCount) {
         this.serviceShowMessage.showError('母代株数必须是大于 0 小于 1,000 的整数。');
         return;
@@ -385,10 +394,16 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
         return;
       }
       parentBottlePlantCount = parentBottle.plantCountActual;
+      varietyCodeInput = parentBottle.varietyCode;
       if (parentBottlePlantCount < 1) {
         this.serviceShowMessage.showError(`母瓶 ${idParentBottle} 的株数错误。`);
         return;
       }
+    }
+
+    if (!varietyCodeInput) {
+      this.serviceShowMessage.showError(`无法确定品种编号。`);
+      return;
     }
 
     const dialogInputData: DialogTaskOppGroupAssignmentInputData = {
@@ -406,6 +421,7 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
       childBottles: this.serviceTissueTaskProcess.bottleChildUnAssignedSig(),
       showParentKeep: taskView.task.taskType !== 'induction',
       taskType: taskView.task.taskType,
+      varietyCode: varietyCodeInput,
     };
 
     const dialogRef = this.dialog.open<
@@ -573,7 +589,7 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
           for (const bottle of bottles) {
             if (bottle.childCodeStatus === 'printed' || bottle.childCodeStatus === 'checked') {
               return this.serviceShowConfirmDialog.show(
-                '该操作组有部分子瓶已打印瓶码，若更改此操作组的操作人，则必须将瓶码从瓶体揭下、作废，并重新打印张贴。是否更改此操作组？',
+                '该操作组有部分子瓶已打印瓶码，若更改此操作组的操作人或更改此操作组的品种编号、代际数、外植体采集批次，则必须将瓶码从瓶体揭下、作废，并重新打印张贴。是否更改此操作组？',
                 '确认更改',
               );
             }
@@ -583,6 +599,9 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
         filter((v) => v === 0),
         switchMap((_) => {
           const dialogInputData: DialogTaskOppGroupUpdateInputData = {
+            taskType: taskView.task.taskType,
+            variety: taskView.task.variety,
+            varietyCode: oppGroup.varietyCode,
             idOppGroup: oppGroupId,
             idParentBottle: oppGroup.idParentBottle ?? '',
             parentPlantCount: oppGroup.parentPlantCount ?? 0,

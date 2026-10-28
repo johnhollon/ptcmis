@@ -41,7 +41,7 @@ public interface BottleDAO extends JpaRepository<BottlePO, String>, JpaSpecifica
     SELECT COUNT(DISTINCT b.id)
     FROM BottlePO b
     WHERE b.variety = :variety
-      AND b.varietyCode = :varietyCode
+      AND (:varietyCode IS NULL OR :varietyCode = '' OR b.varietyCode = :varietyCode)
       AND (:currentStorageStatus IS NULL OR :currentStorageStatus = '' OR b.currentStorageStatus = :currentStorageStatus)
       AND (:discarded IS NULL OR :discarded = '' OR b.discarded = :discarded)
       AND b.id in :idList

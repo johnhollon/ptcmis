@@ -562,6 +562,8 @@ export class ScreenTissueTask implements OnInit, AfterViewInit, OnDestroy {
   protected onDrawerClosed() {
     if (this.taskType === 'induction') {
       this.switchPortalContent({ titleButtonsPortal: this._titleButtonsPortalAdd });
+    } else {
+      this.switchPortalContent({});
     }
   }
 

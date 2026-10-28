@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 
 public class JavaStubsGeneratorUtil {
 
-  private static final Path cachedFilePath = Paths.get("D:\\workspace\\ptcmis\\ptcmis-server\\sql-dll\\source-generator.yaml");
+  private static final Path cachedFilePath = Paths.get("D:\\workspace\\ptcmis-prod\\ptcmis-server\\sql-dll\\source-generator.yaml");
 
   public static void main(String[] args) {
     System.out.println("准备开始生成Java存根实体类。");

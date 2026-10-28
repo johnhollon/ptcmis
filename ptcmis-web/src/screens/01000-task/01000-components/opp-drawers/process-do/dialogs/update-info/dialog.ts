@@ -34,6 +34,7 @@ import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/mat
 import { MatIcon } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltip } from '@angular/material/tooltip';
+import { SelectVarietyCodeSimple } from '../../../../../../../components/variety-code/select/select-variety-code-simple';
 
 @Component({
   selector: 'dialog-update-info',
@@ -53,6 +54,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatAutocompleteTrigger,
     MatFormFieldModule,
     MatTooltip,
+    SelectVarietyCodeSimple,
   ],
   template: `
     <h2 style="font-size: var(--mat-sys-body-large-size)" mat-dialog-title>
@@ -62,6 +64,19 @@ import { MatTooltip } from '@angular/material/tooltip';
     </h2>
     <mat-dialog-content>
       <div [formGroup]="form" style="padding:16px 0; width: 240px;margin:0 auto;">
+        @if (!data.idParentBottle) {
+          <select-variety-code-simple
+            style="width: 100%;margin-bottom:8px;"
+            label="输入品种编号"
+            [canSelectEmpty]="true"
+            optionEmptyText="尚未选择"
+            formControlName="varietyCode"
+            [variety]="data.variety ?? ''"
+          ></select-variety-code-simple>
+          @if (form.get('varietyCode')?.touched && form.get('varietyCode')?.invalid) {
+            <mat-error>{{ form.get('varietyCode')?.errors?.['error'] || '' }}</mat-error>
+          }
+        }
         <mat-form-field appearance="outline" style="width: 100%;margin-bottom:8px;">
           <mat-label>母代株数</mat-label>
           <input type="number" min="0" max="999" matInput formControlName="parentPlantCount" />
@@ -150,7 +165,9 @@ export class DialogTaskOppGroupUpdate implements OnInit, OnDestroy {
     );
   private readonly fb = inject(FormBuilder);
   protected readonly form: FormGroup = this.fb.group<DialogTaskOppGroupUpdateResponseData>({
-    idOppGroup:'',
+    variety: '',
+    varietyCode: '',
+    idOppGroup: '',
     idParentBottle: '',
     idParentBottleOriginal: '',
     parentPlantCount: 0,
@@ -180,6 +197,14 @@ export class DialogTaskOppGroupUpdate implements OnInit, OnDestroy {
       idOppGroup: this.data.idOppGroup,
     });
 
+    this.form.get('varietyCode')?.addValidators((control) => {
+      if (this.data.taskType === 'induction' && !control.value) {
+        return {
+          error: '应选择品种编号。',
+        };
+      }
+      return null;
+    });
     this.form.get('inspector')?.addValidators((control) => {
       if (!control.value) {
         return {
@@ -258,11 +283,14 @@ export class DialogTaskOppGroupUpdate implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
-    this.dialogRef.close(this.form.getRawValue());
+    this.dialogRef.close({ ...this.form.getRawValue(), variety: this.data.variety });
   }
 }
 
 export interface DialogTaskOppGroupUpdateInputData {
+  taskType: string;
+  variety: string;
+  varietyCode: string;
   idOppGroup: string;
   idParentBottle: string;
   parentPlantCount: number;
@@ -276,6 +304,8 @@ export interface DialogTaskOppGroupUpdateInputData {
 }
 
 export interface DialogTaskOppGroupUpdateResponseData {
+  variety: string;
+  varietyCode: string;
   idOppGroup: string;
   idParentBottleOriginal: string;
   idParentBottle: string;

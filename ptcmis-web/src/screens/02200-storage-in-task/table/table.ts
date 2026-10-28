@@ -71,7 +71,6 @@ import { APIConst } from '../../../entities/api/const-api';
 export class TableStorageInTask {
   @Input() columns: string[] = [
     'variety',
-    'varietyCode',
     'taskType',
     'status',
     'applicantName',

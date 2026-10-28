@@ -433,11 +433,11 @@ public class BottleManager {
     if (taskId == null || taskId.isBlank()) return List.of();
     var task = tissueTaskDAO.findById(taskId).orElse(null);
     if (task == null) return List.of();
-    var varietyCode = task.getVarietyCode();
+    var variety = task.getVariety();
 
     Specification<BottlePO> spec = (root, query, cb) -> {
       List<Predicate> predicateList = new ArrayList<>();
-      predicateList.add(cb.equal(root.get(BottlePO.BP_NAME_VARIETYCODE), varietyCode));
+      predicateList.add(cb.equal(root.get(BottlePO.BP_NAME_VARIETY), variety));
       predicateList.add(cb.equal(root.get(BottlePO.BP_NAME_CURRENTSTORAGESTATUS), Const.BOTTLE_STORAGE_STATUS_IN));
       return cb.and(predicateList.toArray(new Predicate[0]));
     };

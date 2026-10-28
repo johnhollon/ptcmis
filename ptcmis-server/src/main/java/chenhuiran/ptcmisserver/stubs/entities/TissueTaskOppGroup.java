@@ -64,6 +64,26 @@ public interface TissueTaskOppGroup extends Serializable {
   String TABLE_CL_NAME_IDTASK = "id_task";
 
   /**
+   * <p>属性（<code>varietyCode</code>）的 JavaBean 属性名（<code>varietyCode</code>）。</p>
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String BP_NAME_VARIETYCODE = "varietyCode";
+
+  /**
+   * <p>属性（<code>varietyCode</code>）对应的数据库字段名（<code>variety_code</code>）。</p>
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String TABLE_CL_NAME_VARIETYCODE = "variety_code";
+
+  /**
    * <p>属性（<code>parentPlantCount</code>）的 JavaBean 属性名（<code>parentPlantCount</code>）。</p>
    * <p>母瓶株数。</p>
    * <ul>
@@ -400,6 +420,15 @@ public interface TissueTaskOppGroup extends Serializable {
    * </ul>
    */
   String getIdTask();
+
+  /**
+   * <p>品种编号（子品种） variety_code.code</p>
+   * <ul>
+   *   <li>COLUMN : <code>variety_code</code></li>
+   *   <li>DDL : <code>VARCHAR(32), MANDATORY, DEFAULT ""</code></li>
+   * </ul>
+   */
+  String getVarietyCode();
 
   /**
    * <p>母瓶株数。</p>

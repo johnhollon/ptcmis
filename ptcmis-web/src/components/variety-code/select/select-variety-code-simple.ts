@@ -31,10 +31,11 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
+  Optional,
   signal,
   SimpleChanges,
   viewChild,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import {
   ControlContainer,
@@ -42,7 +43,7 @@ import {
   FormControl,
   FormControlDirective,
   NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { MatIconButton } from '@angular/material/button';
 import { MatFormFieldAppearance, MatSuffix } from '@angular/material/form-field';
@@ -135,20 +136,30 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
   @Input() showRefreshButton: boolean = true;
   @Input() canSelectEmpty: boolean = false;
   @Input() optionEmptyText: string = '无';
-  @Input() variety: string = '';
+  @Input() set variety(variety: string) {
+    this.#variety = variety;
+    this.updateVersionSig.update((v) => v + 1);
+  }
+  #variety: string = '';
 
   private updateVersionSig = signal(0);
-  private varietyCodeListSig = signal<VarietyCode[]>([]);
-  protected listSig = computed(() => {
-    if (this.updateVersionSig() < 0) return [] as string[];
-    return this.varietyCodeListSig()
-      .filter((v) => !this.variety || this.variety === v.variety)
-      .map((v) => v.code);
-  });
+  private varietyCodeList: VarietyCode[] = [];
+  private filterValue: string = '';
   protected hasErrorsSig = signal(false);
   protected errorMessageSig = signal('必须填写品种编号');
   protected refreshingSig = signal(false);
-  protected filteredOptionsSig = signal<VarietyCode[]>([]);
+  protected filteredOptionsSig = computed(()=>{
+    if (this.updateVersionSig() < 0) return [] as VarietyCode[];
+    let filtered = this.varietyCodeList.filter(
+      (model) =>
+        (!this.#variety || this.#variety === model.variety) &&
+        model.code.toLowerCase().includes(this.filterValue),
+    );
+    if (!filtered || filtered.length < 1) {
+      return this.varietyCodeList;
+    }
+    return filtered;
+  });
 
   @Input() formControl?: FormControl;
   @Input() formControlName = '';
@@ -166,12 +177,12 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
   private serviceShowMessage = inject(ServiceShowMessage);
   private dispose$ = new Subject<void>();
 
-  constructor(private formControlContainer: ControlContainer) {}
+  constructor(@Optional() private formControlContainer: ControlContainer) {}
 
   ngOnInit(): void {
     const enabledList = this.actionVarietyCode.varietyCodeEnabledList;
     if (enabledList && enabledList.length > 0) {
-      this.varietyCodeListSig.set([...enabledList]);
+      this.varietyCodeList = [...enabledList];
     } else {
       this.doRefresh();
     }
@@ -192,17 +203,8 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
   }
 
   filter(): void {
-    const filterValue = this.input().nativeElement.value.toLowerCase();
-    const models = this.varietyCodeListSig();
-    let filtered = models.filter(
-      (model) =>
-        (!this.variety || this.variety === model.variety) &&
-        model.code.toLowerCase().includes(filterValue),
-    );
-    if (!filtered || filtered.length < 1) {
-      filtered = models;
-    }
-    this.filteredOptionsSig.set([...filtered]);
+    this.filterValue = this.input().nativeElement.value.toLowerCase();
+    this.updateVersionSig.update((v) => v + 1);
   }
 
   calculateErrors() {
@@ -246,7 +248,10 @@ export class SelectVarietyCodeSimple implements ControlValueAccessor, OnInit, On
         }),
       )
       .subscribe({
-        next: (result) => this.varietyCodeListSig.set(result),
+        next: (result) => {
+          this.varietyCodeList = [...result];
+          this.updateVersionSig.update((v) => v + 1);
+        },
         error: (error) => this.serviceShowMessage.showError(error),
       });
   }

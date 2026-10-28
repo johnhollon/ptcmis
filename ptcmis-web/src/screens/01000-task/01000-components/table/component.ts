@@ -96,7 +96,6 @@ export class ComponentTableTissueTask implements OnInit {
     if (this.taskType === 'induction') {
       this.defaultTableColumns = [
         'variety',
-        'varietyCode',
         'explantCollectionBatch',
         'taskStatus',
         'storageInStatus',
@@ -115,7 +114,6 @@ export class ComponentTableTissueTask implements OnInit {
     } else if (this.taskType === 'acclimatization') {
       this.defaultTableColumns = [
         'variety',
-        'varietyCode',
         'taskStatus',
         'storageInStatus',
         'parentBottles',
@@ -133,7 +131,6 @@ export class ComponentTableTissueTask implements OnInit {
     } else {
       this.defaultTableColumns = [
         'variety',
-        'varietyCode',
         'taskStatus',
         'storageInStatus',
         'codePrefix',

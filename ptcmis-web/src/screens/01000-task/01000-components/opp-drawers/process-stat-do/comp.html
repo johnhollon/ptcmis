@@ -50,14 +50,6 @@
                 <td class="cell-label">品种</td>
                 <td> {{ taskView.task.variety }}</td>
               </tr>
-              <tr>
-                <td class="cell-label">品种编号</td>
-                <td>
-                  <span [matTooltip]="taskView.task.variety + ' ' + taskView.task.varietyCode">
-                    {{ taskView.task.varietyCode }}
-                  </span>
-                </td>
-              </tr>
                 @if (taskView.task.taskType === 'induction') {
                   <tr>
                     <td class="cell-label">外植体采集批次</td>

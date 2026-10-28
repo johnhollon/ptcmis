@@ -64,7 +64,6 @@ public class StorageOutTaskView implements Serializable {
 
   //======== tissue_task 组培任务左连接带出字段 ========
   private String variety;
-  private String varietyCode;
   private Integer explantCollectionBatch;
   private String taskType;
   private String taskStatus;

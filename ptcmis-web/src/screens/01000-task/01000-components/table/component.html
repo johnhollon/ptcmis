@@ -29,11 +29,6 @@
     <td mat-cell [matTooltip]="item.task.variety" *matCellDef="let item">{{ item.task.variety }}</td>
   </ng-container>
 
-  <ng-container matColumnDef="varietyCode">
-    <th mat-header-cell *matHeaderCellDef>编号</th>
-    <td mat-cell [matTooltip]="item.task.variety + ' ' + item.task.varietyCode" *matCellDef="let item">{{ item.task.varietyCode }}</td>
-  </ng-container>
-
   @if (taskType === 'induction') {
     <ng-container matColumnDef="explantCollectionBatch">
       <th mat-header-cell *matHeaderCellDef matTooltip="外植体采集批次">批次</th>

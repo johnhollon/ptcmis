@@ -816,6 +816,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
       bottle.parentKeepPlantCount = 0;
       bottle.childCodeStatus = 'none';
       if (this.#taskView.task.taskType !== 'induction' && bottleParent) {
+        bottle.variety = bottleParent.variety;
+        bottle.varietyCode = bottleParent.varietyCode;
         bottle.explantCollectionBatch = bottleParent.explantCollectionBatch;
         bottle.generation =
           this.#taskView.task.taskType === 'rooting' &&
@@ -826,6 +828,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
             ? bottleParent.generation
             : bottleParent.generation + 1;
       } else if (this.#taskView.task.taskType === 'induction') {
+        bottle.variety = this.#taskView.task.variety;
+        bottle.varietyCode = data.varietyCode;
         bottle.explantCollectionBatch = this.#taskView.task.explantCollectionBatch;
         bottle.generation = 0;
       }
@@ -835,6 +839,7 @@ export class ServiceTissueTaskProcess implements OnDestroy {
     const oppGroup: TissueTaskOppGroup = {
       id: oppGroupId,
       idTask: this.#taskView.taskId,
+      varietyCode: data.varietyCode,
       idParentBottle: data.idParentBottle,
       parentPlantCount: data.parentPlantCount,
       parentKeep: APIConst.booleans.get(keepParentPlantCount > 0),
@@ -959,21 +964,14 @@ export class ServiceTissueTaskProcess implements OnDestroy {
     // 更新子瓶信息
     this.#bottleAllMap.forEach((bottle) => {
       if (bottle.roleInTask === 'child' && bottle.idOppGroup === oppGroupId) {
-        const operatorNameOriginal = bottle.operatorName;
-        if (
-          data.operator!.name !== operatorNameOriginal &&
-          (bottle.childCodeStatus === 'printed' || bottle.childCodeStatus === 'checked')
-        ) {
-          bottle.childCodeStatus = 'none';
-        }
-        bottle.operatorId = data.operator!.id;
-        bottle.operatorName = data.operator!.name;
-        bottle.inspectorId = data.inspector!.id;
-        bottle.inspectorName = data.inspector!.name;
-        bottle.childCodeStatus = 'none';
+        const operatorName = data.operator!.name;
+        let varietyCode = bottle.varietyCode;
+        let generation = bottle.generation;
+        let explantCollectionBatch = bottle.explantCollectionBatch;
         if (this.#taskView.task.taskType !== 'induction' && parentBottleCurrent) {
-          bottle.explantCollectionBatch = parentBottleCurrent.explantCollectionBatch;
-          bottle.generation =
+          varietyCode = parentBottleCurrent.varietyCode;
+          explantCollectionBatch = parentBottleCurrent.explantCollectionBatch;
+          generation =
             this.#taskView.task.taskType === 'rooting' &&
             (parentBottleCurrent.parentLastTaskType === 'induction' ||
               parentBottleCurrent.parentLastTaskType === 'differentiation' ||
@@ -982,8 +980,31 @@ export class ServiceTissueTaskProcess implements OnDestroy {
               ? parentBottleCurrent.generation
               : parentBottleCurrent.generation + 1;
         } else if (this.#taskView.task.taskType === 'induction') {
-          bottle.explantCollectionBatch = this.#taskView.task.explantCollectionBatch;
-          bottle.generation = 0;
+          varietyCode = data.varietyCode;
+          generation = 0;
+          explantCollectionBatch = this.#taskView.task.explantCollectionBatch;
+        }
+
+        if (
+          (operatorName !== bottle.operatorName ||
+            varietyCode !== bottle.varietyCode ||
+            generation !== bottle.generation ||
+            explantCollectionBatch !== bottle.explantCollectionBatch) &&
+          (bottle.childCodeStatus === 'printed' || bottle.childCodeStatus === 'checked')
+        ) {
+          bottle.childCodeStatus = 'none';
+        }
+        bottle.operatorId = data.operator!.id;
+        bottle.operatorName = operatorName;
+        bottle.inspectorId = data.inspector!.id;
+        bottle.inspectorName = data.inspector!.name;
+        bottle.varietyCode = varietyCode;
+        bottle.explantCollectionBatch = explantCollectionBatch;
+        bottle.generation = generation;
+        if (this.#taskView.task.taskType !== 'induction' && parentBottleCurrent) {
+          bottle.variety = parentBottleCurrent.variety;
+        } else if (this.#taskView.task.taskType === 'induction') {
+          bottle.variety = this.#taskView.task.variety;
         }
       }
     });
@@ -991,6 +1012,12 @@ export class ServiceTissueTaskProcess implements OnDestroy {
     // 更新操作组
     const oppGroup = this.getOppGroup(oppGroupId);
     if (oppGroup) {
+      oppGroup.varietyCode =
+        this.#taskView.task.taskType !== 'induction' && parentBottleCurrent
+          ? parentBottleCurrent.varietyCode
+          : this.#taskView.task.taskType === 'induction'
+            ? data.varietyCode
+            : oppGroup.varietyCode;
       oppGroup.idParentBottle = data.idParentBottle;
       oppGroup.parentPlantCount = data.parentPlantCount;
       oppGroup.parentKeep = APIConst.booleans.get(keepParentPlantCount > 0);
@@ -1030,6 +1057,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
         bottle.allocateTime = 0;
         bottle.finishTime = 0;
         if (bottle.roleInTask === 'child') {
+          bottle.variety = '';
+          bottle.varietyCode = '';
           bottle.explantCollectionBatch = 0;
           bottle.generation = 0;
         }
@@ -1083,6 +1112,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
       bottle.parentKeepPlantCount = 0;
       bottle.childCodeStatus = 'none';
       if (this.#taskView.task.taskType !== 'induction' && bottleParent) {
+        bottle.variety = bottleParent.variety;
+        bottle.varietyCode = bottleParent.varietyCode;
         bottle.explantCollectionBatch = bottleParent.explantCollectionBatch;
         bottle.generation =
           this.#taskView.task.taskType === 'rooting' &&
@@ -1093,6 +1124,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
             ? bottleParent.generation
             : bottleParent.generation + 1;
       } else if (this.#taskView.task.taskType === 'induction') {
+        bottle.variety = this.#taskView.task.variety;
+        bottle.varietyCode = oppGroup.varietyCode;
         bottle.explantCollectionBatch = this.#taskView.task.explantCollectionBatch;
         bottle.generation = 0;
       }
@@ -1121,6 +1154,8 @@ export class ServiceTissueTaskProcess implements OnDestroy {
       throw '未知的瓶码信息。';
     }
     bottle.idOppGroup = '';
+    bottle.variety = '';
+    bottle.varietyCode = '';
     bottle.explantCollectionBatch = 0;
     bottle.generation = 0;
     bottle.operateStatus = 'coded';
@@ -1189,7 +1224,7 @@ export class ServiceTissueTaskProcess implements OnDestroy {
           {
             idPrint: '',
             code: idBottle,
-            varietyCode: this.#taskView.task.varietyCode,
+            varietyCode: bottle.varietyCode,
             explantCollectionBatch: bottle.explantCollectionBatch,
             generation: bottle.generation,
             operatorName: bottle.operatorName,
@@ -1218,7 +1253,7 @@ export class ServiceTissueTaskProcess implements OnDestroy {
     const printModelList = bottles.map((bottle) => ({
       idPrint: '',
       code: bottle.idBottle,
-      varietyCode: this.#taskView.task.varietyCode,
+      varietyCode: bottle.varietyCode,
       explantCollectionBatch: bottle.explantCollectionBatch,
       generation: bottle.generation,
       operatorName: bottle.operatorName,

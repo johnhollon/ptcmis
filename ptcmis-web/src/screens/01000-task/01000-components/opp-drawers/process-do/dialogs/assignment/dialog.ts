@@ -86,10 +86,12 @@ import { TissueTaskBottle } from '../../../../../../../entities/models/TissueTas
               matInput
               formControlName="defaultPlantsPerChildBottle"
             />
-            @if (form.get('defaultPlantsPerChildBottle')?.touched &&
-            form.get('defaultPlantsPerChildBottle')?.invalid) {
+            @if (
+              form.get('defaultPlantsPerChildBottle')?.touched &&
+              form.get('defaultPlantsPerChildBottle')?.invalid
+            ) {
               <mat-error
-              >{{ form.get('defaultPlantsPerChildBottle')?.errors?.['error'] || '' }}
+                >{{ form.get('defaultPlantsPerChildBottle')?.errors?.['error'] || '' }}
               </mat-error>
             }
           </mat-form-field>
@@ -104,9 +106,11 @@ import { TissueTaskBottle } from '../../../../../../../entities/models/TissueTas
               matInput
               formControlName="keepParentPlantCount"
             />
-            @if (form.get('keepParentPlantCount')?.touched && form.get('keepParentPlantCount')?.invalid) {
+            @if (
+              form.get('keepParentPlantCount')?.touched && form.get('keepParentPlantCount')?.invalid
+            ) {
               <mat-error
-              >{{ form.get('keepParentPlantCount')?.errors?.['error'] || '' }}
+                >{{ form.get('keepParentPlantCount')?.errors?.['error'] || '' }}
               </mat-error>
             }
           </mat-form-field>
@@ -243,7 +247,7 @@ export class DialogTaskOppGroupAssignment implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       return;
     }
-    this.dialogRef.close(this.form.getRawValue());
+    this.dialogRef.close({ ...this.form.getRawValue(), varietyCode: this.data.varietyCode });
   }
 }
 
@@ -259,6 +263,7 @@ export interface DialogTaskOppGroupAssignmentInputData {
   childBottles: TissueTaskBottle[];
   showParentKeep: boolean;
   taskType: string;
+  varietyCode: string;
 }
 
 export interface DialogTaskOppGroupAssignmentResponseData {
@@ -269,4 +274,5 @@ export interface DialogTaskOppGroupAssignmentResponseData {
   childBottleCount: number;
   defaultPlantsPerChildBottle: number;
   keepParentPlantCount: number;
+  varietyCode: string;
 }

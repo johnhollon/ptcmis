@@ -26,6 +26,10 @@
 export interface TissueTaskBottle {
   // 任务ID。tissue_task.id。联合主键
   idTask: string;
+  // 品种
+  variety: string;
+  // 品种编号（表示子品种）
+  varietyCode: string;
   // 操作分配组ID。 tissue_task_opp_group.id。联合主键，联合唯一索引
   idOppGroup: string;
   // 瓶码(培养瓶ID, bottle.id)。联合主键，联合唯一索引

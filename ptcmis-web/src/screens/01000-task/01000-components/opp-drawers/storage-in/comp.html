@@ -61,10 +61,6 @@
                 <mat-label>品种</mat-label>
                 <input matInput [value]="taskView.task.variety" readonly>
               </mat-form-field>
-              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
-                <mat-label>品种编号</mat-label>
-                <input [matTooltip]="taskView.task.varietyCode" matInput [value]="taskView.task.varietyCode" readonly>
-              </mat-form-field>
               @if (taskView.task.taskType === 'induction') {
                 <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error" style="width: 246px;">
                   <mat-label>外植体采集批次</mat-label>

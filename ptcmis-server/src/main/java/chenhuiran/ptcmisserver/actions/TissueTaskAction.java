@@ -157,7 +157,7 @@ public class TissueTaskAction {
     archiveManager.uploadMulti(
       tableName,
       recordId,
-      dictionaryCache.getName("tissue_task_type", task.getTask().getTaskType()) + ": " + task.getTask().getVarietyCode() + "(" + task.getTask().getVariety() + ")",
+      dictionaryCache.getName("tissue_task_type", task.getTask().getTaskType()) + "(" + task.getTask().getVariety() + ")",
       desc,
       files,
       user.getId(),

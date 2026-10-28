@@ -30,13 +30,13 @@ import { Subject } from 'rxjs';
 import {
   LayoutDrawerOppSimple
 } from '../../../components/00050-layouts/00200-layout-page-function-simple/layouts/drawer-opp-simple/layout';
-import { SelectVarietyCode } from '../../../components/variety-code/select/select-variety-code';
 import { APIConst } from '../../../entities/api/const-api';
 import { getTissueTaskDefault, TissueTask } from '../../../entities/models/TissueTask';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { PipeTaskType } from '../../../components/00200-pipes/pipe-task-type';
 import { takeUntil } from 'rxjs/operators';
+import { SelectVariety } from '../../../components/variety/select/select-variety';
 
 @Component({
   selector: 'storage-out-task-editor',
@@ -49,10 +49,10 @@ import { takeUntil } from 'rxjs/operators';
     ReactiveFormsModule,
     MatButton,
     LayoutDrawerOppSimple,
-    SelectVarietyCode,
     MatOption,
     MatSelect,
     PipeTaskType,
+    SelectVariety,
   ],
   standalone: true,
 })
@@ -63,9 +63,6 @@ export class CompEditor implements OnInit, OnDestroy {
   @Input() updateChildGeneration: boolean = true;
   @Input() set model(model: TissueTask) {
     const entity = { ...model };
-    if (!!entity.variety && !!entity.varietyCode) {
-      entity.varietyCode = `${entity.variety}\u200B${entity.varietyCode}`;
-    }
     this.form.patchValue(entity);
   }
   dispose$ = new Subject<void>();
@@ -92,10 +89,10 @@ export class CompEditor implements OnInit, OnDestroy {
       return null;
     });
 
-    this.form.get('varietyCode')?.addValidators((control) => {
+    this.form.get('variety')?.addValidators((control) => {
       if (!control.value) {
         return {
-          error: '应选择品种编号。',
+          error: '应选择品种。',
         };
       }
       return null;
@@ -178,16 +175,6 @@ export class CompEditor implements OnInit, OnDestroy {
     model.startTime = model.startTime ?? 0;
     model.finishTime = model.finishTime ?? 0;
     model.modifiable = model.modifiable ?? APIConst.booleans.BOOLEAN_FALSE;
-    const varietyCode = model.varietyCode;
-    if (!!varietyCode) {
-      const varietyCodeSplit = varietyCode.split('\u200B');
-      if (varietyCodeSplit.length > 0) {
-        model.variety = varietyCodeSplit[0].trim().toUpperCase();
-      }
-      if (varietyCodeSplit.length > 1) {
-        model.varietyCode = varietyCodeSplit[1].trim().toUpperCase();
-      }
-    }
     if (model.taskType === 'acclimatization') {
       model.estimatedChildrenBottles = 0;
       model.estimatedChildrenPlants = 0;

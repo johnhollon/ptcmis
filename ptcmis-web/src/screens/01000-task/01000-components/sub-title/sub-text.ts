@@ -37,9 +37,8 @@ import {TissueTaskView} from '../../../../entities/api/TissueTaskView';
       <span
         class="mat-text-primary mat-font-body-lg"
         style="max-width: 180px;display:inline-block;overflow: hidden;text-overflow: ellipsis;margin:0 2px;"
-        matTooltip="{{ model.task.variety + ' - ' + model.task.varietyCode }}"
       >
-        {{ model.task.varietyCode }}
+        {{ model.task.variety }}
       </span>
       @if (model.task.taskType === 'induction') {
         <span>

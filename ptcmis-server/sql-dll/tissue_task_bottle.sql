@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS `tissue_task_bottle`;
 CREATE TABLE `tissue_task_bottle` (
   `id_task` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '任务ID。tissue_task.id。联合主键',
+  `variety` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '品种 variety.name',
+  `variety_code` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '品种编号（子品种） variety_code.code',
   `id_opp_group` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '操作分配组ID。 tissue_task_opp_group.id。联合主键，联合唯一索引',
   `id_bottle` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '瓶码(培养瓶ID, bottle.id)。联合主键，联合唯一索引',
   `explant_collection_batch` INT NOT NULL DEFAULT 0 COMMENT '外植体采集批次',

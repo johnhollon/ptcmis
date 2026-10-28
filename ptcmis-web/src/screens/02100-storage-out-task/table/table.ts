@@ -71,7 +71,6 @@ import { APIConst } from '../../../entities/api/const-api';
 export class TableStorageOutTask {
   protected columns: string[] = [
     'variety',
-    'varietyCode',
     'taskType',
     'status',
     'taskStatus',

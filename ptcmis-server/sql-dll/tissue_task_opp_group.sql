@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS `tissue_task_opp_group`;
 CREATE TABLE `tissue_task_opp_group` (
   `id` VARCHAR(32) NOT NULL COMMENT '操作分配组ID。主键',
   `id_task` VARCHAR(32) NOT NULL COMMENT '所属任务ID，tissue_task.id',
+  `variety_code` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '品种编号（子品种） variety_code.code',
   `parent_plant_count` SMALLINT NOT NULL DEFAULT 0 COMMENT '母瓶株数。',
   `id_parent_bottle` VARCHAR(32) NOT NULL DEFAULT '' COMMENT '母瓶瓶码（ID） bottle.id',
   `parent_keep` VARCHAR(32) NOT NULL DEFAULT '0' COMMENT '母瓶是否留种。 dictionary.boolean',

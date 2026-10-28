@@ -101,7 +101,7 @@
               <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
                 <comp-code-item-simple-tissue-task *cdkVirtualFor="let item of serviceTissueTaskProcess.bottleParentUnAssignedSig()"
                                                    [model]="item"
-                                                   (click)="requestOppGroupAssign(item.idBottle, undefined)"
+                                                   (click)="requestOppGroupAssign(item.idBottle, undefined, undefined)"
                 ></comp-code-item-simple-tissue-task>
               </cdk-virtual-scroll-viewport>
             </fieldset>
@@ -109,13 +109,22 @@
             @if (editableSig()) {
               <fieldset class="form-container code-item-container" style="min-width: 0;">
                 <legend>母代株数</legend>
-                <mat-form-field appearance="outline" class="no-error">
+                <select-variety-code-simple label="输入品种编号"
+                                            class="no-error"
+                                            style="width:216px;margin-top: 12px; margin-right: 6px; display: flex;"
+                                            [canSelectEmpty]="true"
+                                            optionEmptyText="尚未选择"
+                                            [formControl]="varietyCodeForInductionFormControl"
+                                            [variety]="serviceTissueTaskProcess.taskSig()?.task?.variety ?? ''"
+                ></select-variety-code-simple>
+                <mat-form-field appearance="outline"
+                                class="no-error">
                   <mat-label>输入株数</mat-label>
                   <input type="number" matInput min="0" max="999" #parentPlantCount>
                 </mat-form-field>
                 <button matButton="filled"
                         tabIndex="-1"
-                        (click)="requestOppGroupAssign(undefined, parentPlantCount.value);parentPlantCount.value='0'">
+                        (click)="requestOppGroupAssign(undefined, parentPlantCount.value, varietyCodeForInductionFormControl.value ?? '');parentPlantCount.value='0'">
                   分配
                 </button>
               </fieldset>
@@ -194,6 +203,15 @@
                           <tissue-task-chart-bar-parent-bottles-keep [model]="oppGroupStat"></tissue-task-chart-bar-parent-bottles-keep>
                         }
                       </div>
+                    }
+
+                    @if (oppGroupStatId !== ''){
+                      @if (serviceTissueTaskProcess.getOppGroup(oppGroupStatId); as oppGroup) {
+                      <div class="doc-content-info" style="font-size: 1em; margin:4px 0;">
+                        {{serviceTissueTaskProcess.taskSig()?.task?.variety ?? ''}}
+                        {{oppGroup.varietyCode}}
+                      </div>
+                      }
                     }
 
                     @if (oppGroupStatId !== '' && serviceTissueTaskProcess.taskSig().task.taskType !== 'induction') {
@@ -321,6 +339,10 @@
                       <input matInput readonly [value]="oppGroup.idParentBottle">
                     </mat-form-field>
                   }
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 100px;">
+                    <mat-label>品种编号</mat-label>
+                    <input matInput readonly [value]="oppGroup.varietyCode" matTooltip="{{(serviceTissueTaskProcess.taskSig()?.task?.variety ?? '') + oppGroup.varietyCode}}">
+                  </mat-form-field>
                   <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 80px;">
                     <mat-label>母代株数</mat-label>
                     <input matInput readonly [value]="oppGroup.parentPlantCount || 0">
@@ -332,11 +354,11 @@
                     </mat-form-field>
                   }
                   <mat-divider [vertical]="true" style="height: 40px;margin:0 var(--space-size);"></mat-divider>
-                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 110px;">
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 100px;">
                     <mat-label>质检员</mat-label>
                     <input matInput readonly [value]="oppGroup.inspectorName">
                   </mat-form-field>
-                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 110px;">
+                  <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 100px;">
                     <mat-label>操作员</mat-label>
                     <input matInput readonly [value]="oppGroup.operatorName">
                   </mat-form-field>

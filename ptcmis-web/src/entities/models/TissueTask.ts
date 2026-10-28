@@ -32,8 +32,6 @@ export interface TissueTask {
   id: string;
   // 品种
   variety: string;
-  // 品种编号（表示子品种）
-  varietyCode: string;
   // 外植体采集批次
   explantCollectionBatch: number;
   // 预计使用母代瓶数
@@ -78,8 +76,6 @@ export function getTissueTaskDefault(taskType: TissueTaskType | ''): TissueTask 
     id: genId(),
     // 品种
     variety: '',
-    // 品种编号（表示子品种）
-    varietyCode: '',
     // 外植体采集批次
     explantCollectionBatch: 0,
     // 预计使用母代瓶数
