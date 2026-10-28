@@ -44,20 +44,12 @@
         <input matInput value="{{model.variety}}" readonly>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="readonly col1">
-        <mat-label>品种编号</mat-label>
-        <input matInput value="{{model.varietyCode}}" readonly>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="readonly col1">
-        <mat-label>外植体采集批次</mat-label>
-        <input matInput value="{{model.explantCollectionBatch}}" readonly>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="readonly col1">
-        <mat-label>代数</mat-label>
-        <input matInput value="{{model.parentGeneration}}" readonly>
-      </mat-form-field>
+      @if(model.taskType === 'induction'){
+        <mat-form-field appearance="outline" class="readonly col1">
+          <mat-label>外植体采集批次</mat-label>
+          <input matInput value="{{model.explantCollectionBatch}}" readonly>
+        </mat-form-field>
+      }
 
       <mat-form-field appearance="outline" class="readonly col1">
         <mat-label>任务</mat-label>

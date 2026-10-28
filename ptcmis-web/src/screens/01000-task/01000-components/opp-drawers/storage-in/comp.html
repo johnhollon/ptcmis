@@ -57,7 +57,7 @@
                 <mat-label>组培任务状态</mat-label>
                 <input matInput value="{{taskView.task.taskStatus | taskStatus}}" readonly>
               </mat-form-field>
-              <mat-form-field appearance="outline" floatLabel="always" class="col-extra-small readonly no-error">
+              <mat-form-field appearance="outline" floatLabel="always" class="readonly no-error" style="width: 246px;">
                 <mat-label>品种</mat-label>
                 <input matInput [value]="taskView.task.variety" readonly>
               </mat-form-field>
