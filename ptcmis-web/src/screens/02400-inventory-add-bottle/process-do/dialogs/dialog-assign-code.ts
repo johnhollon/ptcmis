@@ -65,7 +65,7 @@ import { Subject } from 'rxjs';
 
         <mat-form-field appearance="outline" style="width: 100%;margin-bottom:8px;">
           <mat-label>本次分配瓶码数量</mat-label>
-          <input type="number" min="1" max="100" matInput formControlName="childBottleCount" />
+          <input type="number" min="1" max="9999" matInput formControlName="childBottleCount" />
           @if (form.get('childBottleCount')?.touched && form.get('childBottleCount')?.invalid) {
             <mat-error>{{ form.get('childBottleCount')?.errors?.['error'] || '' }}</mat-error>
           }
