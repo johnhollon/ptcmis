@@ -27,15 +27,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatError, MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { Subject } from 'rxjs';
-import { LayoutDrawerOppSimple } from '../../../../../components/00050-layouts/00200-layout-page-function-simple/layouts/drawer-opp-simple/layout';
-import { SelectVarietyCode } from '../../../../../components/variety-code/select/select-variety-code';
+import {
+  LayoutDrawerOppSimple
+} from '../../../../../components/00050-layouts/00200-layout-page-function-simple/layouts/drawer-opp-simple/layout';
 import { APIConst } from '../../../../../entities/api/const-api';
 import { TissueTaskView } from '../../../../../entities/api/TissueTaskView';
-import {
-  getTissueTaskDefault,
-  TissueTask,
-  TissueTaskType,
-} from '../../../../../entities/models/TissueTask';
+import { getTissueTaskDefault, TissueTask, TissueTaskType } from '../../../../../entities/models/TissueTask';
 import { isYmd8Number } from '../../../../../services/utils/date';
 import { SelectVariety } from '../../../../../components/variety/select/select-variety';
 
@@ -50,7 +47,6 @@ import { SelectVariety } from '../../../../../components/variety/select/select-v
     ReactiveFormsModule,
     MatButton,
     LayoutDrawerOppSimple,
-    SelectVarietyCode,
     SelectVariety,
   ],
   standalone: true,
