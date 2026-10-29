@@ -1076,7 +1076,7 @@ public class TissueTaskManager {
         oppGroupPO.setId(oppGroupPO.getId() == null ? Id.g() : oppGroupPO.getId());
         oppGroupPO.setAllocateTime(oppGroupPO.getAllocateTime() == null || oppGroupPO.getAllocateTime() < 1 ? now : oppGroupPO.getAllocateTime());
         oppGroupPO.setAllocatorId(oppGroupPO.getAllocatorId() == null ? currentUser.getId() : oppGroupPO.getAllocatorId());
-        oppGroupPO.setAllocatorName(oppGroupPO.getAllocatorId() == null ? currentUser.getName() : oppGroupPO.getAllocatorId());
+        oppGroupPO.setAllocatorName(oppGroupPO.getAllocatorId() == null ? currentUser.getName() : oppGroupPO.getAllocatorName());
       });
     }
     var oppGroupPOList = oppGroupMap.values().stream().toList();
