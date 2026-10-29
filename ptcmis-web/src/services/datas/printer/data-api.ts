@@ -169,7 +169,7 @@ export class DataPrinterApi implements DataPrinter {
                   String(date.getMonth() + 1).padStart(2, '0') +
                   '-' +
                   String(date.getDate()).padStart(2, '0');
-                return `SIZE 40 mm,20 mm\r\nGAP 2 mm,0 mm\r\nDIRECTION 1\r\nCLS\r\nQRCODE 10,16,H,6,A,0,"${code.code}"\r\nTEXT 144,16,"TSS24.BF2",0,1,1,"${code.code}"\r\nTEXT 144,42,"TSS24.BF2",0,1,1,"${code.varietyCode}"\r\nTEXT 144,68,"TSS24.BF2",0,1,1,"P${String(code.explantCollectionBatch ?? 0).padStart(8, '0')} D${String(code.generation ?? 0).padStart(3, '0')}"\r\nTEXT 144,94,"TSS24.BF2",0,1,1,"${code.operatorName}"\r\nTEXT 144,120,"TSS24.BF2",0,1,1,"${dateString}"\r\nPRINT 1`;
+                return `SIZE 40 mm,20 mm\r\nGAP 2 mm,0 mm\r\nDIRECTION 1\r\nCLS\r\nQRCODE 10,16,H,6,A,0,"${code.code}"\r\nTEXT 144,16,"TSS24.BF2",0,1,1,"${code.code}"\r\nTEXT 144,42,"TSS24.BF2",0,1,1,"${code.varietyCode}"\r\nTEXT 144,68,"TSS24.BF2",0,1,1,"P${String(code.explantCollectionBatch ?? 0).padStart(8, '0')} D${code.generation ?? 0}"\r\nTEXT 144,94,"TSS24.BF2",0,1,1,"${code.operatorName}"\r\nTEXT 144,120,"TSS24.BF2",0,1,1,"${dateString}"\r\nPRINT 1`;
               })
               .join('\r\n') + '\r\n';
           LODOP.SEND_PRINT_RAWDATA(data);

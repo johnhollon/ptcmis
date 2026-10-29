@@ -38,7 +38,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 
 const ALLOW_SCAN_CHARS = new Set<string>('ACDEFHIJKNPRTUVXY-0123456789'.split(''));
-const SCAN_GAP_THRESHOLD = 50;
+const SCAN_GAP_THRESHOLD = 80;
 const VALID_PATTERN = /^[ACDEFHIJKNPRTUVXY]{6}-[0-9]{4}$/;
 
 @Injectable({ providedIn: 'root' })

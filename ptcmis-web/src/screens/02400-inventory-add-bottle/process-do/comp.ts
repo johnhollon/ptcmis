@@ -717,6 +717,17 @@ export class CompProcessDo implements OnInit, OnDestroy {
       });
   }
 
+
+
+  protected requestCheckBatch() {
+    this.allMap.forEach((item) => {
+      if (item && item.status === 'printed') {
+        item.status = 'checked';
+      }
+    });
+    this.updateVersionSig.update((v) => v + 1);
+  }
+
   private isDataSyncSavedConfirmed = false;
   protected requestCancel() {
     if (this.editable && this.updateVersionSig() !== this.savedVersion) {

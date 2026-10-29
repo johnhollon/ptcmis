@@ -267,6 +267,9 @@
       </mat-form-field>
 
       @if (editable) {
+        <button matButton="filled" style="margin-left: 1px; background-color: var(--mat-sys-error)" (click)="requestCheckBatch()">
+          一键核对
+        </button>
         <button matButton="filled" style="margin-left: 1px;" (click)="requestScanCheck()">
           <mat-icon>qr_code</mat-icon>
           扫码核对
