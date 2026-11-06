@@ -11,6 +11,9 @@
 !ptcmis-web
 !ptcmis-web/.gitignore
 
+!ptcmis-docs
+!ptcmis-docs/.gitignore
+
 !COPYING
 !COPYRIGHT
 !copyright.md
