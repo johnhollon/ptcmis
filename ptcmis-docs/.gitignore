@@ -2,7 +2,7 @@
 
 !.gitignore
 
-!.PTCMIS-SDD-V1.0.docx
-!.PTCMIS-SDD-V1.0.pdf
-!.PTCMIS-SRS-V1.0.docx
-!.PTCMIS-SRS-V1.0.pdf
+!PTCMIS-SDD-V1.0.docx
+!PTCMIS-SDD-V1.0.pdf
+!PTCMIS-SRS-V1.0.docx
+!PTCMIS-SRS-V1.0.pdf
