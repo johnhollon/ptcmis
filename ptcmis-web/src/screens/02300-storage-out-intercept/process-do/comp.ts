@@ -115,13 +115,6 @@ import { ServiceShowConfirmDialog } from '../../../services/ui/service-show-conf
 })
 export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
   @Input() model: StorageInOut = DefaultStorageInOut;
-  protected getModel(id: string, status: '' | 'discard'): BottleSimple {
-    const result = { id, status, plants: 0, reason: '' };
-    if (this.updateVersionSig() < 0) return result;
-    const model = this.discardMap.get(id);
-    if (model) return { ...model };
-    return result;
-  }
   @Input() editable = true;
 
   @Output() onCancel = new EventEmitter<void>();
@@ -129,30 +122,31 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
   @Output() onRequestStopLoading = new EventEmitter<void>();
   @Output() onSaved = new EventEmitter<void>();
 
-  // 缓存已查询的瓶信息
-  private loadedBottleMap = new Map<string, number>();
-
-  // 所有在库瓶ID
-  private allIdSet = new Set<string>();
-  protected allIdListSig = signal<string[]>([]);
-
-  // 过滤后的瓶ID
-  protected allIdFilteredSigReadonly = computed(() => {
+  private readonly allBottleMap = new Map<string, BottleSimple>();
+  protected allBottleSig = computed(() => {
+    if (this.updateVersionSig() < 0 || this.allBottleMap.size < 1) return [] as BottleSimple[];
     const codePrefix = this.codePrefixInputValueForAllSig();
     const codeSeq = this.codeSeqInputValueForAllSig();
-    if (!codePrefix) return this.allIdListSig();
-    if (codeSeq) {
+    if (!codePrefix)
+      return [...this.allBottleMap.values()].sort((a, b) => a.id.localeCompare(b.id));
+    if (codePrefix && codeSeq) {
       const id = `${codePrefix}-${String(codeSeq).padStart(4, '0')}`;
-      if (!this.allIdSet.has(id)) return [];
-      return [id];
+      const bottle = this.allBottleMap.get(id);
+      if (!bottle) return [];
+      return [bottle];
     }
-    const ids: string[] = [];
-    for (let index = 1; index <= 9999; index++) {
-      const id = `${codePrefix}-${String(index).padStart(4, '0')}`;
-      if (!this.allIdSet.has(id)) continue;
-      ids.push(id);
+    const ids: BottleSimple[] = [];
+    if (codePrefix) {
+      for (let index = 1; index <= 9999; index++) {
+        const id = `${codePrefix}-${String(index).padStart(4, '0')}`;
+        const bottle = this.allBottleMap.get(id);
+        if (bottle) {
+          ids.push(bottle);
+        }
+      }
+      return ids.sort((a, b) => a.id.localeCompare(b.id));
     }
-    return ids;
+    return [...this.allBottleMap.values()].sort((a, b) => a.id.localeCompare(b.id));
   });
 
   // 淘汰瓶
@@ -162,20 +156,23 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
     const codePrefix = this.codePrefixInputValueForDiscardSig();
     const codeSeq = this.codeSeqInputValueForDiscardSig();
     if (version < 0 || !codePrefix) {
-      return [...this.discardMap.keys()].sort((a, b) => a.localeCompare(b));
+      return [...this.discardMap.values()].sort((a, b) => a.id.localeCompare(b.id));
     }
     if (codeSeq) {
       const id = `${codePrefix}-${String(codeSeq).padStart(4, '0')}`;
-      if (!this.discardMap.has(id)) return [];
-      return [id];
+      const bottle = this.discardMap.get(id);
+      if (!bottle) return [];
+      return [bottle];
     }
-    const ids: string[] = [];
+    const ids: BottleSimple[] = [];
     for (let index = 1; index <= 9999; index++) {
       const id = `${codePrefix}-${String(index).padStart(4, '0')}`;
-      if (!this.discardMap.has(id)) continue;
-      ids.push(id);
+      const bottle = this.discardMap.get(id);
+      if (bottle) {
+        ids.push(bottle);
+      }
     }
-    return ids;
+    return ids.sort((a, b) => a.id.localeCompare(b.id));
   });
   protected discardStatSig = computed(() => {
     let bottles = 0;
@@ -215,27 +212,30 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
               id: bottle.idBottle,
               plants: bottle.plantCountActual,
               reason: bottle.discardReason,
-              status: 'discard',
+              status: '',
             });
-            this.loadedBottleMap.set(bottle.idBottle, bottle.plantCountActual);
           });
         }),
         switchMap((_) => {
           if (!this.editable) return of([]);
-          return this.actionBottle.queryAllIdStorageIn();
+          return this.actionBottle.queryAllStorageIn();
         }),
         takeUntil(this.dispose$),
         finalize(() => this.onRequestStopLoading.emit()),
       )
       .subscribe({
-        next: (allAvailable) => {
+        next: (bottles) => {
           const codePrefixSet = new Set<string>();
-          allAvailable.forEach((available) => {
-            this.allIdSet.add(available);
-            codePrefixSet.add(available.substring(0, 6).toUpperCase());
+          bottles.forEach((bottle) => {
+            this.allBottleMap.set(bottle.id, {
+              id: bottle.id,
+              plants: bottle.plantCount,
+              reason: this.discardMap.get(bottle.id)?.reason ?? '',
+              status: '',
+            });
+            codePrefixSet.add(bottle.id.substring(0, 6).toUpperCase());
           });
           this.codePrefixForAllList = [...codePrefixSet].sort((a, b) => a.localeCompare(b));
-          this.allIdListSig.set(allAvailable.sort((a, b) => a.localeCompare(b)));
           this.updateVersionSig.update((v) => v + 1);
         },
         error: (error) => this.serviceShowMessage.showError(error),
@@ -248,30 +248,35 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
 
   protected requestUpdateToNone(id: string) {
     this.discardMap.delete(id);
+    const bottle = this.allBottleMap.get(id);
+    if (bottle) bottle.reason = '';
     this.updateVersionSig.update((v) => v + 1);
   }
 
   protected defaultDiscardReasonFormControlForAll = new FormControl('');
-  protected requestUpdateToDiscard(id: string, scanner = false) {
-    if (!this.allIdSet.has(id)) return;
-    if (this.discardMap.has(id)) return;
+  protected requestUpdateToDiscard(idBottle: string, scanner = false) {
+    if (!this.editable) return;
+    if (!this.allBottleMap.has(idBottle)) return;
+    const bottle = this.allBottleMap.get(idBottle);
+    if (!bottle) return;
+    if (this.discardMap.has(idBottle)) return;
 
     const reason = this.defaultDiscardReasonFormControlForAll.value ?? '';
 
     if (scanner && reason) {
-      const plants = this.loadedBottleMap.get(id) ?? 0;
-      this.discardMap.set(id, {
-        id: id,
+      this.discardMap.set(bottle.id, {
+        id: bottle.id,
         reason: reason,
-        status: 'discard',
-        plants,
+        status: '',
+        plants: bottle.plants,
       });
+      bottle.reason = reason;
       this.updateVersionSig.update((v) => v + 1);
       return;
     }
 
     const dialogInputData: DialogTaskBottleDiscardData = {
-      idBottle: id,
+      idBottle: bottle.id,
       reason: this.defaultDiscardReasonFormControlForAll.value ?? '',
     };
 
@@ -292,8 +297,9 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
             this.serviceShowMessage.showError('应选择淘汰原因。');
             return;
           }
-          if (!this.allIdSet.has(result.idBottle)) return;
-          const plants = this.loadedBottleMap.get(result.idBottle) ?? 0;
+          if (!this.allBottleMap.has(result.idBottle)) return;
+          this.allBottleMap.get(result.idBottle)!.reason = result.reason;
+          const plants = this.allBottleMap.get(result.idBottle)?.plants ?? 0;
           this.discardMap.set(result.idBottle, {
             id: result.idBottle,
             reason: result.reason,
@@ -305,17 +311,8 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
       });
   }
 
-  protected requestSetBottleInfo(bottle: BottleSimple) {
-    this.loadedBottleMap.set(bottle.id, bottle.plants);
-
-    const model = this.discardMap.get(bottle.id);
-    if (model) model.plants = bottle.plants;
-
-    this.updateVersionSig.update((v) => v + 1);
-  }
-
   protected requestUpdateDiscardReason(bottle: BottleSimple) {
-    if (!this.allIdSet.has(bottle.id)) return;
+    if (!this.allBottleMap.has(bottle.id)) return;
     if (!this.discardMap.has(bottle.id)) return;
 
     const dialogInputData: DialogTaskBottleDiscardData = {
@@ -340,8 +337,9 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
             this.serviceShowMessage.showError('应选择淘汰原因。');
             return;
           }
-          if (!this.allIdSet.has(result.idBottle)) return;
-          const plants = this.loadedBottleMap.get(result.idBottle) ?? 0;
+          if (!this.allBottleMap.has(result.idBottle)) return;
+          this.allBottleMap.get(result.idBottle)!.reason = result.reason;
+          const plants = this.allBottleMap.get(result.idBottle)?.plants ?? 0;
           this.discardMap.set(result.idBottle, {
             id: result.idBottle,
             reason: result.reason,

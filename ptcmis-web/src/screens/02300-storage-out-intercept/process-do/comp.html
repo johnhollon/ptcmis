@@ -89,11 +89,11 @@
           </mat-form-field>
         </div>
         <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
-          <comp-code-item-with-opp-intercept *cdkVirtualFor="let item of allIdFilteredSigReadonly()"
+          <comp-code-item-with-opp-intercept *cdkVirtualFor="let item of allBottleSig()"
                                              [editable]="editable"
-                                             [model]="getModel(item, '')"
-                                             (onUnExists)="requestUpdateToNone($event)"
-                                             (onLoaded)="requestSetBottleInfo($event)"
+                                             [model]="item"
+                                             [discarded]="discardMap.has(item.id)"
+                                             [showReason]="false"
                                              (onRequestUpdateToDiscard)="requestUpdateToDiscard($event)"
                                              (onRequestUpdateToNormal)="requestUpdateToNone($event)"
                                              (onRequestUpdateDiscardReason)="requestUpdateDiscardReason($event)"
@@ -149,9 +149,9 @@
       <cdk-virtual-scroll-viewport class="bottles-cdk-scroll" [itemSize]="58" [maxBufferPx]="2080" [minBufferPx]="840">
         <comp-code-item-with-opp-intercept *cdkVirtualFor="let item of discardIdFilteredSigReadonly()"
                                            [editable]="editable"
-                                           [model]="getModel(item, 'discard')"
-                                           (onUnExists)="requestUpdateToNone($event)"
-                                           (onLoaded)="requestSetBottleInfo($event)"
+                                           [model]="item"
+                                           [discarded]="discardMap.has(item.id)"
+                                           [showReason]="true"
                                            (onRequestUpdateToDiscard)="requestUpdateToDiscard($event)"
                                            (onRequestUpdateToNormal)="requestUpdateToNone($event)"
                                            (onRequestUpdateDiscardReason)="requestUpdateDiscardReason($event)"
