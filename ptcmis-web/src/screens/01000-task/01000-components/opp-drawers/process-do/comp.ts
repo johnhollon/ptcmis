@@ -92,11 +92,6 @@ import {
   DialogTaskSetProcessSettingsInputData,
   DialogTaskSetProcessSettingsResponseData,
 } from './dialogs/process-settings/dialog';
-import {
-  DialogTaskCreateStorageOut,
-  DialogTaskCreateStorageOutInputData,
-  DialogTaskCreateStorageOutResponseData,
-} from '../dialogs/storage-out/dialog-create';
 import { ServiceTissueTaskProcess } from '../process/service';
 import { TissueTaskChartBarParentBottles } from './charts/chart-bar-parent-bottles';
 import { TissueTaskChartBarParentBottlesKeep } from './charts/chart-bar-parent-bottles-keep';
@@ -500,6 +495,22 @@ export class TissueTaskProcessDo implements OnInit, OnDestroy {
           this.serviceShowMessage.showInfo(model);
         },
         error: (error) => this.serviceShowMessage.showError(error),
+      });
+  }
+
+  protected requestOppGroupToOpenByScan() {
+    this.serviceGlobalCodeScanner
+      .start('扫码定位操作组')
+      .pipe(takeUntil(this.dispose$))
+      .subscribe({
+        next: (v) => {
+          const bottle = this.serviceTissueTaskProcess.getBottle(v);
+          if (bottle?.idOppGroup) {
+            this.oppGroupSelectedSig.set(bottle.idOppGroup);
+          } else {
+            this.serviceShowMessage.showError(`没有找到 ${v} 所在操作组。`);
+          }
+        },
       });
   }
 

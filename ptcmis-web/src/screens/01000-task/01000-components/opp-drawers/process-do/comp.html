@@ -162,7 +162,16 @@
         <!--目录区-->
         <div class="opp-group-doc-container">
           <div class="opp-group-doc-title">
-            <h2>操作组</h2>
+            <h2 style="display: flex; align-items: center;gap: 8px;">
+              <span>操作组</span>
+              <button matIconButton
+                      tabIndex="-1"
+                      style="color:var(--mat-sys-primary)"
+                      matTooltip="扫码定位操作组"
+                      (click)="requestOppGroupToOpenByScan()">
+                <mat-icon>qr_code</mat-icon>
+              </button>
+            </h2>
           </div>
           <div class="opp-group-doc-content">
             @for (oppGroupStatId of serviceTissueTaskProcess.oppGroupStatSig(); track oppGroupStatId; ) {
@@ -205,12 +214,12 @@
                       </div>
                     }
 
-                    @if (oppGroupStatId !== ''){
+                    @if (oppGroupStatId !== '') {
                       @if (serviceTissueTaskProcess.getOppGroup(oppGroupStatId); as oppGroup) {
-                      <div class="doc-content-info" style="font-size: 1em; margin:4px 0;">
-                        {{serviceTissueTaskProcess.taskSig()?.task?.variety ?? ''}}
-                        {{oppGroup.varietyCode}}
-                      </div>
+                        <div class="doc-content-info" style="font-size: 1em; margin:4px 0;">
+                          {{ serviceTissueTaskProcess.taskSig()?.task?.variety ?? '' }}
+                          {{ oppGroup.varietyCode }}
+                        </div>
                       }
                     }
 
@@ -341,7 +350,8 @@
                   }
                   <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 100px;">
                     <mat-label>品种编号</mat-label>
-                    <input matInput readonly [value]="oppGroup.varietyCode" matTooltip="{{(serviceTissueTaskProcess.taskSig()?.task?.variety ?? '') + oppGroup.varietyCode}}">
+                    <input matInput readonly [value]="oppGroup.varietyCode"
+                           matTooltip="{{(serviceTissueTaskProcess.taskSig()?.task?.variety ?? '') + oppGroup.varietyCode}}">
                   </mat-form-field>
                   <mat-form-field floatLabel="always" appearance="outline" class="readonly" style="flex:0 0 80px;">
                     <mat-label>母代株数</mat-label>
