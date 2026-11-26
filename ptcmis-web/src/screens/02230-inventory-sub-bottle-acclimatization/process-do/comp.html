@@ -59,6 +59,15 @@
         <input matInput value="{{model.operatorTime | timestamp}}" readonly>
       </mat-form-field>
 
+      @if (outStatSig().varietyCodes.length > 0) {
+        <div>涉及子品种编号：</div>
+        <ul style="margin: 0;">
+          @for (varietyCode of outStatSig().varietyCodes; track varietyCode) {
+            <li>{{ varietyCode }}</li>
+          }
+        </ul>
+      }
+
     </fieldset>
 
     @if (editable) {
@@ -134,7 +143,7 @@
         @if (editable) {
           <span class="text-error">(点击撤销)</span>
         }
-        <span [class.text-error]="!editable">[{{outStatSig().bottles}}瓶 | {{outStatSig().plants}}株]</span>
+        <span [class.text-error]="!editable">[{{ outStatSig().bottles }}瓶 | {{ outStatSig().plants }}株]</span>
       </legend>
       @if (editable) {
         <div class="text-error" style="display: flex;align-items: center;margin-bottom: 8px;">

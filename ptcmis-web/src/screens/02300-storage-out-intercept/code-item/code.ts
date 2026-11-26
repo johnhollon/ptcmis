@@ -31,7 +31,7 @@ import {
   OnInit,
   Output,
   signal,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -44,6 +44,7 @@ export interface BottleSimple {
   plants: number;
   status: '' | 'discard';
   reason: string;
+  varietyCode: string;
 }
 
 @Component({
@@ -59,6 +60,7 @@ export class CompCodeItemWithOpp implements OnInit, OnDestroy, OnChanges {
   @Input() model: BottleSimple = {
     id: '',
     plants: 0,
+    varietyCode: '',
     status: '',
     reason: '',
   };

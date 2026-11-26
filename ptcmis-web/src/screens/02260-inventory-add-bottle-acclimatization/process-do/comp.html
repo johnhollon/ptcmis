@@ -59,6 +59,15 @@
         <input matInput value="{{model.operatorTime | timestamp}}" readonly>
       </mat-form-field>
 
+      @if (outStatSig().varietyCodes.length > 0) {
+        <div>涉及子品种编号：</div>
+        <ul style="margin: 0;">
+          @for (varietyCode of outStatSig().varietyCodes; track varietyCode) {
+            <li>{{ varietyCode }}</li>
+          }
+        </ul>
+      }
+
     </fieldset>
 
     @if (editable) {

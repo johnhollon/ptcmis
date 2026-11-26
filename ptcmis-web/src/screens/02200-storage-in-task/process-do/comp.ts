@@ -223,6 +223,21 @@ export class StorageInTaskProcessDo implements OnInit, OnDestroy, OnChanges {
       plantCountChecked: plants - uncheckedPlants,
     };
   });
+  protected readonly varietyCodeSigReadonly = computed(() => {
+    if (this.updateVersionSig() < 0) return [] as StorageInOutBottle[];
+    const bottles = [...this.bottleAllMap.values()].filter(
+      (bottle) =>
+        bottle.inOutBottleType === 'parent_in' ||
+        bottle.inOutBottleType === 'parent_keep_in' ||
+        bottle.inOutBottleType === 'child_in',
+    );
+    const varietyCodeSet = new Set<string>();
+    bottles.forEach((b) => {
+      varietyCodeSet.add(b.varietyCode);
+    });
+    return [...varietyCodeSet].sort((a, b) => a.localeCompare(b));
+  });
+
 
   private readonly dispose$ = new Subject<void>();
 

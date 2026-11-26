@@ -273,12 +273,18 @@ export class CompProcessDo implements OnInit, OnDestroy {
   protected outStatSig = computed(() => {
     let plants = 0;
     let bottles = 0;
-    if (this.updateVersionSig() < 0) return { bottles, plants };
+    if (this.updateVersionSig() < 0) return { bottles, plants, varietyCodes: [] };
+    const varietyCodeSet = new Set<string>();
     this.outBottleMap.forEach((b) => {
       plants += b.plantCount ?? 0;
+      varietyCodeSet.add(b.varietyCode);
     });
     bottles = this.outBottleMap.size;
-    return { bottles, plants };
+    return {
+      bottles,
+      plants,
+      varietyCodes: [...varietyCodeSet].sort((a, b) => a.localeCompare(b)),
+    };
   });
 
   private readonly dispose$ = new Subject<void>();

@@ -89,11 +89,20 @@ export class StorageOutTaskViewerDo implements OnInit, OnDestroy {
   protected usedStatSig = computed(() => {
     let plants = 0;
     const list = this.usedSig();
+    const varietyCodeSet = new Set<string>();
     list.forEach((id) => {
-      plants += this.usedMap.get(id)?.plantCountActual ?? 0;
+      const bottle = this.usedMap.get(id);
+      if (bottle) {
+        plants += bottle.plantCountActual ?? 0;
+        varietyCodeSet.add(bottle.varietyCode);
+      }
     });
     const bottles = this.usedMap.size;
-    return { bottles, plants };
+    return {
+      bottles,
+      plants,
+      varietyCodes: [...varietyCodeSet].sort((a, b) => a.localeCompare(b)),
+    };
   });
 
   private readonly dispose$ = new Subject<void>();

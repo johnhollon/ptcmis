@@ -133,13 +133,22 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
     let plants = 0;
     const list = this.usedSig();
     const version = this.updateVersionSig();
+    const varietyCodeSet = new Set<string>();
     if (version >= 0) {
       list.forEach((id) => {
-        plants += this.usedMap.get(id)?.plantCountActual ?? 0;
+        const bottle = this.usedMap.get(id);
+        if (bottle) {
+          plants += bottle.plantCountActual ?? 0;
+          varietyCodeSet.add(bottle.varietyCode);
+        }
       });
       bottles = this.usedMap.size;
     }
-    return { bottles, plants };
+    return {
+      bottles,
+      plants,
+      varietyCodes: [...varietyCodeSet].sort((a, b) => a.localeCompare(b)),
+    };
   });
 
   protected codePrefixFormControl = new FormControl('');
@@ -248,10 +257,10 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
       this.usedMap.set(id, {
         idInOut: this.model.id,
         idBottle: id,
-        variety: this.model.variety,
-        varietyCode: this.model.varietyCode,
-        explantCollectionBatch: this.model.explantCollectionBatch,
-        generation: this.model.parentGeneration,
+        variety: model.variety,
+        varietyCode: model.varietyCode,
+        explantCollectionBatch: model.explantCollectionBatch,
+        generation: model.generation,
         ignoreStats: APIConst.booleans.BOOLEAN_FALSE,
         inOutBottleType: 'parent_out',
         plantCountApplied: model.plantCount,
@@ -280,9 +289,9 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
       idInOut: this.model.id,
       idBottle: id,
       variety: this.model.variety,
-      varietyCode: this.model.varietyCode,
-      explantCollectionBatch: this.model.explantCollectionBatch,
-      generation: this.model.parentGeneration,
+      varietyCode: model.varietyCode,
+      explantCollectionBatch: model.explantCollectionBatch,
+      generation: model.generation,
       ignoreStats: APIConst.booleans.BOOLEAN_FALSE,
       inOutBottleType: 'parent_out',
       plantCountApplied: model.plantCount,

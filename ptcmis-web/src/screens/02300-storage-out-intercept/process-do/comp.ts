@@ -178,13 +178,18 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
     let bottles = 0;
     let plants = 0;
     const version = this.updateVersionSig();
-    if (version < 0) return { bottles, plants };
-
+    if (version < 0) return { bottles, plants, varietyCodes: [] };
+    const varietyCodeSet = new Set<string>();
     this.discardMap.forEach((discard) => {
       plants += discard.plants ?? 0;
+      varietyCodeSet.add(discard.varietyCode);
     });
     bottles = this.discardMap.size;
-    return { bottles, plants };
+    return {
+      bottles,
+      plants,
+      varietyCodes: [...varietyCodeSet].sort((a, b) => a.localeCompare(b)),
+    };
   });
 
   // 更新版本
@@ -212,6 +217,7 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
               id: bottle.idBottle,
               plants: bottle.plantCountActual,
               reason: bottle.discardReason,
+              varietyCode: bottle.varietyCode,
               status: '',
             });
           });
@@ -232,6 +238,7 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
               plants: bottle.plantCount,
               reason: this.discardMap.get(bottle.id)?.reason ?? '',
               status: '',
+              varietyCode: bottle.varietyCode,
             });
             codePrefixSet.add(bottle.id.substring(0, 6).toUpperCase());
           });
@@ -269,6 +276,7 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
         reason: reason,
         status: '',
         plants: bottle.plants,
+        varietyCode: bottle.varietyCode,
       });
       bottle.reason = reason;
       this.updateVersionSig.update((v) => v + 1);
@@ -304,6 +312,7 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
             id: result.idBottle,
             reason: result.reason,
             status: 'discard',
+            varietyCode: bottle.varietyCode,
             plants,
           });
           this.updateVersionSig.update((v) => v + 1);
@@ -344,6 +353,7 @@ export class StorageOutTaskProcessDo implements OnInit, OnDestroy {
             id: result.idBottle,
             reason: result.reason,
             status: 'discard',
+            varietyCode: bottle.varietyCode,
             plants,
           });
           this.updateVersionSig.update((v) => v + 1);
